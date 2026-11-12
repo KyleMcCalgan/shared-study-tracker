@@ -10,12 +10,12 @@ A small live dashboard for **Kyle and David** to work through the COS330 (Comput
 ## How it works
 
 ```
-GitHub Pages (website/, static) ──► Firebase JS SDK ──► Anonymous Auth (silent)
+GitHub Pages (website/, static) ──► Firebase JS SDK ──► Google Sign-In (2 allowed accounts)
                                                     └─► Cloud Firestore ◄─realtime─► both browsers
 ```
 
-- **No login screen.** Each browser signs in anonymously in the background. Kyle approves each browser once (see [Security](docs/security.md)).
-- **Profiles.** After approval you pick **Kyle** or **David**. The device remembers the choice; switch in ⚙️ Settings. A profile is a convenience, **not** proof of identity: either approved device can edit either profile.
+- **Sign in once with Google** on each device and you stay signed in. Only Kyle's and David's Google accounts are allowed (see [Security](docs/security.md)).
+- **Your account is your profile.** There's no "pick a name": you see your own plan and can only change your own progress. You can see each other's progress.
 - **Progress lives in Firestore,** not in Git. Ticking a box never triggers a commit or a site rebuild.
 - **The schedule is imported once** from the Markdown by an owner-only script. The site never re-reads the Markdown.
 
@@ -27,7 +27,7 @@ GitHub Pages (website/, static) ──► Firebase JS SDK ──► Anonymous Au
 | **Schedule** | Week agenda with filters (All · Kyle · David · Together · Rest & buffers). Mark sessions done, missed or cancelled; reschedule with a preview and protected-day warnings; add shared notes; add your own sessions |
 | **Topics** | All 12 examinable chapters (Ch 12 excluded). Each person has an independent status (Not started → In progress → First pass completed → Needs more practice → Exam ready), the depth reached (Exposure / MV / MUST), notes, the technical-example checklist, David's Q1–Q16 queue, and "Needs discussion" |
 | **Discuss** | Shared queue of questions, tricky topics and things to revisit: open → discussed / deferred. Marking an item discussed never marks a chapter complete |
-| **Settings** | Switch profile, connection status, device approval and ID, refresh, JSON export, links |
+| **Settings** | Signed-in account and sign out, connection status, refresh, JSON export, links |
 
 Saving is shown honestly in the header: **Saving…** until Firestore confirms, then **Synced**. **Offline** and **Sync error** are shown too. Rejected writes show an error and roll back.
 
@@ -48,7 +48,7 @@ website/            ← the ONLY folder published to GitHub Pages
   js/views/ dashboard, schedule, topics, discussions, settings, session-card
 data/seed-schedule.json   ← reviewable snapshot generated from the Markdown
 docs/                     ← source schedule, import report, setup/deploy/security/testing guides
-scripts/                  ← parser, validator, owner-only seed/approve/deploy-rules, dev server
+scripts/                  ← parser, validator, owner-only seed/allow/deploy-rules, dev server
 tests/                    ← unit, rules (emulator), seed (emulator), smoke (browser), e2e (real SDK + emulators)
 firestore.rules, firestore.indexes.json, firebase.json
 .github/workflows/        ← deploy-pages.yml, validate.yml
@@ -67,23 +67,21 @@ firestore.rules, firestore.indexes.json, firebase.json
 ```bash
 npm install
 npm run serve            # http://localhost:8080/website/
-# Preview with the real seed data, in memory only (nothing saved, no approval):
+# Preview with the real seed data, in memory only (nothing saved, no sign-in):
 #   http://localhost:8080/website/?preview
 # VS Code Live Server also works: "Go Live" with the project folder open, then
 #   http://127.0.0.1:5500/website/?preview
 ```
 
-### Approve a new device (owner)
-
-The new browser shows a device ID. Then run:
+### Give or remove access (owner)
 
 ```bash
-npm run approve -- <device-id> --label "Kyle phone"
-npm run approve -- --list
-npm run approve -- --revoke <device-id>
+npm run allow -- someone@gmail.com --profile david
+npm run allow -- --list
+npm run allow -- --revoke someone@gmail.com
 ```
 
-Clearing site data, private windows, or a new browser or device all create a new ID that needs approving.
+Adding an account unlocks an open "No access" page by itself; removing one locks it out immediately.
 
 ### Changing the schedule safely
 

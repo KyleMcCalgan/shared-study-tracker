@@ -86,12 +86,21 @@ await test('Invalid config state: "Firebase configuration missing"', async (page
   await page.getByRole('heading', { name: 'Firebase configuration missing' }).waitFor();
 });
 
-await test('F01 approval gate shows device code, no study content', async (page) => {
-  await page.goto(`${BASE}?preview=unapproved`);
-  await page.getByRole('heading', { name: 'Device approval required' }).waitFor();
-  assert.equal(await page.locator('.uid-big').textContent(), 'preview-device-uid');
+await test('F01 signed-out screen offers Google sign-in, no study content', async (page) => {
+  await page.goto(`${BASE}?preview=signedout`);
+  await page.getByRole('heading', { name: 'Sign in' }).waitFor();
   assert.equal(await page.locator('.sess').count(), 0);
   assert.equal(await page.locator('.nav').count(), 0);
+  await page.getByRole('button', { name: /Continue with Google/ }).click();
+  await page.getByRole('heading', { name: "Who's studying?" }).waitFor(); // preview account → chooser
+});
+
+await test('Unlisted account sees "No access" and can switch account', async (page) => {
+  await page.goto(`${BASE}?preview=notallowed`);
+  await page.getByRole('heading', { name: 'No access for this account' }).waitFor();
+  assert.equal(await page.locator('.sess').count(), 0);
+  await page.getByRole('button', { name: 'Use a different account' }).click();
+  await page.getByRole('heading', { name: 'Sign in' }).waitFor();
 });
 
 await test('F16 Firebase unavailable shows error + retry', async (page) => {

@@ -36,8 +36,8 @@ Daily study progress (ticks, statuses, notes) **never needs a commit or deploy**
 
 ## 3. The standard workflow (any code change)
 
-1. **Preview locally.** Use Live Server with the project folder as the workspace, or `npm run serve`. Open `…/website/?preview`. Sample data, nothing saved, no device approval needed.
-   - `?preview=unapproved`, `?preview=empty`, `?preview=error` show the other screens.
+1. **Preview locally.** Use Live Server with the project folder as the workspace, or `npm run serve`. Open `…/website/?preview`. Sample data, nothing saved, no sign-in needed.
+   - `?preview=signedout`, `?preview=notallowed`, `?preview=empty`, `?preview=error` show the other screens.
    - Live Server reloads on every save, which resets preview data. That's expected.
 2. **Run the relevant tests** from the table above, or everything with `npm run test:all` (about 3 minutes).
 3. **Commit and push** to `main`. Commits are authored as Kyle only.
@@ -133,8 +133,8 @@ $env:GOOGLE_APPLICATION_CREDENTIALS = "$PWD\secrets\study-planner-80983-firebase
 |---|---|
 | `npm run deploy:rules` | Publishes `firestore.rules` to the live project |
 | `npm run seed` / `-- --apply` | Dry-run / apply the schedule import |
-| `npm run approve -- <code> --label "…"` | Approves a device (max 2 unless `--allow-more`) |
-| `npm run approve -- --list` / `--revoke <code>` | Lists / removes approved devices (revoking is instant) |
+| `npm run allow -- <email> --profile kyle|david` | Gives a Google account access as that person (one per profile unless `--allow-more`) |
+| `npm run allow -- --list` / `--revoke <email>` | Lists / removes allowed accounts (removal is instant) |
 
 ---
 
@@ -149,11 +149,11 @@ $env:GOOGLE_APPLICATION_CREDENTIALS = "$PWD\secrets\study-planner-80983-firebase
 
 ---
 
-## 8. Devices and approval when developing
+## 8. Signing in when developing
 
-- Every browser **and address** counts as a separate device. `127.0.0.1:5500` (Live Server), `localhost:8080` and the GitHub Pages site each need their own approval to see real data.
-- Use `?preview` locally and you never need approval.
-- To use real data locally, approve that address once with `npm run approve -- <code> --label "Kyle laptop (local)" --allow-more`. It stays approved unless you change port, switch between `localhost` and `127.0.0.1`, or clear site data.
+- Use `?preview` locally: sample data, no sign-in, nothing saved.
+- Without `?preview`, the local site uses the **real** database and you sign in with Google as usual. `localhost` is an authorised domain by default. For Live Server on `127.0.0.1` you must add `127.0.0.1` under **Authentication → Settings → Authorized domains**, or use `http://localhost:5500/website/` instead.
+- Each address (e.g. `localhost:5500` vs the GitHub Pages site) keeps its own sign-in, so you may be asked to sign in once per address.
 
 ---
 

@@ -39,32 +39,39 @@ async function device() {
   return { ctx, page };
 }
 
-const A = await device();
-const B = await device();
-const C = await device(); // never approved
-let uidA; let uidB; let uidC;
+const A = await device(); // Kyle
+const B = await device(); // David
+const C = await device(); // a Google account that is not on the list
+const KYLE = 'kyle.e2e@example.com';
+const DAVID = 'david.e2e@example.com';
+let uidA;
+const googleSignIn = (d, email) => d.page.evaluate((e) => window.__emulatorGoogleSignIn(e).then((c) => c.user.uid), email);
 
-await step('F01 first visit signs in silently and shows the approval gate (no study content)', async () => {
-  for (const d of [A, B, C]) await d.page.getByRole('heading', { name: 'Device approval required' }).waitFor({ timeout: 20000 });
-  [uidA, uidB, uidC] = await Promise.all([A, B, C].map((d) => d.page.locator('.uid-big').textContent()));
-  assert.ok(uidA && uidB && uidA !== uidB);
-  assert.equal(await A.page.locator('.session').count(), 0);
+await step('F01 first visit shows "Sign in" with Google; no study content', async () => {
+  for (const d of [A, B, C]) await d.page.getByRole('heading', { name: 'Sign in' }).waitFor({ timeout: 20000 });
+  await A.page.getByRole('button', { name: /Continue with Google/ }).waitFor();
+  assert.equal(await A.page.locator('.sess').count(), 0);
 });
 
-await step('F03 approving a device unlocks it live (no refresh) and shows the profile chooser', async () => {
-  await admin.collection('approvedDevices').doc(uidA).set({ label: 'A', approvedAt: FieldValue.serverTimestamp() });
-  await admin.collection('approvedDevices').doc(uidB).set({ label: 'B', approvedAt: FieldValue.serverTimestamp() });
-  await A.page.getByRole('heading', { name: "Who's studying?" }).waitFor({ timeout: 15000 });
-  await B.page.getByRole('heading', { name: "Who's studying?" }).waitFor({ timeout: 15000 });
-  await A.page.getByRole('button', { name: 'Kyle' }).click();
-  await B.page.getByRole('button', { name: 'David' }).click();
-  await A.page.locator('.appbar .avatar-kyle').waitFor();
-  await B.page.locator('.appbar .avatar-david').waitFor();
+await step('Signed-in but unlisted accounts see "No access"', async () => {
+  uidA = await googleSignIn(A, KYLE);
+  await googleSignIn(B, DAVID);
+  await googleSignIn(C, 'stranger@example.com');
+  for (const d of [A, B, C]) await d.page.getByRole('heading', { name: 'No access for this account' }).waitFor({ timeout: 15000 });
+  await C.page.locator('.uid-big', { hasText: 'stranger@example.com' }).waitFor();
 });
 
-await step('F02 unapproved device stays gated; direct reads are refused by the rules', async () => {
+await step('F03 allowing an account unlocks it live, with the profile set by the account (no chooser)', async () => {
+  await admin.collection('allowedUsers').doc(KYLE).set({ profile: 'kyle', addedAt: FieldValue.serverTimestamp() });
+  await admin.collection('allowedUsers').doc(DAVID).set({ profile: 'david', addedAt: FieldValue.serverTimestamp() });
+  await A.page.locator('.appbar .avatar-kyle').waitFor({ timeout: 15000 });
+  await B.page.locator('.appbar .avatar-david').waitFor({ timeout: 15000 });
+  assert.equal(await A.page.getByRole('heading', { name: "Who's studying?" }).count(), 0);
+});
+
+await step('F02 unlisted account stays gated; direct reads are refused by the rules', async () => {
   await C.page.waitForTimeout(500);
-  assert.equal(await C.page.getByRole('heading', { name: 'Device approval required' }).count(), 1);
+  assert.equal(await C.page.getByRole('heading', { name: 'No access for this account' }).count(), 1);
   const denied = await C.page.evaluate(async () => {
     const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js');
     try { await getDocs(collection(getFirestore(), 'workspaces/cos330-2026/progress')); return 'READ OK'; } catch (e) { return e.code; }
@@ -106,9 +113,21 @@ await step('F15 reload keeps saved changes (persisted in Firestore)', async () =
   assert.equal(doc.data().updatedByUid, uidA);
 });
 
-await step('Revoking a device locks it out live', async () => {
-  await admin.collection('approvedDevices').doc(uidB).delete();
-  await B.page.getByRole('heading', { name: 'Device approval required' }).waitFor({ timeout: 15000 });
+await step('Session survives a reload (stays signed in)', async () => {
+  await B.page.reload();
+  await B.page.locator('.appbar .avatar-david').waitFor({ timeout: 15000 });
+});
+
+await step('Removing an account locks it out live', async () => {
+  await admin.collection('allowedUsers').doc(DAVID).delete();
+  await B.page.getByRole('heading', { name: 'No access for this account' }).waitFor({ timeout: 15000 });
+});
+
+await step('Sign out returns to the sign-in screen', async () => {
+  await A.page.goto(`${URL_}#settings`);
+  await A.page.getByRole('button', { name: 'Sign out' }).click();
+  await A.page.getByRole('dialog').getByRole('button', { name: 'Sign out' }).click();
+  await A.page.getByRole('heading', { name: 'Sign in' }).waitFor({ timeout: 15000 });
 });
 
 await step('No uncaught page errors', async () => {

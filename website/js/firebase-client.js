@@ -2,7 +2,8 @@
 // Uses the official modular Web SDK as browser ES modules (pinned version).
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
 import {
-  getAuth, signInAnonymously, onAuthStateChanged, connectAuthEmulator,
+  getAuth, onAuthStateChanged, connectAuthEmulator, GoogleAuthProvider, signInWithPopup, signOut,
+  signInWithCredential,
 } from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 import {
   getFirestore, doc, collection, onSnapshot, writeBatch, serverTimestamp, query, orderBy, limit,
@@ -32,6 +33,10 @@ export function createFirebaseBackend(config, { emulator = false } = {}) {
   if (emulator) {
     connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
     connectFirestoreEmulator(db, '127.0.0.1', 8180);
+    // Test hook (emulator only): sign in as a fake verified Google account.
+    window.__emulatorGoogleSignIn = (email) => signInWithCredential(auth, GoogleAuthProvider.credential(
+      JSON.stringify({ sub: email, email, email_verified: true }),
+    ));
   }
 
   function toPlain(snapDoc) {
@@ -53,19 +58,32 @@ export function createFirebaseBackend(config, { emulator = false } = {}) {
   return {
     kind: 'firebase',
 
-    /** Silent anonymous sign-in; resolves with the UID (restored if this browser has one). */
-    signIn() {
-      return new Promise((resolve, reject) => {
-        const off = onAuthStateChanged(auth, (user) => {
-          if (user) { off(); resolve(user.uid); }
-        }, (e) => { off(); reject(e); });
-        signInAnonymously(auth).catch((e) => { off(); reject(e); });
-      });
+    /**
+     * Auth state. cb(user|null) where user = { uid, email, name, google }.
+     * Firebase keeps the session in this browser, so it persists across visits.
+     */
+    watchAuth(cb, onError) {
+      return onAuthStateChanged(auth, (u) => cb(u ? {
+        uid: u.uid,
+        email: (u.email || '').toLowerCase(),
+        name: u.displayName || '',
+        google: u.providerData.some((p) => p.providerId === 'google.com') && u.emailVerified,
+      } : null), onError);
     },
 
-    /** Live approval status for this device's UID. cb(approved, error) */
-    watchApproval(uid, cb) {
-      return onSnapshot(doc(db, 'approvedDevices', uid), (snap) => cb(snap.exists(), null), (e) => cb(false, e));
+    /** Google sign-in in a popup (works on GitHub Pages; redirects don't across domains). */
+    async signIn() {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      await signInWithPopup(auth, provider);
+    },
+
+    signOut() { return signOut(auth); },
+
+    /** Live allowlist entry for this account. cb(entry|null, error) where entry = { profile }. */
+    watchAccess(email, cb) {
+      return onSnapshot(doc(db, 'allowedUsers', email.toLowerCase()),
+        (snap) => cb(snap.exists() ? snap.data() : null, null), (e) => cb(null, e));
     },
 
     /** Subscribe to every collection the app needs. Returns an unsubscribe function. */

@@ -7,9 +7,12 @@ export const SERVER_TIME = Object.freeze({ __serverTime: true });
 const listeners = new Set();
 
 export const state = {
-  // boot | config-missing | signing-in | auth-error | unapproved | loading | no-workspace | ready | fatal
+  // boot | config-missing | signing-in | signed-out | checking-access | not-allowed | auth-error
+  // | loading | no-workspace | ready | fatal
   phase: 'boot',
   error: null,
+  user: null, // { uid, email, name, google }
+  signingIn: false,
   uid: null,
   approved: false,
   preview: false,

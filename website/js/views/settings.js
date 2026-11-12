@@ -23,26 +23,33 @@ async function copy(text) {
   try { await navigator.clipboard.writeText(text); toast('Copied', 'success'); } catch { toast('Couldn\'t copy. Select the text and copy it manually.', 'error'); }
 }
 
-export function renderSettings(root, _param, _rerender, { resubscribe }) {
+export function renderSettings(root, _param, _rerender, { resubscribe, signOut }) {
   const me = state.profile;
   const other = PROFILE_IDS.find((p) => p !== me);
-  let reveal = false;
-  const uidText = h('code', { class: 'uid' }, maskUid(state.uid));
 
   root.append(h('h1', { class: 'page-title' }, 'Settings'));
 
   root.append(h('section', { class: 'card stack' },
     h('div', { class: 'row' }, avatar(me, 'md'), h('div', { class: 'grow' },
-      h('p', { class: 'eyebrow' }, 'Using this device as'),
-      h('p', { style: 'font-family:var(--display);font-weight:800;font-size:1.5rem' }, PROFILES[me].name))),
-    h('button', {
+      h('p', { class: 'eyebrow' }, 'Signed in as'),
+      h('p', { style: 'font-family:var(--display);font-weight:800;font-size:1.5rem' }, PROFILES[me].name),
+      state.user?.email && h('p', { class: 'small muted' }, state.user.email))),
+    // Real accounts are tied to one profile. Only the local preview can switch.
+    state.preview && h('button', {
       class: 'btn btn-block',
       onclick: async () => {
-        const ok = await confirmDialog({ title: `Switch to ${PROFILES[other].name}?`, message: `Progress changes on this device will then be recorded for ${PROFILES[other].name}.`, confirmLabel: `Switch to ${PROFILES[other].name}` });
+        const ok = await confirmDialog({ title: `Switch to ${PROFILES[other].name}?`, message: `Preview only: act as ${PROFILES[other].name}.`, confirmLabel: `Switch to ${PROFILES[other].name}` });
         if (ok) { saveProfile(other); toast(`You're now ${PROFILES[other].name}`, 'success'); location.hash = '#today'; }
       },
     }, `Switch to ${PROFILES[other].name}`),
-    h('p', { class: 'small muted' }, 'Picking a name isn\'t a login. It only decides whose progress this device edits.')));
+    h('button', {
+      class: 'btn btn-ghost btn-block',
+      onclick: async () => {
+        const ok = await confirmDialog({ title: 'Sign out?', message: 'You\'ll need to sign in with Google again on this device.', confirmLabel: 'Sign out' });
+        if (ok) signOut();
+      },
+    }, 'Sign out'),
+    h('p', { class: 'small muted' }, 'Your Google account decides which profile you are, so you can only change your own progress.')));
 
   root.append(h('section', null, secHead('Connection'), h('div', { class: 'card stack' },
     h('dl', { class: 'kv' },
@@ -55,12 +62,6 @@ export function renderSettings(root, _param, _rerender, { resubscribe }) {
       h('dt', null, 'Data'), h('dd', null, state.preview ? 'Local preview (not saved)' : `Cloud Firestore · ${WORKSPACE_ID}`)),
     h('button', { class: 'btn', onclick: () => { resubscribe(); toast('Reconnecting…'); } }, icon('refresh', { size: 18 }), 'Refresh data'))));
 
-  root.append(h('section', null, secHead('This device'), h('div', { class: 'card stack' },
-    h('p', null, state.approved ? h('b', { style: 'color:var(--rest)' }, '✓ Approved') : h('b', null, 'Not approved')),
-    h('div', { class: 'row wrap' }, h('span', { class: 'small muted' }, 'Device ID'), uidText,
-      h('button', { class: 'btn btn-sm', onclick: (e) => { reveal = !reveal; uidText.textContent = reveal ? state.uid : maskUid(state.uid); e.currentTarget.textContent = reveal ? 'Hide' : 'Show'; } }, 'Show'),
-      h('button', { class: 'btn btn-sm', onclick: () => copy(state.uid) }, 'Copy')),
-    h('p', { class: 'small muted' }, 'Clearing site data, private windows or a new browser give you a new ID, which then needs approving again.'))));
 
   root.append(h('section', null, secHead('Data'), h('div', { class: 'card' }, h('div', { class: 'list-rows' },
     h('a', { class: 'list-row', href: SOURCE_SCHEDULE_URL, target: '_blank', rel: 'noopener' }, h('span', { class: 'grow' }, h('b', null, 'Source schedule'), h('span', { class: 'small muted' }, state.workspace?.sourceScheduleFilename ?? '')), icon('chevron', { size: 18 })),
@@ -90,7 +91,16 @@ function exportJson() {
 
 // ------------------------------------------------------------------ gate screens
 
-export function gateScreen(kind, { onRetry, onChooseProfile } = {}) {
+/** Small multi-colour "G" (static, trusted markup). */
+function googleMark() {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = '<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C37 38.6 44 33 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+  return tpl.content.firstElementChild;
+}
+
+export function gateScreen(kind, {
+  onRetry, onChooseProfile, onSignIn, onSignOut,
+} = {}) {
   const card = h('div', { class: 'gate-card' }, h('p', { class: 'gate-brand' }, 'cos330'));
   const add = (...xs) => card.append(...xs.flat().filter(Boolean)); // native append would print "null"
   const title = (t) => h('h1', { class: 'gate-title' }, t);
@@ -98,7 +108,25 @@ export function gateScreen(kind, { onRetry, onChooseProfile } = {}) {
   switch (kind) {
     case 'boot':
     case 'signing-in':
-      add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Connecting…'), h('p', { class: 'muted', role: 'status' }, 'Signing this device in.'));
+    case 'checking-access':
+      add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Connecting…'),
+        h('p', { class: 'muted', role: 'status' }, kind === 'checking-access' ? 'Checking your access.' : 'Starting up.'));
+      break;
+    case 'signed-out':
+      add(title('Sign in'),
+        lead('This tracker is private to Kyle and David. Sign in with your Google account. You\'ll stay signed in on this device.'),
+        h('button', { class: 'btn btn-primary btn-block', onclick: onSignIn, disabled: state.signingIn }, googleMark(), state.signingIn ? 'Opening Google…' : 'Continue with Google'),
+        state.error && h('p', { class: 'warning', role: 'alert' }, state.error),
+        !state.preview && ['localhost', '127.0.0.1'].includes(location.hostname) && h('p', { class: 'small muted' },
+          'Working on the code locally? Add ?preview to the address to use sample data without signing in.'));
+      break;
+    case 'not-allowed':
+      add(title('No access for this account'),
+        lead('Only Kyle\'s and David\'s Google accounts can open this tracker.'),
+        state.user?.email && h('div', { class: 'uid-box' }, h('p', { class: 'eyebrow' }, 'Signed in as'), h('p', { class: 'uid-big' }, state.user.email)),
+        h('p', { class: 'small muted' }, 'If this is your account, ask Kyle to add it. The page unlocks by itself as soon as he does. Otherwise, sign out and choose your other Google account.'),
+        state.error && h('p', { class: 'small muted' }, `Detail: ${state.error}`),
+        h('button', { class: 'btn btn-primary btn-block', onclick: onSignOut }, 'Use a different account'));
       break;
     case 'loading':
       add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Loading your plan…'), h('p', { class: 'muted', role: 'status' }, 'Fetching the schedule and progress.'));
@@ -110,30 +138,14 @@ export function gateScreen(kind, { onRetry, onChooseProfile } = {}) {
       break;
     case 'auth-error':
       add(title('Can\'t reach Firebase'),
-        lead('This device couldn\'t sign in. Nothing has been loaded or saved.'),
+        lead('Couldn\'t connect to sign-in. Nothing has been loaded or saved.'),
         state.error && h('p', { class: 'small muted' }, state.error),
-        h('p', { class: 'small muted' }, 'Check your connection. If this keeps happening, Anonymous sign-in may be switched off in Firebase.'),
+        h('p', { class: 'small muted' }, 'Check your connection and try again.'),
         h('button', { class: 'btn btn-primary btn-block', onclick: onRetry }, 'Try again'));
-      break;
-    case 'unapproved':
-      add(title('Device approval required'),
-        lead('This tracker is private to Kyle and David. Each browser is approved once. No password needed.'),
-        !state.preview && ['localhost', '127.0.0.1'].includes(location.hostname) && h('p', { class: 'warning' },
-          'Working on the code locally? Add ?preview to the address to use sample data. No approval needed, and nothing is saved.'),
-        h('div', { class: 'uid-box' },
-          h('p', { class: 'eyebrow' }, 'Your device code'),
-          h('code', { class: 'uid-big' }, state.uid || ''),
-          h('button', { class: 'btn btn-primary btn-block', onclick: () => copy(state.uid) }, icon('copy', { size: 18 }), 'Copy code')),
-        h('ol', { class: 'steps' },
-          h('li', null, 'Send the code to Kyle privately, e.g. on WhatsApp.'),
-          h('li', null, 'Keep this page open. It unlocks by itself once approved.')),
-        h('p', { class: 'small muted' }, 'Private windows, cleared browser data and new browsers each get a new code.'),
-        state.error && h('p', { class: 'small muted' }, `Detail: ${state.error}`),
-        h('button', { class: 'btn btn-ghost', onclick: onRetry }, 'Check again'));
       break;
     case 'no-workspace':
       add(title('Schedule not imported yet'),
-        lead('This device is approved, but the study plan isn\'t in the database yet.'),
+        lead('You have access, but the study plan isn\'t in the database yet.'),
         h('p', { class: 'small muted' }, 'Owner: run npm run seed -- --apply (see docs/firebase-setup.md).'),
         h('button', { class: 'btn btn-ghost', onclick: onRetry }, 'Check again'));
       break;
@@ -146,7 +158,7 @@ export function gateScreen(kind, { onRetry, onChooseProfile } = {}) {
         h('div', { class: 'profile-cards' }, PROFILE_IDS.map((p) => h('button', {
           class: ['profile-card', `profile-${p}`], onclick: () => onChooseProfile(p),
         }, h('span', { class: 'profile-initial', 'aria-hidden': 'true' }, PROFILES[p].initial), h('span', { class: 'profile-name' }, PROFILES[p].name)))),
-        h('p', { class: 'small muted' }, 'Not a login. It only decides whose progress this device edits. You can switch later in Settings.'));
+        h('p', { class: 'small muted' }, 'Local preview only. Real accounts are tied to one person.'));
       break;
     default:
       add(title(kind));

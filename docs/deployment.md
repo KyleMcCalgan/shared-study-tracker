@@ -21,5 +21,5 @@ Edit `firestore.rules`, run `npm run test:rules`, then `npm run deploy:rules`. P
 ## Checking a deployment
 
 1. **Actions** tab: the "Deploy website to GitHub Pages" run is green.
-2. Open the live URL. On a phone the approval screen or the Today view should load without errors.
+2. Open the live URL. On a phone the sign-in screen or the Today view should load without errors.
 3. ⚙️ Settings → Connection shows "Connected. All changes saved."

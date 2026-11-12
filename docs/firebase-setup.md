@@ -16,9 +16,11 @@ Everything uses the free **Spark** plan. No billing account is needed, so don't 
 
 These values are public identifiers, not passwords. Access is enforced by the security rules.
 
-## 3. Enable Anonymous sign-in
+## 3. Enable Google sign-in and authorise the site address
 
-**Build → Authentication → Get started → Sign-in method → Anonymous → Enable → Save.**
+1. **Build → Authentication → Sign-in method → Add new provider → Google → Enable.** Pick your email as the "support email" → **Save**.
+2. **Authentication → Settings → Authorized domains → Add domain** → `kylemccalgan.github.io` → **Add**. Without this, sign-in fails on the live site with "unauthorized domain". `localhost` is already listed.
+3. Anonymous sign-in is no longer used and can be switched off (Sign-in method → Anonymous → Disable).
 
 ## 4. Create the Firestore database
 
@@ -30,7 +32,7 @@ These values are public identifiers, not passwords. Access is enforced by the se
 
 ## 5. Download an admin key (never committed)
 
-Used only on your PC, to deploy rules, import the schedule and approve devices.
+Used only on your PC, to deploy rules, import the schedule and manage who has access.
 
 1. **Project settings (⚙️) → Service accounts → Generate new private key.**
 2. Save it in the project's **`secrets/`** folder (create it if missing). Everything in `secrets/` is git-ignored.
@@ -42,18 +44,17 @@ In PowerShell, for the current session (adjust the filename):
 $env:GOOGLE_APPLICATION_CREDENTIALS = "$PWD\secrets\study-planner-80983-firebase-adminsdk-xxxxx-xxxxxxxxxx.json"
 ```
 
-## 6. Deploy rules, import the schedule, approve devices
+## 6. Deploy rules, import the schedule, allow the two accounts
 
 ```bash
-npm run deploy:rules            # strict rules from firestore.rules
-npm run seed                    # dry run: shows what will be created
-npm run seed -- --apply         # import the schedule
-# each person opens the site, copies the device ID shown, sends it privately to Kyle:
-npm run approve -- <id> --label "Kyle phone"
-npm run approve -- <id> --label "David phone"
+npm run deploy:rules                                  # strict rules from firestore.rules
+npm run seed                                          # dry run: shows what will be created
+npm run seed -- --apply                               # import the schedule
+npm run allow -- kyles-google@gmail.com --profile kyle
+npm run allow -- davids-google@gmail.com --profile david
 ```
 
-Each approved device unlocks automatically within seconds.
+The emails are stored only in Firestore, never in the repo. Each person then opens the site, taps **Continue with Google**, and is in. If someone signs in before being added, their "No access" page unlocks by itself once they are.
 
 **Fallback for rules:** if `deploy:rules` reports a permission error, open **Firestore Database → Rules**, paste the whole of `firestore.rules`, and click **Publish**.
 

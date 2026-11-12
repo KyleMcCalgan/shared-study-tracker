@@ -67,28 +67,31 @@ async function boot() {
   startAuth();
 }
 
-function timeout(promise, ms, message) {
-  return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error(message)), ms))]);
-}
+let authOff = null;
 
-async function startAuth() {
+/** Google account → allowlist entry → profile → data. */
+function startAuth() {
   setState({ phase: 'signing-in', error: null });
-  let uid;
-  try {
-    uid = await timeout(backend.signIn(), 20000, 'Timed out while signing in');
-  } catch (e) {
-    const code = e.code ? ` (${e.code})` : '';
-    setState({ phase: 'auth-error', error: `${e.message}${code}` });
-    return;
-  }
-  setState({ uid });
-  watchApproval();
+  if (authOff) authOff();
+  authOff = backend.watchAuth((user) => {
+    if (approvalOff) { approvalOff(); approvalOff = null; }
+    stopData();
+    if (!user || !user.google) {
+      // Signed out (or an old anonymous session from the device-code era).
+      setState({ user: null, uid: null, approved: false, phase: 'signed-out' });
+      return;
+    }
+    setState({ user, uid: user.uid, phase: 'checking-access', error: null });
+    watchAccess();
+  }, (e) => setState({ phase: 'auth-error', error: `${e.message}${e.code ? ` (${e.code})` : ''}` }));
 }
 
-function watchApproval() {
+function watchAccess() {
   if (approvalOff) approvalOff();
-  approvalOff = backend.watchApproval(state.uid, (approved, err) => {
-    if (approved) {
+  approvalOff = backend.watchAccess(state.user.email, (entry, err) => {
+    if (entry) {
+      // The account decides the profile (preview accounts have none → chooser).
+      if (entry.profile && entry.profile !== state.profile) saveProfile(entry.profile);
       if (!state.approved || !dataOff) {
         setState({ approved: true, phase: 'loading', error: null });
         startData();
@@ -96,9 +99,32 @@ function watchApproval() {
     } else {
       stopData();
       const detail = err ? `${err.code || ''} ${err.message || ''}`.trim() : null;
-      setState({ approved: false, phase: 'unapproved', error: detail });
+      setState({ approved: false, phase: 'not-allowed', error: detail });
     }
   });
+}
+
+async function signIn() {
+  setState({ error: null, signingIn: true });
+  try {
+    await backend.signIn();
+  } catch (e) {
+    const code = e.code || '';
+    const msg = code.includes('popup-blocked') ? 'Your browser blocked the sign-in window. Allow pop-ups for this site and try again.'
+      : code.includes('popup-closed') || code.includes('cancelled-popup') ? 'Sign-in was cancelled.'
+        : code.includes('unauthorized-domain') ? 'This website address is not authorised in Firebase yet (Authentication → Settings → Authorized domains).'
+          : code.includes('operation-not-allowed') ? 'Google sign-in is not enabled in Firebase yet (Authentication → Sign-in method).'
+            : `Sign-in failed: ${e.message}`;
+    setState({ error: msg });
+  } finally {
+    setState({ signingIn: false });
+  }
+}
+
+async function signOut() {
+  stopData();
+  saveProfile(null);
+  await backend.signOut();
 }
 
 function startData() {
@@ -114,7 +140,7 @@ function startData() {
     onError: (name, err) => {
       console.error(`Listener ${name} failed`, err);
       const msg = err.code === 'permission-denied'
-        ? 'Permission denied: this device may no longer be approved.'
+        ? 'Permission denied: this account may no longer have access.'
         : `${err.code || ''} ${err.message || ''}`.trim();
       setSync({ listenerError: `${name}: ${msg}` });
       if (state.phase === 'loading') setState({ phase: 'fatal', error: `Could not load data. ${msg}` });
@@ -126,12 +152,12 @@ function stopData() { if (dataOff) { dataOff(); dataOff = null; } }
 
 function resubscribe() {
   setSync({ listenerError: null });
-  if (state.approved) startData(); else watchApproval();
+  if (state.approved) startData(); else if (state.user) watchAccess(); else startAuth();
 }
 
 function retry() {
   if (!backend) { location.reload(); return; }
-  if (!state.uid) startAuth();
+  if (!state.user) startAuth();
   else resubscribe();
 }
 
@@ -153,6 +179,8 @@ function render({ routeChanged = false } = {}) {
     shell = null;
     clear(app).append(gateScreen(gate, {
       onRetry: retry,
+      onSignIn: signIn,
+      onSignOut: signOut,
       onChooseProfile: (p) => { saveProfile(p); location.hash = '#today'; },
     }));
     document.title = 'COS330 Study Tracker';
@@ -185,7 +213,7 @@ function renderView(routeChanged) {
   const scrollY = window.scrollY;
 
   const next = h('div', { class: `view view-${name}` });
-  route.render(next, routeChanged ? param : null, () => render(), { resubscribe });
+  route.render(next, routeChanged ? param : null, () => render(), { resubscribe, signOut });
   view.replaceChildren(next);
 
   if (!routeChanged) {

@@ -11,7 +11,7 @@ export async function createMemoryBackend(mode) {
   if (mode === 'error') {
     return {
       kind: 'memory',
-      signIn: () => Promise.reject(Object.assign(new Error('Simulated network failure'), { code: 'auth/network-request-failed' })),
+      watchAuth: (cb, onError) => { setTimeout(() => onError(Object.assign(new Error('Simulated network failure'), { code: 'auth/network-request-failed' })), 50); return () => {}; },
     };
   }
   const res = await fetch('../data/seed-schedule.json', { cache: 'no-store' });
@@ -35,10 +35,16 @@ export async function createMemoryBackend(mode) {
   };
   const decode = (data) => Object.fromEntries(Object.entries(data).map(([k, v]) => [k, v === SERVER_TIME ? Date.now() : v]));
 
+  // Fake account: profile left null so preview still shows the "who's studying" chooser.
+  const fakeUser = { uid: 'preview-uid', email: 'preview@example.com', name: 'Preview', google: true };
+  let authCb = null;
+  let signedIn = mode !== 'signedout';
   return {
     kind: 'memory',
-    signIn: async () => 'preview-device-uid',
-    watchApproval(uid, cb) { setTimeout(() => cb(mode !== 'unapproved', null), 50); return () => {}; },
+    watchAuth(cb) { authCb = cb; setTimeout(() => cb(signedIn ? fakeUser : null), 30); return () => { authCb = null; }; },
+    async signIn() { signedIn = true; setTimeout(() => authCb?.(fakeUser), 30); },
+    async signOut() { signedIn = false; setTimeout(() => authCb?.(null), 30); },
+    watchAccess(email, cb) { setTimeout(() => cb(mode === 'notallowed' ? null : { profile: null }, null), 50); return () => {}; },
     subscribeAll(handlers) {
       onData = handlers.onData;
       setTimeout(() => ['workspace', 'topics', 'sessions', 'progress', 'checks', 'discussions', 'activity'].forEach(emit), 120);

@@ -2,10 +2,16 @@ rules_version = '2';
 
 // COS330 Shared Study Tracker: Firestore Security Rules.
 //
-// Model (spec §10): every browser signs in silently with Firebase Anonymous
-// Auth. Only device UIDs listed in /approvedDevices/{uid} may read or write
-// study data. That allowlist is managed ONLY by the owner (Firebase Console or
-// scripts/approve-device.mjs with Admin credentials). Browsers can never write it.
+// Model (spec §20): Google Sign-In with an owner-managed allowlist.
+// /allowedUsers/{lower-cased email} = { profile: 'kyle' | 'david' } lists the
+// only two Google accounts that may read or write study data. The allowlist is
+// managed ONLY by the owner (scripts/allow-user.mjs with Admin credentials or
+// the Firebase Console). Browsers can never write it, and the email addresses
+// live only in the database, never in this public repository.
+//
+// Because each account maps to one profile, people can only change their OWN
+// progress, ticks and authored items; shared things (sessions, discussion
+// status) are editable by both.
 //
 // Deny by default: anything not matched below is refused.
 // Tested with the emulator in tests/rules/rules.test.mjs.
@@ -16,10 +22,19 @@ service cloud.firestore {
     // ------------------------------------------------------------ helpers
     function signedIn() { return request.auth != null; }
 
+    function allowPath() {
+      return /databases/$(database)/documents/allowedUsers/$(request.auth.token.email.lower());
+    }
+
     function approved() {
       return signedIn()
-        && exists(/databases/$(database)/documents/approvedDevices/$(request.auth.uid));
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email_verified == true
+        && exists(allowPath());
     }
+
+    // The profile ('kyle' | 'david') this signed-in account belongs to.
+    function myProfile() { return get(allowPath()).data.profile; }
 
     function okWs(ws) { return ws == 'cos330-2026' && approved(); }
 
@@ -61,9 +76,10 @@ service cloud.firestore {
     }
 
     // ------------------------------------------------------------ access control
-    // A device may read ONLY its own approval record (to know whether it is approved).
-    match /approvedDevices/{uid} {
-      allow get: if signedIn() && request.auth.uid == uid;
+    // An account may read ONLY its own allowlist entry (to learn its access + profile).
+    match /allowedUsers/{email} {
+      allow get: if signedIn() && request.auth.token.email != null
+        && email == request.auth.token.email.lower();
       allow list, create, update, delete: if false;
     }
 
@@ -90,7 +106,7 @@ service cloud.firestore {
         let d = request.resource.data;
         let keys = ['profileId', 'topicId', 'status', 'depth', 'notes', 'startedAt', 'completedAt', 'updatedAt', 'updatedByUid'];
         return d.keys().hasOnly(keys) && d.keys().hasAll(keys)
-          && isProfile(d.profileId)
+          && isProfile(d.profileId) && d.profileId == myProfile() // only your own progress
           && d.topicId in topicIdList()
           && docId == d.profileId + '__' + d.topicId
           && d.status in ['not_started', 'in_progress', 'completed', 'needs_practice', 'exam_ready']
@@ -113,7 +129,7 @@ service cloud.firestore {
         let d = request.resource.data;
         let keys = ['profileId', 'itemId', 'done', 'updatedAt', 'updatedByUid'];
         return d.keys().hasOnly(keys) && d.keys().hasAll(keys)
-          && isProfile(d.profileId)
+          && isProfile(d.profileId) && d.profileId == myProfile() // only your own ticks
           && d.itemId is string && d.itemId.matches('^[a-z0-9][a-z0-9-]{0,118}$')
           && docId == d.profileId + '__' + d.itemId
           && d.done is bool
@@ -125,6 +141,7 @@ service cloud.firestore {
         allow read: if okWs(ws);
         allow create: if okWs(ws) && validUserSession()
           && request.resource.data.createdAt == request.time
+          && request.resource.data.createdBy == myProfile()
           && request.resource.data.status == 'planned';
         allow update: if okWs(ws) && (
           (resource.data.imported == true && validImportedSessionUpdate())
@@ -203,7 +220,7 @@ service cloud.firestore {
                     'createdAt', 'updatedAt', 'updatedByUid'];
         return d.keys().hasOnly(keys) && d.keys().hasAll(keys)
           && validDiscussionFields(d)
-          && isProfile(d.raisedBy)
+          && isProfile(d.raisedBy) && d.raisedBy == myProfile()
           && d.kind in ['discuss', 'difficulty', 'revisit', 'question']
           && d.status == 'open'
           && d.imported == false
@@ -232,7 +249,7 @@ service cloud.firestore {
         let keys = ['type', 'profileId', 'text', 'createdAt', 'byUid'];
         return d.keys().hasOnly(keys) && d.keys().hasAll(keys)
           && d.type in ['progress', 'check', 'session', 'discussion']
-          && isProfile(d.profileId)
+          && isProfile(d.profileId) && d.profileId == myProfile()
           && nonEmpty(d.text, 200)
           && d.createdAt == request.time
           && d.byUid == request.auth.uid;
