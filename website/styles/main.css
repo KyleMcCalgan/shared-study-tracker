@@ -60,6 +60,7 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 var(--font);
   padding-top: env(safe-area-inset-top, 0px);
+  overflow-wrap: break-word; /* long filenames / IDs wrap instead of widening the page */
 }
 a { color: var(--brand); }
 h1, h2, h3 { line-height: 1.25; margin: 0; }
