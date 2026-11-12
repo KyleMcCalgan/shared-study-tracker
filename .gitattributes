@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# The archived schedule must stay byte-identical to the supplied original.
+docs/source-schedule.md -text
+*.png binary

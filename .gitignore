@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+*service-account*.json
+*serviceAccount*.json
+*-firebase-adminsdk-*.json
+credentials*.json
+.secrets/
+
+# Firebase local state
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+emulator-data/
+.runtimeconfig.json
+
+# Local exports / test output
+exports/
+*.export.json
+test-results/
+screenshots/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Local scratch copy of the console snippet (values live in website/js/firebase-config.js)
+firebase-config-reference.txt

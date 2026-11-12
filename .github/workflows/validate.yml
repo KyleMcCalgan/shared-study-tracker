@@ -1,0 +1,42 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Seed matches source schedule
+        run: npm run validate
+      - name: Unit tests (dates, model, importer, seed diff)
+        run: npm test
+      - name: Firestore rules tests (emulator)
+        run: npm run test:rules
+      - name: Seed idempotency tests (emulator)
+        run: npm run test:seed
+      - name: Browser smoke tests (preview backend)
+        run: npm run test:smoke
+        env:
+          SMOKE_BROWSER_CHANNEL: chrome
+      - name: End-to-end tests (real SDK + emulators)
+        run: npm run test:e2e
+        env:
+          SMOKE_BROWSER_CHANNEL: chrome

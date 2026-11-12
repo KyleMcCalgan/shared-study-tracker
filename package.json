@@ -1,0 +1,35 @@
+{
+  "name": "shared-study-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "COS330 shared study tracker for Kyle and David. Static site (website/) + Cloud Firestore. Node is used only for dev tooling: parsing, seeding, tests.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "parse": "node scripts/parse-schedule.mjs",
+    "validate": "node scripts/validate-seed.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test": "node --test tests/unit/",
+    "pretest:rules": "node scripts/free-emulator-ports.mjs",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-study-tracker \"node --test tests/rules/\"",
+    "pretest:seed": "node scripts/free-emulator-ports.mjs",
+    "test:seed": "firebase emulators:exec --only firestore --project demo-study-tracker \"node --test tests/seed/\"",
+    "test:smoke": "node tests/smoke/smoke.mjs",
+    "pretest:e2e": "node scripts/free-emulator-ports.mjs",
+    "test:e2e": "firebase emulators:exec --only firestore,auth --project demo-study-tracker \"node tests/e2e/emulator-e2e.mjs\"",
+    "test:all": "npm run validate && npm test && npm run test:rules && npm run test:seed && npm run test:smoke && npm run test:e2e",
+    "seed": "node scripts/seed-firestore.mjs",
+    "approve": "node scripts/approve-device.mjs",
+    "deploy:rules": "node scripts/deploy-rules.mjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "6.0.0",
+    "@google-cloud/firestore": "9.4.0",
+    "firebase": "13.1.0",
+    "firebase-admin": "14.5.0",
+    "firebase-tools": "15.34.2",
+    "playwright-core": "1.64.1"
+  }
+}
