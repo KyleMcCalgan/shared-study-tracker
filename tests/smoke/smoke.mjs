@@ -49,9 +49,17 @@ async function choose(page, who = 'Kyle') {
   await page.locator('.hero-title').waitFor();
 }
 
-async function noHorizontalOverflow(page) {
-  const { sw, cw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
-  assert.ok(sw <= cw + 1, `horizontal overflow: scrollWidth ${sw} > clientWidth ${cw}`);
+async function noHorizontalOverflow(page, label = '') {
+  const { sw, cw, culprits } = await page.evaluate(() => {
+    const W = document.documentElement.clientWidth;
+    const inScroller = (e) => { for (let p = e.parentElement; p; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll') return true; } return false; };
+    const culprits = [...document.querySelectorAll('body *')]
+      .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > W + 0.5 && !inScroller(e); })
+      .filter((e) => ![...e.children].some((c) => c.getBoundingClientRect().right > W + 0.5))
+      .slice(0, 4).map((e) => `${e.tagName.toLowerCase()}.${[...e.classList].join('.')} (right ${Math.round(e.getBoundingClientRect().right)}) "${(e.textContent || '').trim().slice(0, 40)}"`);
+    return { sw: document.documentElement.scrollWidth, cw: W, culprits };
+  });
+  assert.ok(sw <= cw + 1, `horizontal overflow on ${label}: scrollWidth ${sw} > clientWidth ${cw}; culprits: ${culprits.join(' | ')}`);
 }
 
 // ---------------------------------------------------------------- gate states
@@ -256,7 +264,7 @@ for (const width of [320, 375, 430, 1280]) {
       await page.goto(`${BASE}?preview#${view}`);
       await page.locator('.view').waitFor();
       await page.waitForTimeout(150);
-      await noHorizontalOverflow(page);
+      await noHorizontalOverflow(page, view);
       if (shots) await page.screenshot({ path: `${shots}/${width}-${view.replace('/', '_')}.png`, fullPage: width !== 1280 });
     }
   });
