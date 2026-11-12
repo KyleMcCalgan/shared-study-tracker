@@ -33,13 +33,13 @@ These values are public identifiers, not passwords. Access is enforced by the se
 Used only on your PC, to deploy rules, import the schedule and approve devices.
 
 1. **Project settings (⚙️) → Service accounts → Generate new private key.**
-2. Save it either outside the project, or in the project root **with its default name** (`study-planner-80983-firebase-adminsdk-….json`). `.gitignore` already ignores that name.
+2. Save it in the project's **`secrets/`** folder (create it if missing). Everything in `secrets/` is git-ignored.
 3. Never commit it, upload it or paste it anywhere. The scripts refuse a key inside the project unless git confirms it is ignored and untracked, and they always refuse one inside `website/`.
 
 In PowerShell, for the current session (adjust the filename):
 
 ```powershell
-$env:GOOGLE_APPLICATION_CREDENTIALS = "$PWD\study-planner-80983-firebase-adminsdk-xxxxx-xxxxxxxxxx.json"
+$env:GOOGLE_APPLICATION_CREDENTIALS = "$PWD\secrets\study-planner-80983-firebase-adminsdk-xxxxx-xxxxxxxxxx.json"
 ```
 
 ## 6. Deploy rules, import the schedule, approve devices

@@ -33,3 +33,6 @@ Thumbs.db
 
 # Local scratch copy of the console snippet (values live in website/js/firebase-config.js)
 firebase-config-reference.txt
+
+# Local admin credentials folder: everything inside is ignored, never committed
+secrets/
