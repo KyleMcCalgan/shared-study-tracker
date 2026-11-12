@@ -1,6 +1,8 @@
-// DOM helpers. All text goes through textContent / text nodes: user notes are
-// never rendered as HTML.
+// DOM helpers and shared UI pieces. All text goes through textContent / text
+// nodes: user notes are never rendered as HTML.
 import { PROFILES, SESSION_TYPES, PROGRESS_STATUSES, SESSION_STATUSES } from './config.js';
+import { subscribe } from './store.js';
+import { icon } from './icons.js';
 
 /**
  * h('button', { class: 'btn', onclick: fn, 'aria-label': 'x', dataset: { id } }, 'Text', childNode)
@@ -16,7 +18,7 @@ export function h(tag, attrs, ...children) {
       else if (k === 'text') el.textContent = v;
       else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
       else if (k === 'value') el.value = v;
-      else if (k === 'checked' || k === 'selected' || k === 'disabled' || k === 'open' || k === 'required' || k === 'multiple') el[k] = Boolean(v);
+      else if (['checked', 'selected', 'disabled', 'open', 'required', 'multiple'].includes(k)) el[k] = Boolean(v);
       else el.setAttribute(k, v === true ? '' : String(v));
     }
   }
@@ -37,7 +39,7 @@ export function clear(el) { while (el.firstChild) el.removeChild(el.firstChild);
 
 // ------------------------------------------------------------------ toasts
 
-export function toast(message, kind = 'info', { timeout = 3200 } = {}) {
+export function toast(message, kind = 'info', { timeout = 3000 } = {}) {
   const region = document.getElementById('toasts');
   if (!region) return;
   const el = h('div', { class: ['toast', `toast-${kind}`], role: kind === 'error' ? 'alert' : 'status' },
@@ -47,101 +49,124 @@ export function toast(message, kind = 'info', { timeout = 3200 } = {}) {
   setTimeout(() => el.remove(), timeout);
 }
 
-// ------------------------------------------------------------------ dialogs
+// ------------------------------------------------------------------ dialogs / sheets
 
 /**
- * Modal dialog built on <dialog>. `build(close)` returns the body node.
- * Resolves with whatever value close() is called with (undefined on Esc).
+ * Modal dialog (a bottom sheet on phones). `build(close)` returns the body.
+ * With `live: true` the body is rebuilt when shared data changes, so a sheet
+ * left open still shows the other person's latest updates.
+ * Resolves with the value passed to close() (undefined on Esc / ×).
  */
-export function openDialog({ title, build, wide = false }) {
+export function openDialog({ title, build, wide = false, live = false }) {
   return new Promise((resolve) => {
+    const body = h('div', { class: 'dialog-body' });
     const dlg = h('dialog', { class: ['dialog', wide && 'dialog-wide'], 'aria-labelledby': 'dlg-title' });
     let done = false;
+    let unsub = null;
     const close = (value) => {
       if (done) return;
       done = true;
+      if (unsub) unsub();
       dlg.close();
       dlg.remove();
       resolve(value);
     };
+    const render = () => {
+      const active = document.activeElement;
+      if (body.childNodes.length && active && body.contains(active) && (active.tagName === 'TEXTAREA' || (active.tagName === 'INPUT' && active.type === 'text'))) return;
+      const fk = active?.dataset?.fk;
+      body.replaceChildren(build(close));
+      if (fk) body.querySelector(`[data-fk="${CSS.escape(fk)}"]`)?.focus({ preventScroll: true });
+    };
     dlg.append(
       h('div', { class: 'dialog-head' },
         h('h2', { id: 'dlg-title', class: 'dialog-title' }, title),
-        h('button', { class: 'icon-btn', 'aria-label': 'Close', onclick: () => close(undefined) }, '×')),
-      h('div', { class: 'dialog-body' }, build(close)),
+        h('button', { class: 'icon-btn', 'aria-label': 'Close', onclick: () => close(undefined) }, icon('close'))),
+      body,
     );
+    render();
+    if (live) unsub = subscribe(render);
     dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(undefined); });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) close(undefined); }); // tap backdrop
     document.body.appendChild(dlg);
     dlg.showModal();
-    const first = dlg.querySelector('[autofocus], input, select, textarea, .dialog-body button');
-    if (first) first.focus();
+    const auto = dlg.querySelector('[autofocus]');
+    if (auto) auto.focus();
   });
 }
 
-export function confirmDialog({ title, message, confirmLabel = 'Confirm', danger = false, details = null }) {
+export function confirmDialog({ title, message, confirmLabel = 'Confirm', danger = false }) {
   return openDialog({
     title,
-    build: (close) => h('div', null,
+    build: (close) => h('div', { class: 'stack' },
       h('p', null, message),
-      details,
       h('div', { class: 'dialog-actions' },
         h('button', { class: 'btn', onclick: () => close(false) }, 'Cancel'),
         h('button', { class: ['btn', danger ? 'btn-danger' : 'btn-primary'], onclick: () => close(true) }, confirmLabel))),
   }).then(Boolean);
 }
 
-// ------------------------------------------------------------------ chips & badges
+/** List of actions shown as a sheet. actions: [{ label, sub?, danger?, run }] */
+export function actionSheet(title, actions) {
+  return openDialog({
+    title,
+    build: (close) => h('div', { class: 'menu', role: 'menu' }, actions.filter(Boolean).map((a) => h('button', {
+      role: 'menuitem', class: a.danger && 'danger', onclick: () => { close(); a.run(); },
+    }, h('span', { class: 'grow' }, a.label, a.sub && h('small', null, a.sub))))),
+  });
+}
 
-export function personChip(profileId, { small = false } = {}) {
+// ------------------------------------------------------------------ small pieces
+
+export function avatar(profileId, size = 'sm') {
   const p = PROFILES[profileId];
-  return h('span', { class: ['chip', `chip-${profileId}`, small && 'chip-sm'] },
-    h('span', { class: 'chip-initial', 'aria-hidden': 'true' }, p.initial), p.name);
+  return h('span', { class: ['avatar', `avatar-${profileId}`, `avatar-${size}`], title: p.name, 'aria-hidden': 'true' }, p.initial);
 }
 
-export function participantsChip(participants) {
-  if (participants.length > 1) {
-    return h('span', { class: 'chip chip-joint' }, h('span', { class: 'chip-initial', 'aria-hidden': 'true' }, '＋'), 'Kyle + David');
-  }
-  return personChip(participants[0]);
+export function personChip(profileId) {
+  return h('span', { class: ['chip', `chip-${profileId}`] }, PROFILES[profileId].name);
 }
 
-export function typeChip(type) {
-  const t = SESSION_TYPES[type] || SESSION_TYPES.other;
-  return h('span', { class: ['chip', 'chip-type', `type-${type}`] }, h('span', { 'aria-hidden': 'true' }, t.icon), t.label);
+export function whoChip(participants) {
+  return participants.length > 1
+    ? h('span', { class: 'chip chip-joint' }, 'Together')
+    : personChip(participants[0]);
 }
 
-export function progressBadge(status) {
+export function typeTag(type) {
+  return h('span', { class: ['tag', `tag-${type}`] }, (SESSION_TYPES[type] || SESSION_TYPES.other).label);
+}
+
+export function statusLabel(status, { short = false } = {}) {
   const s = PROGRESS_STATUSES.find((x) => x.id === status) || PROGRESS_STATUSES[0];
-  return h('span', { class: ['badge', `st-${s.id}`] }, s.label);
+  return h('span', { class: ['status', `st-${s.id}`] }, short ? s.short : s.label);
 }
 
-export function sessionStatusBadge(status) {
+export function sessionStatePill(status) {
   if (status === 'planned') return null;
   const s = SESSION_STATUSES.find((x) => x.id === status);
-  return h('span', { class: ['badge', `ss-${status}`] }, s ? s.label : status);
+  return h('span', { class: ['pill-state', `ps-${status}`] }, s ? s.label : status);
 }
 
-export function tierChip(tier, code) {
-  const label = code || tier;
-  return h('span', { class: ['tier', `tier-${(tier || 'block').toLowerCase()}`] }, label);
-}
-
-/** Progress bar with an accessible text equivalent. */
-export function progressBar(value, max, label, profileId) {
+export function bar(value, max, label) {
   const pct = max ? Math.round((value / max) * 100) : 0;
-  return h('div', { class: 'pbar-wrap' },
-    h('div', {
-      class: ['pbar', profileId && `pbar-${profileId}`], role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': max, 'aria-valuenow': value, 'aria-label': label,
-    }, h('div', { class: 'pbar-fill', style: `width:${pct}%` })));
+  return h('div', { class: 'bar', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': max, 'aria-valuenow': value, 'aria-label': label },
+    h('span', { style: `width:${pct}%` }));
 }
 
-export function emptyState(title, text, icon = '') {
-  return h('div', { class: 'empty' }, icon && h('div', { class: 'empty-icon', 'aria-hidden': 'true' }, icon),
-    h('p', { class: 'empty-title' }, title), text && h('p', { class: 'muted' }, text));
+export function emptyState(title, text) {
+  return h('div', { class: 'empty card' }, h('p', { class: 'empty-title' }, title), text && h('p', { class: 'muted' }, text));
 }
 
-export function section(title, ...children) {
-  return h('section', { class: 'panel' }, title && h('h2', { class: 'panel-title' }, title), ...children);
+export function secHead(title, link) {
+  return h('div', { class: 'sec-head' }, h('h2', { class: 'sec-title' }, title),
+    link && h('a', { class: 'sec-link', href: link.href }, link.label, icon('chevron', { size: 18 })));
+}
+
+export function segmented({ label, options, value, onChange }) {
+  return h('div', { class: 'seg', role: 'group', 'aria-label': label }, options.map((o) => h('button', {
+    type: 'button', 'aria-pressed': String(o.id === value), onclick: () => onChange(o.id),
+  }, o.label)));
 }
 
 export function fieldError(id, message) {

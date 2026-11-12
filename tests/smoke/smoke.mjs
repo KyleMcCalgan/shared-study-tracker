@@ -45,9 +45,23 @@ async function test(name, fn, { allowConsole = null } = {}) {
 
 async function choose(page, who = 'Kyle') {
   await page.goto(`${BASE}?preview`);
-  await page.getByRole('button', { name: who }).click();
-  await page.locator('.hero-title').waitFor();
+  await page.locator(`.profile-${who.toLowerCase()}`).click();
+  await page.locator('.hero').waitFor();
 }
+
+async function switchTo(page, who) {
+  await page.goto(`${BASE}?preview#settings`);
+  await page.getByRole('button', { name: `Switch to ${who}` }).click();
+  await page.getByRole('dialog').getByRole('button', { name: `Switch to ${who}` }).click();
+  await page.locator(`.appbar .avatar-${who.toLowerCase()}`).waitFor();
+}
+
+async function openMenu(page, sessionId, item) {
+  await page.locator(`#session-${sessionId}`).getByRole('button', { name: /More actions/ }).click();
+  await page.getByRole('menuitem', { name: item }).click();
+}
+
+const tileStatus = (page, t, who) => page.locator(`#tile-${t} .who-${who} .status`);
 
 async function noHorizontalOverflow(page, label = '') {
   const { sw, cw, culprits } = await page.evaluate(() => {
@@ -76,7 +90,7 @@ await test('F01 approval gate shows device code, no study content', async (page)
   await page.goto(`${BASE}?preview=unapproved`);
   await page.getByRole('heading', { name: 'Device approval required' }).waitFor();
   assert.equal(await page.locator('.uid-big').textContent(), 'preview-device-uid');
-  assert.equal(await page.locator('.session').count(), 0);
+  assert.equal(await page.locator('.sess').count(), 0);
   assert.equal(await page.locator('.nav').count(), 0);
 });
 
@@ -94,94 +108,98 @@ await test('F17 empty database shows "not imported" state', async (page) => {
 // ---------------------------------------------------------------- profile
 await test('F03/F04 choose profile, remembered after reload', async (page) => {
   await page.goto(`${BASE}?preview`);
-  await page.getByRole('heading', { name: 'Who is using this device?' }).waitFor();
+  await page.getByRole('heading', { name: "Who's studying?" }).waitFor();
   await page.getByRole('button', { name: 'David' }).click();
-  await page.getByRole('heading', { name: 'Hi David' }).waitFor();
+  await page.locator('.appbar .avatar-david').waitFor();
   await page.reload();
-  await page.getByRole('heading', { name: 'Hi David' }).waitFor();
+  await page.locator('.appbar .avatar-david').waitFor();
   assert.equal(await page.evaluate(() => localStorage.getItem('studyTracker.activeProfile.v1')), 'david');
 });
 
 await test('F05 switch profile via settings updates header', async (page) => {
   await choose(page, 'Kyle');
-  await page.goto(`${BASE}?preview#settings`);
-  await page.getByRole('button', { name: 'Switch to David' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Switch to David' }).click();
-  await page.getByRole('heading', { name: 'Hi David' }).waitFor();
-  assert.match(await page.locator('.profile-pill').textContent(), /David/);
+  await switchTo(page, 'David');
+  assert.equal(await page.locator('.appbar .avatar').textContent(), 'D');
 });
 
 // ---------------------------------------------------------------- progress
 await test('F06/F07 independent progress per profile', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#topics/ch01`);
-  await page.locator('#st-kyle-ch01').selectOption('completed');
-  await page.locator('#topic-ch01 .who-kyle .badge', { hasText: 'First pass completed' }).waitFor();
-  assert.equal(await page.locator('#topic-ch01 .who-david .badge').textContent(), 'Not started');
-  // David changes his own status on the same chapter
-  await page.evaluate(() => localStorage.setItem('studyTracker.activeProfile.v1', 'david'));
-  // in-memory preview resets on reload, so switch in-app instead
-  await page.goto(`${BASE}?preview#settings`);
-  await page.getByRole('button', { name: 'Switch to David' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Switch to David' }).click();
+  await page.getByRole('radio', { name: 'First pass completed' }).click();
+  await page.locator('#topic-ch01 .who-kyle .status', { hasText: 'First pass completed' }).waitFor();
+  assert.equal(await page.locator('#topic-ch01 .who-david .status').textContent(), 'Not started');
+  await switchTo(page, 'David');
   await page.goto(`${BASE}?preview#topics/ch01`);
-  await page.locator('#st-david-ch01').selectOption('in_progress');
-  await page.locator('#topic-ch01 .who-david .badge', { hasText: 'In progress' }).waitFor();
-  assert.equal(await page.locator('#topic-ch01 .who-kyle .badge').textContent(), 'First pass completed');
+  await page.getByRole('radio', { name: 'In progress' }).click();
+  await page.locator('#topic-ch01 .who-david .status', { hasText: 'In progress' }).waitFor();
+  assert.equal(await page.locator('#topic-ch01 .who-kyle .status').textContent(), 'First pass completed');
+  await page.goto(`${BASE}?preview#topics`);
+  assert.equal(await tileStatus(page, 'ch01', 'kyle').textContent(), 'First pass');
+  assert.equal(await tileStatus(page, 'ch01', 'david').textContent(), 'In progress');
   await page.goto(`${BASE}?preview#today`);
-  assert.match(await page.locator('.col-kyle .kpi-num').textContent(), /^1\/12$/);
-  assert.match(await page.locator('.col-david .kpi-num').textContent(), /^0\/12$/);
+  assert.equal(await page.locator('.duo-kyle .duo-num').textContent(), '1/12');
+  assert.equal(await page.locator('.duo-david .duo-num').textContent(), '0/12');
 });
 
 await test('Task checkbox writes and shows saving → synced', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#schedule/2026-11-13`);
   const card = page.locator('#session-2026-11-13-kyle-study');
-  await card.locator('details.session-tasks').evaluate((d) => { d.open = true; });
-  await card.locator('input.task-check').first().check();
+  await card.locator('input.tick').first().check();
   await page.locator('.sync-saving').waitFor();
   await page.locator('.sync-synced').waitFor();
-  await card.locator('input.task-check:checked').first().waitFor({ state: 'attached' });
-  assert.match(await card.locator('summary', { hasText: 'Tasks' }).textContent(), /you: 1\/4 done/);
+  await card.locator('input.tick:checked').first().waitFor({ state: 'attached' });
+  assert.equal(await card.locator('.sess-progress > span').textContent(), '1 of 4');
 });
 
 await test('Rejected write shows error and does not claim success', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#topics/ch02`);
   await page.evaluate(() => { window.__previewFailWrites = true; });
-  await page.locator('#st-kyle-ch02').selectOption('in_progress');
+  await page.getByRole('radio', { name: 'In progress' }).click();
   await page.locator('.toast-error').waitFor();
   assert.match(await page.locator('.toast-error').textContent(), /Not saved/);
-  await page.locator('#topic-ch02 .who-kyle .badge', { hasText: 'Not started' }).waitFor(); // optimistic change reverted
+  await page.locator('#topic-ch02 .who-kyle .status', { hasText: 'Not started' }).waitFor(); // reverted
+  await page.getByRole('radio', { name: 'Not started', checked: true }).waitFor();
   assert.equal(await page.locator('.sync-synced').count(), 1);
 }, { allowConsole: /Write failed/ });
 
 // ---------------------------------------------------------------- schedule
-await test('F09 calendar filters', async (page) => {
+await test('F09 calendar filters; own sessions listed first', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#schedule/2026-11-16`);
-  const count = () => page.locator('.session').count();
+  const count = () => page.locator('.sess').count();
   const all = await count();
-  await page.getByRole('button', { name: 'Together' }).click();
+  assert.equal(await page.locator('.sess').first().getAttribute('id'), 'session-2026-11-16-kyle-study');
+  await page.getByRole('button', { name: 'Together', exact: true }).click();
   const together = await count();
-  const types = await page.locator('.session .chip-type').allTextContents();
+  const types = await page.locator('.sess .tag').allTextContents();
   assert.ok(types.every((t) => /Joint|Practice/.test(t)), `together shows ${types}`);
-  await page.getByRole('button', { name: 'Rest & buffers' }).click();
-  const rb = await page.locator('.session .chip-type').allTextContents();
+  await page.getByRole('button', { name: 'Rest', exact: true }).click();
+  const rb = await page.locator('.sess .tag').allTextContents();
   assert.ok(rb.every((t) => /Rest|Buffer/.test(t)), `rest/buffer shows ${rb}`);
   await page.getByRole('button', { name: 'David', exact: true }).click();
-  const david = await page.locator('.session').count();
+  const david = await count();
   assert.ok(all > together && all > david, `all=${all} together=${together} david=${david}`);
   await page.getByRole('button', { name: 'All', exact: true }).click();
+});
+
+await test('Day strip: tapping a day shows that day', async (page) => {
+  await choose(page, 'Kyle');
+  await page.goto(`${BASE}?preview#schedule`);
+  await page.locator('#daypill-2026-11-20').click();
+  await page.getByRole('heading', { name: 'Friday 20' }).waitFor();
+  await page.locator('#session-2026-11-20-practice').waitFor();
 });
 
 await test('F13/F14 rest day and practice day marked; protected in reschedule', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#schedule/2026-11-14`);
-  await page.locator('#session-2026-11-14-kyle-golf-rest .rest-note').waitFor();
+  await page.locator('#session-2026-11-14-kyle-golf-rest', { hasText: 'No required work' }).waitFor();
   await page.goto(`${BASE}?preview#schedule/2026-11-16`);
-  await page.locator('#session-2026-11-16-kyle-study').getByRole('button', { name: 'Reschedule…' }).click();
-  const dlg = page.getByRole('dialog');
+  await openMenu(page, '2026-11-16-kyle-study', /Move to another day/);
+  const dlg = page.getByRole('dialog', { name: 'Move to another day' });
   await dlg.locator('#resched-date').fill('2026-11-20');
   await dlg.locator('.warning').waitFor();
   await dlg.getByRole('button', { name: 'Move session' }).click();
@@ -192,38 +210,38 @@ await test('F13/F14 rest day and practice day marked; protected in reschedule', 
 await test('F10/F11 reschedule + missed keep progress unchanged', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#topics/ch05`);
-  await page.locator('#st-kyle-ch05').selectOption('in_progress');
-  await page.locator('#topic-ch05 .who-kyle .badge', { hasText: 'In progress' }).waitFor();
+  await page.getByRole('radio', { name: 'In progress' }).click();
+  await page.locator('#topic-ch05 .who-kyle .status', { hasText: 'In progress' }).waitFor();
   await page.goto(`${BASE}?preview#schedule/2026-11-16`);
-  const card = page.locator('#session-2026-11-16-kyle-study');
-  await card.getByRole('button', { name: 'Missed…' }).click();
+  await openMenu(page, '2026-11-16-kyle-study', /Missed it/);
   await page.getByRole('dialog').locator('#missed-reason').fill('ran out of time');
-  await page.getByRole('dialog').getByRole('button', { name: 'Mark missed and reschedule…' }).click();
-  const dlg = page.getByRole('dialog', { name: 'Reschedule session' });
+  await page.getByRole('dialog').getByRole('button', { name: /Missed \+ move it/ }).click();
+  const dlg = page.getByRole('dialog', { name: 'Move to another day' });
   await dlg.waitFor();
-  await dlg.getByRole('button', { name: /SHOULD deepening/ }).click(); // explicit buffer slot
+  await dlg.getByRole('button', { name: /SHOULD deepening/ }).click();
   await dlg.locator('.preview', { hasText: 'Thursday 19 November 2026' }).waitFor();
   await dlg.getByRole('button', { name: 'Move session' }).click();
   await page.locator('.toast-success', { hasText: 'Moved' }).waitFor();
   await page.goto(`${BASE}?preview#schedule/2026-11-19`);
-  await page.locator('#session-2026-11-16-kyle-study .session-flag', { hasText: 'Moved from Mon 16 Nov' }).waitFor();
-  await page.goto(`${BASE}?preview#topics/ch05`);
-  assert.equal(await page.locator('#topic-ch05 .who-kyle .badge').textContent(), 'In progress');
+  await page.locator('#session-2026-11-16-kyle-study .sess-flag', { hasText: 'Moved from Mon 16 Nov' }).waitFor();
+  await page.goto(`${BASE}?preview#topics`);
+  assert.equal(await tileStatus(page, 'ch05', 'kyle').textContent(), 'In progress');
 });
 
 await test('Add, edit and delete a user session', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#schedule/2026-11-17`);
-  await page.getByRole('button', { name: '＋ Add session' }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
   const dlg = page.getByRole('dialog');
   await dlg.getByRole('button', { name: 'Add session' }).click();
   await dlg.locator('#sf-title-err:not([hidden])').waitFor(); // validation
   await dlg.locator('#sf-title').fill('Extra SQLi practice');
   await dlg.locator('#sf-date').fill('2026-11-17');
   await dlg.getByRole('button', { name: 'Add session' }).click();
-  const card = page.locator('.session', { hasText: 'Extra SQLi practice' });
+  const card = page.locator('.sess', { hasText: 'Extra SQLi practice' });
   await card.waitFor();
-  await card.getByRole('button', { name: 'Delete…' }).click();
+  await card.getByRole('button', { name: /More actions/ }).click();
+  await page.getByRole('menuitem', { name: /Delete session/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
   await card.waitFor({ state: 'detached' });
 });
@@ -232,20 +250,21 @@ await test('Add, edit and delete a user session', async (page) => {
 await test('F12 add discussion; discussed does not change progress', async (page) => {
   await choose(page, 'David');
   await page.goto(`${BASE}?preview#topics/ch04`);
-  await page.locator('#topic-ch04').getByRole('button', { name: /Needs discussion/ }).click();
-  const dlg = page.getByRole('dialog');
+  await page.getByRole('button', { name: /Raise for discussion/ }).click();
+  const dlg = page.getByRole('dialog', { name: 'New discussion item' });
   await dlg.locator('#nd-title').fill('Capability list vs ACL: which is faster to revoke?');
   await dlg.getByRole('button', { name: 'Add' }).click();
   await page.goto(`${BASE}?preview#discuss`);
   const item = page.locator('.disc', { hasText: 'Capability list vs ACL' });
   await item.waitFor();
-  await item.locator('select').selectOption('discussed');
-  await page.locator('.panel', { hasText: 'Discussed (1)' }).waitFor();
-  await page.goto(`${BASE}?preview#topics/ch04`);
-  assert.equal(await page.locator('#topic-ch04 .who-david .badge').textContent(), 'Not started');
-  // seeded schedule questions are present
+  await item.getByRole('button', { name: 'Discussed' }).click();
+  await page.getByRole('button', { name: 'Discussed 1' }).click();
+  await page.locator('.disc', { hasText: 'Capability list vs ACL' }).waitFor();
+  await page.goto(`${BASE}?preview#topics`);
+  assert.equal(await tileStatus(page, 'ch04', 'david').textContent(), 'Not started');
   await page.goto(`${BASE}?preview#discuss`);
-  await page.locator('.disc', { hasText: 'two\'s complement gives −69' }).waitFor();
+  await page.getByRole('button', { name: /^Open/ }).click();
+  await page.locator('.disc', { hasText: "two's complement gives −69" }).waitFor();
 });
 
 await test('David queue ticks sync with session task', async (page) => {
@@ -254,8 +273,15 @@ await test('David queue ticks sync with session task', async (page) => {
   await page.locator('#q-q01').check();
   await page.locator('#q-q01:checked').waitFor({ state: 'attached' });
   await page.goto(`${BASE}?preview#schedule/2026-11-13`);
-  const card = page.locator('#session-2026-11-13-david-study');
-  await card.locator('#chk-david-q01:checked').waitFor({ state: 'attached' });
+  await page.locator('#session-2026-11-13-david-study #chk-david-q01:checked').waitFor({ state: 'attached' });
+});
+
+await test('Navigating closes an open sheet', async (page) => {
+  await choose(page, 'Kyle');
+  await page.goto(`${BASE}?preview#topics/ch03`);
+  await page.getByRole('dialog').waitFor();
+  await page.goto(`${BASE}?preview#today`);
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
 });
 
 // ---------------------------------------------------------------- responsive
@@ -263,11 +289,13 @@ for (const width of [320, 375, 430, 1280]) {
   await test(`No horizontal overflow at ${width}px on all views`, async (page) => {
     await page.setViewportSize({ width, height: 900 });
     await choose(page, 'Kyle');
-    for (const view of ['today', 'schedule/2026-11-19', 'topics', 'discuss', 'settings']) {
+    for (const view of ['today', 'schedule/2026-11-19', 'topics', 'topics/ch05', 'discuss', 'settings']) {
       await page.goto(`${BASE}?preview#${view}`);
       await page.locator('.view').waitFor();
       await page.waitForTimeout(150);
       await noHorizontalOverflow(page, view);
+      const leaked = await page.evaluate(() => (document.body.innerText.match(/\b(null|undefined|NaN|\[object Object\])\b/) || [])[0]);
+      assert.equal(leaked, undefined, `"${leaked}" rendered as text on ${view}`);
       if (shots) await page.screenshot({ path: `${shots}/${width}-${view.replace('/', '_')}.png`, fullPage: width !== 1280 });
     }
   });

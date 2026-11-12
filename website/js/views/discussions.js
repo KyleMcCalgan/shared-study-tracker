@@ -1,7 +1,8 @@
 // Shared discussion queue. Marking an item discussed never changes progress.
 import {
-  h, emptyState, personChip, openDialog, fieldError,
+  h, emptyState, avatar, openDialog, fieldError, segmented, actionSheet,
 } from '../ui.js';
+import { icon } from '../icons.js';
 import { state } from '../store.js';
 import {
   PROFILES, DISCUSSION_STATUSES, DISCUSSION_KINDS, LIMITS,
@@ -13,68 +14,76 @@ import { formatShort, formatTimestamp } from '../date-utils.js';
 import * as actions from '../actions.js';
 import { topicLink } from './session-card.js';
 
-export function renderDiscussions(root) {
-  root.append(h('div', { class: 'toolbar' },
-    h('h1', { class: 'view-title' }, 'Discuss'),
-    h('button', { class: 'btn btn-sm btn-primary', onclick: () => raiseDiscussionDialog({}) }, '＋ New item')));
-  root.append(h('p', { class: 'muted small' }, 'Questions, tricky topics and things to revisit together. Marking an item discussed does not mark any chapter complete.'));
+let tab = 'open';
 
+export function renderDiscussions(root, _param, rerender) {
+  root.append(h('div', { class: 'row' }, h('h1', { class: 'page-title grow' }, 'Discuss'),
+    h('button', { class: 'btn btn-sm btn-primary', onclick: () => raiseDiscussionDialog({}) }, icon('plus', { size: 18 }), 'New')));
   const all = sortDiscussions(state.discussions);
-  if (!all.length) {
-    root.append(emptyState('No discussion items yet', 'Add a question or a topic you want to go through together.', '💬'));
-    return;
+  const count = (id) => all.filter((d) => d.status === id).length;
+  root.append(segmented({
+    label: 'Filter', value: tab, onChange: (id) => { tab = id; rerender(); },
+    options: DISCUSSION_STATUSES.map((s) => ({ id: s.id, label: `${s.label} ${count(s.id)}` })),
+  }));
+  const items = all.filter((d) => d.status === tab);
+  if (!items.length) {
+    root.append(emptyState(tab === 'open' ? 'Nothing to discuss' : `Nothing ${tab}`,
+      tab === 'open' ? 'Add questions or tricky topics you want to go through together.' : null));
+  } else {
+    root.append(h('div', null, items.map(discussionCard)));
   }
-  for (const st of DISCUSSION_STATUSES) {
-    const items = all.filter((d) => d.status === st.id);
-    if (!items.length && st.id !== 'open') continue;
-    root.append(h('section', { class: 'panel' },
-      h('h2', { class: 'panel-title' }, `${st.label} (${items.length})`),
-      items.length ? items.map(discussionCard) : h('p', { class: 'muted' }, 'Nothing open. Nice.')));
-  }
+  root.append(h('p', { class: 'small muted' }, 'Marking something discussed never marks a chapter as complete.'));
 }
+
+const who = (p) => PROFILES[p]?.name ?? p;
 
 function discussionCard(d) {
   const kind = DISCUSSION_KINDS.find((k) => k.id === d.kind);
   const session = d.sessionId ? state.sessions.find((s) => s.id === d.sessionId) : null;
-  const statusId = `ds-${d.id}`;
-  return h('article', { class: ['disc', `disc-${d.status}`], id: `disc-${d.id}` },
-    h('div', { class: 'session-chips' },
-      h('span', { class: 'chip chip-type' }, kind?.label ?? d.kind),
-      d.priority === 'high' && h('span', { class: 'badge badge-high' }, 'High priority'),
-      d.raisedBy ? personChip(d.raisedBy, { small: true }) : h('span', { class: 'chip chip-sm' }, '📄 From schedule')),
+  const me = PROFILES[state.profile].name;
+  const setStatus = (status) => actions.updateDiscussion(d, { status }, `${me} marked "${d.title.slice(0, 80)}" as ${status}`);
+  return h('article', { class: ['disc', d.status !== 'open' && 'is-closed'], id: `disc-${d.id}` },
+    h('div', { class: 'sess-top' },
+      h('span', { class: 'tag tag-individual' }, kind?.label ?? d.kind),
+      d.priority === 'high' && h('span', { class: 'pill-state ps-high' }, 'High'),
+      d.status !== 'open' && h('span', { class: ['pill-state', d.status === 'discussed' ? 'ps-completed' : 'ps-optional'] }, d.status)),
     h('h3', { class: 'disc-title' }, d.title),
-    d.topicIds?.length > 0 && h('p', { class: 'session-topics' }, h('span', { class: 'muted' }, 'Topics: '), d.topicIds.map(topicLink)),
-    session && h('p', { class: 'small' }, 'For: ', h('a', { href: `#schedule/${session.date}` }, `${formatShort(session.date)} · ${session.title}`)),
-    h('p', { class: 'muted small' }, d.createdAt ? `Added ${formatTimestamp(d.createdAt)}` : '', d.updatedAt && d.updatedAt !== d.createdAt ? ` · updated ${formatTimestamp(d.updatedAt)}` : ''),
-    d.notes && h('p', { class: 'pre user-note' }, d.notes),
-    h('div', { class: 'disc-controls' },
-      h('label', { for: statusId, class: 'small' }, 'Status '),
-      h('select', {
-        id: statusId, dataset: { fk: statusId },
-        onchange: (e) => actions.updateDiscussion(d, { status: e.target.value }, `${PROFILES[state.profile].name} marked "${d.title.slice(0, 80)}" as ${e.target.value}`),
-      }, DISCUSSION_STATUSES.map((s) => h('option', { value: s.id, selected: s.id === d.status }, s.label))),
-      h('button', { class: 'btn btn-sm', onclick: () => editNotesDialog(d) }, d.notes ? 'Edit notes / resolution…' : 'Add notes / resolution…'),
-      h('button', { class: 'btn btn-sm', onclick: () => actions.updateDiscussion(d, { priority: d.priority === 'high' ? 'normal' : 'high' }) },
-        d.priority === 'high' ? 'Set normal priority' : 'Set high priority')));
+    d.topicIds?.length > 0 && h('div', { class: 'chips' }, d.topicIds.map(topicLink)),
+    h('p', { class: 'row small muted' },
+      d.raisedBy ? avatar(d.raisedBy, 'xs') : null,
+      d.raisedBy ? `${who(d.raisedBy)}` : 'From the schedule',
+      d.createdAt ? ` · ${formatTimestamp(d.createdAt)}` : ''),
+    session && h('a', { class: 'small', href: `#schedule/${session.date}`, style: 'font-weight:700' }, `For ${formatShort(session.date)} · ${session.title}`),
+    d.notes && h('p', { class: 'user-note pre' }, d.notes),
+    h('div', { class: 'disc-foot' },
+      d.status === 'open'
+        ? h('button', { class: 'btn btn-primary', onclick: () => setStatus('discussed') }, icon('check', { size: 18 }), 'Discussed')
+        : h('button', { class: 'btn btn-ghost', onclick: () => setStatus('open') }, 'Reopen'),
+      h('button', {
+        class: 'icon-btn', 'aria-label': `More for ${d.title}`,
+        onclick: () => actionSheet(d.title, [
+          { label: d.notes ? 'Edit notes / answer…' : 'Add notes / answer…', run: () => editNotesDialog(d) },
+          d.status === 'open' && { label: 'Defer for later', run: () => setStatus('deferred') },
+          { label: d.priority === 'high' ? 'Normal priority' : 'High priority', run: () => actions.updateDiscussion(d, { priority: d.priority === 'high' ? 'normal' : 'high' }) },
+        ]),
+      }, icon('more'))));
 }
 
 function editNotesDialog(d) {
   return openDialog({
-    title: 'Notes / resolution',
+    title: 'Notes / answer',
     build: (close) => {
-      const ta = h('textarea', { id: 'disc-notes', rows: 6, maxlength: LIMITS.notes });
+      const ta = h('textarea', { id: 'disc-notes', rows: 6, maxlength: LIMITS.notes, autofocus: true });
       ta.value = d.notes || '';
       return h('div', { class: 'form' },
-        h('p', null, d.title),
-        h('div', { class: 'field' }, h('label', { for: 'disc-notes' }, `Notes (max ${LIMITS.notes} characters)`), ta),
-        h('div', { class: 'dialog-actions' },
-          h('button', { class: 'btn', onclick: () => close() }, 'Cancel'),
-          h('button', { class: 'btn btn-primary', onclick: () => close(ta.value) }, 'Save')));
+        h('p', { style: 'font-weight:700' }, d.title),
+        h('div', { class: 'field' }, h('label', { for: 'disc-notes' }, 'Notes'), ta),
+        h('div', { class: 'dialog-actions' }, h('button', { class: 'btn btn-primary', onclick: () => close(ta.value) }, 'Save')));
     },
   }).then((v) => typeof v === 'string' && v !== (d.notes || '') && actions.updateDiscussion(d, { notes: v.trim() }));
 }
 
-/** Dialog to add a discussion item; `defaults.topicIds` preselects topics. */
+/** Dialog to add a discussion item; `defaults.topicIds` preselects chapters. */
 export function raiseDiscussionDialog(defaults) {
   const topics = activeTopics(state.topics);
   const jointSessions = sortSessions(visibleSessions(state.sessions).filter((s) => s.type === 'joint' && s.status === 'planned'));
@@ -82,28 +91,26 @@ export function raiseDiscussionDialog(defaults) {
     title: 'New discussion item',
     wide: true,
     build: (close) => {
-      const title = h('input', { id: 'nd-title', type: 'text', maxlength: LIMITS.title, required: true, autofocus: true, 'aria-describedby': 'nd-title-err' });
+      const title = h('input', { id: 'nd-title', type: 'text', maxlength: LIMITS.title, required: true, 'aria-describedby': 'nd-title-err', placeholder: 'e.g. Why does salting stop rainbow tables?' });
       const titleErr = fieldError('nd-title-err', '');
       const kind = h('select', { id: 'nd-kind' }, DISCUSSION_KINDS.map((k) => h('option', { value: k.id }, k.label)));
       const priority = h('select', { id: 'nd-priority' }, h('option', { value: 'normal' }, 'Normal'), h('option', { value: 'high' }, 'High'));
-      const session = h('select', { id: 'nd-session' }, h('option', { value: '' }, 'No specific session'),
-        jointSessions.map((s) => h('option', { value: s.id }, `${formatShort(s.date)} · ${s.title.slice(0, 60)}`)));
+      const session = h('select', { id: 'nd-session' }, h('option', { value: '' }, 'Whenever we next meet'),
+        jointSessions.map((s) => h('option', { value: s.id }, `${formatShort(s.date)} · ${s.title.slice(0, 50)}`)));
       const notes = h('textarea', { id: 'nd-notes', rows: 3, maxlength: LIMITS.notes });
-      const topicBoxes = h('fieldset', { class: 'fieldset' }, h('legend', null, 'Topics'), h('div', { class: 'chip-row' },
+      const topicBoxes = h('fieldset', { class: 'fieldset' }, h('legend', null, 'Chapters'), h('div', { class: 'chips' },
         topics.map((t) => h('label', { class: 'check-pill' },
           h('input', { type: 'checkbox', name: 'nd-topics', value: t.id, checked: (defaults.topicIds || []).includes(t.id) }), `Ch ${t.chapter}`))));
       const form = h('form', { class: 'form', novalidate: true },
-        h('p', { class: 'muted small' }, 'Raised by ', personChip(state.profile, { small: true })),
         h('div', { class: 'field' }, h('label', { for: 'nd-title' }, 'Question or topic'), title, titleErr),
+        topicBoxes,
         h('div', { class: 'grid-2' },
           h('div', { class: 'field' }, h('label', { for: 'nd-kind' }, 'Type'), kind),
           h('div', { class: 'field' }, h('label', { for: 'nd-priority' }, 'Priority'), priority)),
-        topicBoxes,
-        h('div', { class: 'field' }, h('label', { for: 'nd-session' }, 'Discuss at (optional)'), session),
+        h('div', { class: 'field' }, h('label', { for: 'nd-session' }, 'Discuss at'), session),
         h('div', { class: 'field' }, h('label', { for: 'nd-notes' }, 'Notes (optional)'), notes),
-        h('div', { class: 'dialog-actions' },
-          h('button', { class: 'btn', type: 'button', onclick: () => close() }, 'Cancel'),
-          h('button', { class: 'btn btn-primary', type: 'submit' }, 'Add')));
+        h('p', { class: 'small muted' }, `Raised by ${PROFILES[state.profile].name}`),
+        h('div', { class: 'dialog-actions' }, h('button', { class: 'btn btn-primary', type: 'submit' }, 'Add')));
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const input = {

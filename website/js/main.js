@@ -5,6 +5,7 @@ import {
   state, setState, setSync, subscribe, applyCollection, allLoaded, saveProfile, syncStatus,
 } from './store.js';
 import { h, clear } from './ui.js';
+import { icon } from './icons.js';
 import { PROFILES } from './config.js';
 import * as actions from './actions.js';
 import { isPreviewAllowed, createMemoryBackend } from './memory-backend.js';
@@ -15,11 +16,11 @@ import { renderDiscussions } from './views/discussions.js';
 import { renderSettings, gateScreen } from './views/settings.js';
 
 const ROUTES = {
-  today: { label: 'Today', icon: '☀️', render: renderDashboard },
-  schedule: { label: 'Schedule', icon: '🗓️', render: renderSchedule },
-  topics: { label: 'Topics', icon: '📚', render: renderTopics },
-  discuss: { label: 'Discuss', icon: '💬', render: renderDiscussions },
-  settings: { label: 'Settings', icon: '⚙️', render: renderSettings, hidden: true },
+  today: { label: 'Today', icon: 'today', render: renderDashboard },
+  schedule: { label: 'Schedule', icon: 'schedule', render: renderSchedule },
+  topics: { label: 'Chapters', icon: 'topics', render: renderTopics },
+  discuss: { label: 'Discuss', icon: 'discuss', render: renderDiscussions },
+  settings: { label: 'Settings', icon: 'more', render: renderSettings, hidden: true },
 };
 
 let backend = null;
@@ -32,7 +33,11 @@ async function boot() {
   render();
   window.addEventListener('online', () => setSync({ online: true }));
   window.addEventListener('offline', () => setSync({ online: false }));
-  window.addEventListener('hashchange', () => render({ routeChanged: true }));
+  window.addEventListener('hashchange', () => {
+    // Navigating (links, back button) closes any open sheet first.
+    document.querySelectorAll('dialog[open]').forEach((d) => d.dispatchEvent(new Event('cancel')));
+    render({ routeChanged: true });
+  });
   subscribe(() => render());
 
   try {
@@ -199,16 +204,16 @@ function renderView(routeChanged) {
 }
 
 function buildShell() {
-  const syncPill = h('span', { class: 'sync', role: 'status', 'aria-live': 'polite' });
-  const profileBtn = h('a', { class: 'profile-pill', href: '#settings', 'aria-label': 'Active profile; open settings' });
+  const syncPill = h('span', { class: 'sync', role: 'status', 'aria-live': 'polite' }, h('span', { class: 'sync-text' }));
+  const profileBtn = h('a', { class: 'avatar', href: '#settings' });
   const nav = h('nav', { class: 'nav', 'aria-label': 'Main' },
     Object.entries(ROUTES).filter(([, r]) => !r.hidden).map(([id, r]) => h('a', { href: `#${id}`, class: 'nav-link', dataset: { route: id } },
-      h('span', { class: 'nav-icon', 'aria-hidden': 'true' }, r.icon), h('span', { class: 'nav-label' }, r.label))));
+      icon(r.icon, { size: 22 }), h('span', { class: 'nav-label' }, r.label))));
   const header = h('header', { class: 'appbar' },
-    h('a', { class: 'brand', href: '#today' }, h('span', { class: 'brand-mark', 'aria-hidden': 'true' }, '◆'), h('span', { class: 'brand-text' }, 'COS330 Study')),
+    h('a', { class: 'brand', href: '#today', 'aria-label': 'COS330 study tracker, today' },
+      h('span', { class: 'brand-word' }, 'cos330'), h('span', { class: 'brand-sub' }, 'study tracker')),
     nav,
-    h('div', { class: 'appbar-right' }, syncPill, profileBtn,
-      h('a', { class: 'icon-btn', href: '#settings', 'aria-label': 'Settings', title: 'Settings' }, '⚙️')));
+    h('div', { class: 'appbar-right' }, syncPill, profileBtn));
   const banner = state.preview ? h('div', { class: 'preview-banner', role: 'note' }, 'Local preview: data comes from the committed seed and changes are NOT saved anywhere.') : null;
   const view = h('main', { id: 'view', class: 'main', tabindex: '-1' });
   const root = h('div', { class: 'shell' }, h('a', { class: 'skip', href: '#view', onclick: (e) => { e.preventDefault(); view.focus(); } }, 'Skip to content'), header, banner, view);
@@ -220,11 +225,12 @@ const SYNC_LABEL = { synced: 'Synced', saving: 'Saving…', offline: 'Offline', 
 function updateHeader() {
   const s = syncStatus();
   shell.syncPill.className = `sync sync-${s}`;
-  shell.syncPill.textContent = SYNC_LABEL[s];
-  shell.syncPill.title = s === 'offline' ? 'You are offline. Changes will not reach the other device until you reconnect.' : '';
+  shell.syncPill.firstChild.textContent = SYNC_LABEL[s];
+  shell.syncPill.title = s === 'offline' ? 'You are offline. Changes will not reach the other device until you reconnect.' : SYNC_LABEL[s];
   const p = PROFILES[state.profile];
-  shell.profileBtn.className = `profile-pill profile-${p.id}`;
-  shell.profileBtn.replaceChildren(h('span', { class: 'chip-initial', 'aria-hidden': 'true' }, p.initial), h('span', { class: 'profile-pill-name' }, p.name));
+  shell.profileBtn.className = `avatar avatar-${p.id}`;
+  shell.profileBtn.textContent = p.initial;
+  shell.profileBtn.setAttribute('aria-label', `${p.name} (active profile). Open settings`);
 }
 
 boot();

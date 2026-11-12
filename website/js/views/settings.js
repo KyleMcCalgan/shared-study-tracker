@@ -1,71 +1,72 @@
 // Settings / diagnostics + full-screen gate states.
-import { h, confirmDialog, toast, personChip } from '../ui.js';
+import {
+  h, confirmDialog, toast, avatar, secHead,
+} from '../ui.js';
+import { icon } from '../icons.js';
 import { state, saveProfile, syncStatus } from '../store.js';
 import {
   PROFILES, PROFILE_IDS, REPO_URL, SOURCE_SCHEDULE_URL, WORKSPACE_ID,
 } from '../config.js';
-import { TIMEZONE, formatTimestamp, todayISO, formatLong } from '../date-utils.js';
+import { TIMEZONE, formatTimestamp, todayISO } from '../date-utils.js';
 
 const SYNC_TEXT = {
-  synced: 'Connected. All changes saved.',
+  synced: 'Connected. Everything is saved.',
   saving: 'Saving… waiting for the server to confirm.',
-  offline: 'Offline. Changes will not reach the other device until you reconnect.',
-  connecting: 'Connecting… showing cached data.',
-  error: 'Connection error. See details below.',
+  offline: 'Offline. Changes reach the other phone once you reconnect.',
+  connecting: 'Connecting…',
+  error: 'Connection problem. See details below.',
 };
 
 export function maskUid(uid) { return uid ? `${uid.slice(0, 4)}…${uid.slice(-4)}` : '–'; }
 
 async function copy(text) {
-  try { await navigator.clipboard.writeText(text); toast('Copied', 'success'); } catch { toast('Could not copy. Select the text and copy it manually.', 'error'); }
+  try { await navigator.clipboard.writeText(text); toast('Copied', 'success'); } catch { toast('Couldn\'t copy. Select the text and copy it manually.', 'error'); }
 }
 
-export function renderSettings(root, _param, rerender, { resubscribe }) {
+export function renderSettings(root, _param, _rerender, { resubscribe }) {
+  const me = state.profile;
+  const other = PROFILE_IDS.find((p) => p !== me);
   let reveal = false;
   const uidText = h('code', { class: 'uid' }, maskUid(state.uid));
-  root.append(h('div', { class: 'toolbar' }, h('h1', { class: 'view-title' }, 'Settings')));
 
-  root.append(h('section', { class: 'panel' },
-    h('h2', { class: 'panel-title' }, 'Profile'),
-    h('p', null, 'Active profile on this device: ', personChip(state.profile)),
-    h('p', { class: 'muted small' }, 'Choosing a profile is a convenience, not a login. It decides whose progress you are editing on this device.'),
-    h('div', { class: 'chip-row' }, PROFILE_IDS.filter((p) => p !== state.profile).map((p) => h('button', {
-      class: 'btn',
+  root.append(h('h1', { class: 'page-title' }, 'Settings'));
+
+  root.append(h('section', { class: 'card stack' },
+    h('div', { class: 'row' }, avatar(me, 'md'), h('div', { class: 'grow' },
+      h('p', { class: 'eyebrow' }, 'Using this device as'),
+      h('p', { style: 'font-family:var(--display);font-weight:800;font-size:1.5rem' }, PROFILES[me].name))),
+    h('button', {
+      class: 'btn btn-block',
       onclick: async () => {
-        const ok = await confirmDialog({ title: 'Switch profile', message: `Switch this device to ${PROFILES[p].name}? From now on, progress changes here are recorded for ${PROFILES[p].name}.`, confirmLabel: `Switch to ${PROFILES[p].name}` });
-        if (ok) { saveProfile(p); toast(`Active profile: ${PROFILES[p].name}`, 'success'); location.hash = '#today'; }
+        const ok = await confirmDialog({ title: `Switch to ${PROFILES[other].name}?`, message: `Progress changes on this device will then be recorded for ${PROFILES[other].name}.`, confirmLabel: `Switch to ${PROFILES[other].name}` });
+        if (ok) { saveProfile(other); toast(`You're now ${PROFILES[other].name}`, 'success'); location.hash = '#today'; }
       },
-    }, `Switch to ${PROFILES[p].name}`)))));
+    }, `Switch to ${PROFILES[other].name}`),
+    h('p', { class: 'small muted' }, 'Picking a name isn\'t a login. It only decides whose progress this device edits.')));
 
-  root.append(h('section', { class: 'panel' },
-    h('h2', { class: 'panel-title' }, 'Connection'),
+  root.append(h('section', null, secHead('Connection'), h('div', { class: 'card stack' },
     h('dl', { class: 'kv' },
       h('dt', null, 'Status'), h('dd', null, SYNC_TEXT[syncStatus()]),
       h('dt', null, 'Last synced'), h('dd', null, state.sync.lastSyncedAt ? formatTimestamp(state.sync.lastSyncedAt) : 'Not yet'),
-      h('dt', null, 'Pending writes'), h('dd', null, String(state.sync.pending)),
+      state.sync.pending > 0 && h('dt', null, 'Waiting to save'), state.sync.pending > 0 && h('dd', null, String(state.sync.pending)),
       state.sync.lastWriteError && h('dt', null, 'Last error'), state.sync.lastWriteError && h('dd', null, state.sync.lastWriteError),
-      state.sync.listenerError && h('dt', null, 'Listener error'), state.sync.listenerError && h('dd', null, state.sync.listenerError),
-      h('dt', null, 'Timezone'), h('dd', null, `${TIMEZONE} (today is ${formatLong(todayISO())})`),
-      h('dt', null, 'Workspace'), h('dd', null, WORKSPACE_ID),
-      h('dt', null, 'Backend'), h('dd', null, state.preview ? 'Local preview (not saved)' : 'Cloud Firestore')),
-    h('button', { class: 'btn', onclick: () => { resubscribe(); toast('Reconnecting…'); } }, '↻ Refresh data')));
+      state.sync.listenerError && h('dt', null, 'Listener'), state.sync.listenerError && h('dd', null, state.sync.listenerError),
+      h('dt', null, 'Time zone'), h('dd', null, `${TIMEZONE} · today is ${todayISO()}`),
+      h('dt', null, 'Data'), h('dd', null, state.preview ? 'Local preview (not saved)' : `Cloud Firestore · ${WORKSPACE_ID}`)),
+    h('button', { class: 'btn', onclick: () => { resubscribe(); toast('Reconnecting…'); } }, icon('refresh', { size: 18 }), 'Refresh data'))));
 
-  root.append(h('section', { class: 'panel' },
-    h('h2', { class: 'panel-title' }, 'This device'),
-    h('p', null, 'Approval: ', state.approved ? h('strong', { class: 'ok' }, '✓ Approved') : h('strong', null, 'Not approved')),
-    h('p', null, 'Device ID: ', uidText, ' ',
-      h('button', { class: 'btn btn-sm', onclick: (e) => { reveal = !reveal; uidText.textContent = reveal ? state.uid : maskUid(state.uid); e.target.textContent = reveal ? 'Hide' : 'Show'; } }, 'Show'),
-      ' ', h('button', { class: 'btn btn-sm', onclick: () => copy(state.uid) }, 'Copy')),
-    h('p', { class: 'muted small' }, 'If you clear this browser\'s site data, use private browsing, or switch browser or device, you get a new device ID that has to be approved again.')));
+  root.append(h('section', null, secHead('This device'), h('div', { class: 'card stack' },
+    h('p', null, state.approved ? h('b', { style: 'color:var(--rest)' }, '✓ Approved') : h('b', null, 'Not approved')),
+    h('div', { class: 'row wrap' }, h('span', { class: 'small muted' }, 'Device ID'), uidText,
+      h('button', { class: 'btn btn-sm', onclick: (e) => { reveal = !reveal; uidText.textContent = reveal ? state.uid : maskUid(state.uid); e.currentTarget.textContent = reveal ? 'Hide' : 'Show'; } }, 'Show'),
+      h('button', { class: 'btn btn-sm', onclick: () => copy(state.uid) }, 'Copy')),
+    h('p', { class: 'small muted' }, 'Clearing site data, private windows or a new browser give you a new ID, which then needs approving again.'))));
 
-  root.append(h('section', { class: 'panel' },
-    h('h2', { class: 'panel-title' }, 'Data and links'),
-    h('ul', { class: 'link-list' },
-      h('li', null, h('a', { href: SOURCE_SCHEDULE_URL, target: '_blank', rel: 'noopener' }, 'Source schedule (Markdown)')),
-      h('li', null, h('a', { href: REPO_URL, target: '_blank', rel: 'noopener' }, 'GitHub repository')),
-      h('li', null, h('a', { href: `${REPO_URL}/blob/main/docs/import-report.md`, target: '_blank', rel: 'noopener' }, 'Import report'))),
-    h('button', { class: 'btn', onclick: exportJson }, '⬇ Download export (JSON)'),
-    h('p', { class: 'muted small' }, `Schedule: ${state.workspace?.sourceScheduleFilename ?? '–'} (v${state.workspace?.sourceVersion ?? '?'})`)));
+  root.append(h('section', null, secHead('Data'), h('div', { class: 'card' }, h('div', { class: 'list-rows' },
+    h('a', { class: 'list-row', href: SOURCE_SCHEDULE_URL, target: '_blank', rel: 'noopener' }, h('span', { class: 'grow' }, h('b', null, 'Source schedule'), h('span', { class: 'small muted' }, state.workspace?.sourceScheduleFilename ?? '')), icon('chevron', { size: 18 })),
+    h('a', { class: 'list-row', href: `${REPO_URL}/blob/main/docs/import-report.md`, target: '_blank', rel: 'noopener' }, h('b', { class: 'grow' }, 'Import report'), icon('chevron', { size: 18 })),
+    h('a', { class: 'list-row', href: REPO_URL, target: '_blank', rel: 'noopener' }, h('b', { class: 'grow' }, 'GitHub repository'), icon('chevron', { size: 18 })),
+    h('button', { class: 'list-row', style: 'background:none;border:0;width:100%;text-align:left', onclick: exportJson }, h('b', { class: 'grow' }, 'Download a backup (JSON)'), icon('download', { size: 18 }))))));
 }
 
 function exportJson() {
@@ -90,65 +91,63 @@ function exportJson() {
 // ------------------------------------------------------------------ gate screens
 
 export function gateScreen(kind, { onRetry, onChooseProfile } = {}) {
-  const wrap = h('div', { class: 'gate' });
-  const card = h('div', { class: 'gate-card' });
-  wrap.append(card);
+  const card = h('div', { class: 'gate-card' }, h('p', { class: 'gate-brand' }, 'cos330'));
+  const add = (...xs) => card.append(...xs.flat().filter(Boolean)); // native append would print "null"
   const title = (t) => h('h1', { class: 'gate-title' }, t);
+  const lead = (t) => h('p', { class: 'gate-lead' }, t);
   switch (kind) {
     case 'boot':
     case 'signing-in':
-      card.append(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Connecting…'), h('p', { class: 'muted', role: 'status' }, 'Signing this device in.'));
+      add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Connecting…'), h('p', { class: 'muted', role: 'status' }, 'Signing this device in.'));
       break;
     case 'loading':
-      card.append(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Loading your study plan…'), h('p', { class: 'muted', role: 'status' }, 'Fetching the schedule and progress.'));
+      add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Loading your plan…'), h('p', { class: 'muted', role: 'status' }, 'Fetching the schedule and progress.'));
       break;
     case 'config-missing':
-      card.append(title('Firebase configuration missing'),
-        h('p', null, 'This copy of the site has no Firebase project configured yet, so it cannot load or save anything.'),
-        h('p', { class: 'muted small' }, 'Owner: copy website/js/firebase-config.example.js to website/js/firebase-config.js, fill in the web app config from the Firebase Console, then commit and push. See docs/firebase-setup.md.'));
+      add(title('Firebase configuration missing'),
+        lead('This copy of the site has no Firebase project set up, so it can\'t load or save anything.'),
+        h('p', { class: 'small muted' }, 'Owner: fill in website/js/firebase-config.js (see docs/firebase-setup.md).'));
       break;
     case 'auth-error':
-      card.append(title('Can\'t reach Firebase'),
-        h('p', null, 'The app could not sign this device in. Nothing has been loaded or saved.'),
-        h('p', { class: 'muted small' }, state.error || ''),
-        h('p', { class: 'muted small' }, 'Check your internet connection. If it keeps happening, Anonymous sign-in may not be enabled in the Firebase project.'),
-        h('button', { class: 'btn btn-primary', onclick: onRetry }, 'Try again'));
+      add(title('Can\'t reach Firebase'),
+        lead('This device couldn\'t sign in. Nothing has been loaded or saved.'),
+        state.error && h('p', { class: 'small muted' }, state.error),
+        h('p', { class: 'small muted' }, 'Check your connection. If this keeps happening, Anonymous sign-in may be switched off in Firebase.'),
+        h('button', { class: 'btn btn-primary btn-block', onclick: onRetry }, 'Try again'));
       break;
-    case 'unapproved': {
-      const uidCode = h('code', { class: 'uid uid-big' }, state.uid || '');
-      card.append(title('Device approval required'),
-        h('p', null, 'This tracker is private to Kyle and David. Each browser has to be approved once. No password is needed.'),
+    case 'unapproved':
+      add(title('Device approval required'),
+        lead('This tracker is private to Kyle and David. Each browser is approved once. No password needed.'),
+        h('div', { class: 'uid-box' },
+          h('p', { class: 'eyebrow' }, 'Your device code'),
+          h('code', { class: 'uid-big' }, state.uid || ''),
+          h('button', { class: 'btn btn-primary btn-block', onclick: () => copy(state.uid) }, icon('copy', { size: 18 }), 'Copy code')),
         h('ol', { class: 'steps' },
-          h('li', null, 'Copy this device code:'),
-        ),
-        h('div', { class: 'uid-row' }, uidCode, h('button', { class: 'btn btn-primary', onclick: () => copy(state.uid) }, 'Copy code')),
-        h('ol', { class: 'steps', start: 2 },
-          h('li', null, 'Send it privately to Kyle (for example on WhatsApp).'),
-          h('li', null, 'Keep this page open. It unlocks by itself once the device is approved.')),
-        h('p', { class: 'muted small' }, 'Clearing browser data, private windows and new browsers create a new code that needs approving again.'),
-        state.error && h('p', { class: 'muted small' }, `Detail: ${state.error}`),
-        h('button', { class: 'btn', onclick: onRetry }, 'Check again'));
+          h('li', null, 'Send the code to Kyle privately, e.g. on WhatsApp.'),
+          h('li', null, 'Keep this page open. It unlocks by itself once approved.')),
+        h('p', { class: 'small muted' }, 'Private windows, cleared browser data and new browsers each get a new code.'),
+        state.error && h('p', { class: 'small muted' }, `Detail: ${state.error}`),
+        h('button', { class: 'btn btn-ghost', onclick: onRetry }, 'Check again'));
       break;
-    }
     case 'no-workspace':
-      card.append(title('Schedule not imported yet'),
-        h('p', null, 'This device is approved, but the study plan has not been loaded into the database yet.'),
-        h('p', { class: 'muted small' }, 'Owner: run the seed script (npm run seed -- --apply). See docs/firebase-setup.md.'),
-        h('button', { class: 'btn', onclick: onRetry }, 'Check again'));
+      add(title('Schedule not imported yet'),
+        lead('This device is approved, but the study plan isn\'t in the database yet.'),
+        h('p', { class: 'small muted' }, 'Owner: run npm run seed -- --apply (see docs/firebase-setup.md).'),
+        h('button', { class: 'btn btn-ghost', onclick: onRetry }, 'Check again'));
       break;
     case 'fatal':
-      card.append(title('Something went wrong'), h('p', null, state.error || 'Unknown error'), h('button', { class: 'btn btn-primary', onclick: onRetry }, 'Reload'));
+      add(title('Something went wrong'), lead(state.error || 'Unknown error'), h('button', { class: 'btn btn-primary btn-block', onclick: onRetry }, 'Reload'));
       break;
     case 'choose-profile':
-      card.append(title('Who is using this device?'),
-        h('p', { class: 'muted' }, 'Pick your name. This device will remember it, and you can switch later in Settings.'),
+      add(title('Who\'s studying?'),
+        lead('Pick your name. This device will remember it.'),
         h('div', { class: 'profile-cards' }, PROFILE_IDS.map((p) => h('button', {
           class: ['profile-card', `profile-${p}`], onclick: () => onChooseProfile(p),
         }, h('span', { class: 'profile-initial', 'aria-hidden': 'true' }, PROFILES[p].initial), h('span', { class: 'profile-name' }, PROFILES[p].name)))),
-        h('p', { class: 'muted small' }, 'This is not a login. It only decides whose progress this device updates.'));
+        h('p', { class: 'small muted' }, 'Not a login. It only decides whose progress this device edits. You can switch later in Settings.'));
       break;
     default:
-      card.append(title(kind));
+      add(title(kind));
   }
-  return wrap;
+  return h('div', { class: 'gate' }, card);
 }

@@ -67,6 +67,18 @@ export function sessionsOn(sessions, date) {
 
 export function involves(session, profileId) { return session.participants.includes(profileId); }
 
+/** Stable re-order for display: my own sessions, then shared ones, then the other person's. */
+export function mineFirst(list, profileId) {
+  const rank = (s) => (!involves(s, profileId) ? 2 : s.participants.length === 1 ? 0 : 1);
+  return list.map((s, i) => [s, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([s]) => s);
+}
+
+/** Split "J1: Ch 1–2 (long detail…)" into a short title and a subtitle for display. */
+export function splitTitle(title) {
+  const m = /^(.{6,}?)\s*\(([^()]{12,})\)\s*$/.exec(title || '');
+  return m && title.length > 40 ? { main: m[1], sub: m[2] } : { main: title, sub: null };
+}
+
 /** Filter values: all | kyle | david | together | restbuffer */
 export function matchesFilter(session, filter) {
   switch (filter) {
@@ -200,3 +212,40 @@ export function validateDiscussionInput(input, topicIds) {
 }
 
 export function isValidItemId(id) { return ITEM_ID_RE.test(id); }
+
+// ------------------------------------------------------------ display helpers
+
+const TIER_WORD = { MUST: 'core', SHOULD: 'extras', COULD: 'stretch' };
+const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+function clip(s, n = 44) {
+  if (s.length <= n) return s;
+  const cut = s.slice(0, n);
+  const sp = cut.lastIndexOf(' ');
+  return `${(sp > n * 0.5 ? cut.slice(0, sp) : cut).replace(/[\s,;:+–-]+$/, '')}…`;
+}
+
+/**
+ * Short, scannable name for a schedule task; the full source text stays
+ * available as the task's detail.
+ *   "Ch 1: S4–7 (definition…" MUST      → "Ch 1 core"
+ *   "Q3 Ch 2 part B, including…"        → "Q3 · Ch 2 part B"
+ *   "P1 Active-recall warm-up (…): …"   → "P1 · Active-recall warm-up"
+ */
+export function shortTaskLabel(task) {
+  const text = String(task.text || '').trim();
+  const firstClause = (s) => s.split(/\s*[:(;—,]\s*|\.\s/)[0].trim();
+  if (task.code && /^[TP]\d+$/.test(task.code)) return clip(`${task.code} · ${cap(firstClause(text))}`);
+  const q = /^(Q\d+)\s+(.*)$/.exec(text);
+  if (q) return clip(`${q[1]} · ${firstClause(q[2])}`);
+  const ch = /^(Ch \d+(?: part [AB])?)\b/.exec(text);
+  if (ch && TIER_WORD[task.tier]) return `${ch[1]} ${TIER_WORD[task.tier]}`;
+  const lead = /^([A-Z][\w-]{1,12}):\s*(.+)$/.exec(text); // e.g. "Recall: explain Ch 3–4 aloud"
+  if (lead) return clip(`${lead[1]} · ${firstClause(lead[2])}`);
+  return clip(cap(firstClause(text)));
+}
+
+/** Hours of a session's tasks (sum of numeric estimates), or null. */
+export function taskHours(session) {
+  const hrs = (session.tasks || []).map((t) => t.hours).filter((x) => typeof x === 'number');
+  return hrs.length ? Math.round(hrs.reduce((a, b) => a + b, 0) * 100) / 100 : null;
+}

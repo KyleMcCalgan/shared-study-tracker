@@ -1,17 +1,19 @@
-// Today dashboard (default view).
-import {
-  h, section, emptyState, progressBar, personChip, progressBadge,
-} from '../ui.js';
+// Today: countdown, Kyle vs David, your checklist, then what's next.
+import { h, emptyState, secHead, avatar } from '../ui.js';
+import { icon } from '../icons.js';
 import { state } from '../store.js';
-import { PROFILES, PROFILE_IDS, DISCUSSION_KINDS } from '../config.js';
+import { PROFILES, PROFILE_IDS } from '../config.js';
 import {
   sessionsOn, involves, computeStats, overdueSessions, nextSharedSession, upcomingSpecialDays,
-  sessionsAhead, davidQueueStatus, exampleStats, sortDiscussions, activeTopics, getProgress,
+  davidQueueStatus, sortDiscussions, activeTopics, getProgress, taskItemId, isChecked,
 } from '../model.js';
 import {
-  todayISO, formatLong, formatShort, examCountdown, relativeDay, formatTimestamp,
+  todayISO, formatShort, examCountdown, relativeDay, formatTimestamp, weekdayName, parseISODate,
 } from '../date-utils.js';
-import { sessionCard } from './session-card.js';
+import { sessionCard, sessionMenu } from './session-card.js';
+import * as actions from '../actions.js';
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function renderDashboard(root) {
   const today = todayISO();
@@ -19,120 +21,106 @@ export function renderDashboard(root) {
   const ws = state.workspace;
   const todays = sessionsOn(state.sessions, today);
   const mine = todays.filter((s) => involves(s, me));
-  const others = todays.filter((s) => !involves(s, me));
   const countdown = examCountdown(ws?.examDate, today);
+  const p = parseISODate(today);
 
-  // ---- hero: date, profile, countdown, day goal
-  root.append(h('section', { class: 'hero' },
-    h('p', { class: 'hero-date' }, formatLong(today)),
-    h('h1', { class: 'hero-title' }, `Hi ${PROFILES[me].name}`),
-    countdown.kind !== 'none' && h('p', { class: ['countdown', `countdown-${countdown.kind}`] },
-      h('strong', null, countdown.label),
-      countdown.kind !== 'passed' && h('span', { class: 'muted' }, ` · ${formatShort(ws.examDate)}, ${ws.examStart}–${ws.examEnd}`)),
-    ws?.dayGoals?.[today] && h('p', { class: 'hero-goal' }, h('span', { class: 'muted' }, 'Today\'s goal: '), ws.dayGoals[today])));
+  // ---- hero
+  let count;
+  if (countdown.kind === 'future') count = h('div', { class: 'hero-count' }, h('span', { class: 'hero-num' }, String(countdown.days)), h('span', { class: 'hero-unit' }, countdown.days === 1 ? 'day to' : 'days to', h('br'), 'the exam'));
+  else if (countdown.kind === 'today') count = h('p', { class: 'hero-big' }, 'Exam day');
+  else if (countdown.kind === 'passed') count = h('p', { class: 'hero-big' }, 'Exam done');
+  else count = h('p', { class: 'hero-big' }, `Hi ${PROFILES[me].name}`);
+  root.append(h('section', null,
+    h('div', { class: 'hero' }, count,
+      h('p', { class: 'hero-date' }, weekdayName(today), h('strong', null, `${p.d} ${MONTHS[p.m - 1]}`))),
+    countdown.kind === 'today' && h('p', { class: 'hero-goal' }, `${ws.examStart}–${ws.examEnd} · arrive 14:30`),
+    ws?.dayGoals?.[today] && h('p', { class: 'hero-goal' }, ws.dayGoals[today])));
 
-  // ---- today's plan
-  const plan = section('Your plan today');
+  // ---- Kyle vs David
+  const topics = activeTopics(state.topics);
+  root.append(h('section', { 'aria-label': 'Progress' }, h('div', { class: 'duo' }, PROFILE_IDS.map((pid) => {
+    const st = computeStats(state.topics, state.progressById, pid);
+    const q = pid === 'david' ? davidQueueStatus(ws?.davidQueue, state.checksById) : null;
+    return h('a', { class: ['duo-card', `duo-${pid}`], href: '#topics', 'aria-label': `${PROFILES[pid].name}: ${st.firstPass} of ${st.total} chapters through first pass, ${st.inProgress} in progress` },
+      h('span', { class: 'duo-name' }, PROFILES[pid].name, pid === me && h('span', { class: 'duo-you' }, 'You')),
+      h('span', { class: 'duo-num' }, String(st.firstPass), h('small', null, `/${st.total}`)),
+      h('span', { class: 'segbar', 'aria-hidden': 'true' }, topics.map((t) => h('i', { class: `st-${getProgress(state.progressById, pid, t.id).status}` }))),
+      h('span', { class: 'duo-sub' }, 'through first pass',
+        st.inProgress ? h('br') : null, st.inProgress ? `${st.inProgress} in progress` : null,
+        q && q.items.length ? h('br') : null, q && q.items.length ? `Queue ${q.doneCount} of ${q.items.length}` : null));
+  }))));
+
+  // ---- your day
+  const plan = h('section', null, secHead('Your day'));
   if (!mine.length) {
-    plan.append(emptyState('No study scheduled today', 'Nothing is planned for you today. Check the schedule for what\'s next.', '☀️'));
+    const next = nextStudyFor(me, today);
+    plan.append(emptyState('Nothing planned today', next ? `Next up: ${formatShort(next.date)} · ${next.title}` : 'Check the schedule for what\'s next.'));
   } else {
-    if (mine.every((s) => s.type === 'rest')) plan.append(h('p', { class: 'rest-banner' }, '🌿 Rest day. No required work today.'));
     mine.forEach((s) => plan.append(sessionCard(s)));
   }
   root.append(plan);
 
-  // ---- next shared session
-  const next = nextSharedSession(state.sessions, today);
-  root.append(section('Next shared session',
-    next
-      ? h('div', null, h('p', { class: 'muted small' }, `${relativeDay(next.date, today)} · ${formatLong(next.date)}`), sessionCard(next, { compact: true }),
-        h('a', { class: 'link-more', href: `#schedule/${next.date}` }, 'Open in schedule →'))
-      : emptyState('No upcoming joint sessions', 'Add one from the Schedule tab if you plan to meet.')));
-
-  // ---- other participant today
-  if (others.length) {
-    const other = PROFILE_IDS.find((p) => p !== me);
-    root.append(section(`${PROFILES[other].name}'s plan today`, others.map((s) => sessionCard(s, { compact: true }))));
-  }
-
-  // ---- progress side by side
-  const topics = activeTopics(state.topics);
-  const progress = section('Progress (all 12 examinable chapters)');
-  const grid = h('div', { class: 'compare' });
-  for (const p of PROFILE_IDS) {
-    const st = computeStats(state.topics, state.progressById, p);
-    const ex = exampleStats(state.topics, state.checksById, p);
-    const ahead = sessionsAhead(state.sessions, today, p);
-    grid.append(h('div', { class: ['compare-col', `col-${p}`] },
-      h('div', { class: 'compare-head' }, personChip(p), p === me && h('span', { class: 'muted small' }, '(you)')),
-      h('p', { class: 'kpi' }, h('span', { class: 'kpi-num' }, `${st.firstPass}/${st.total}`), h('span', { class: 'kpi-label' }, 'first pass done')),
-      progressBar(st.firstPass, st.total, `${PROFILES[p].name}: ${st.firstPass} of ${st.total} chapters with first pass completed`, p),
-      h('ul', { class: 'kpi-list' },
-        h('li', null, `${st.inProgress} in progress · ${st.counts.needs_practice} need practice · ${st.examReady} exam ready`),
-        h('li', null, `Technical examples: ${ex.done}/${ex.total}`),
-        h('li', null, `Study sessions ahead: ${ahead}`)),
-      p === 'david' && queueSummary()));
-  }
-  progress.append(grid);
-  const strip = h('div', { class: 'chapter-strip', role: 'list', 'aria-label': 'Chapter status overview' });
-  for (const t of topics) {
-    strip.append(h('a', { class: 'strip-cell', href: `#topics/${t.id}`, role: 'listitem' },
-      h('span', { class: 'strip-ch' }, `Ch ${t.chapter}`),
-      PROFILE_IDS.map((p) => {
-        const s = getProgress(state.progressById, p, t.id).status;
-        return h('span', { class: ['strip-dot', `st-${s}`, `who-${p}`], title: `${PROFILES[p].name}: ${s.replace('_', ' ')}` },
-          PROFILES[p].initial, h('span', { class: 'sr-only' }, `${PROFILES[p].name} ${s.replace('_', ' ')}`));
-      })));
-  }
-  progress.append(h('p', { class: 'muted small' }, 'Per chapter: K = Kyle, D = David. Colour and text show status (open a chapter for details).'), strip);
-  root.append(progress);
-
-  // ---- needs attention: unmarked past sessions
+  // ---- catch-up: past sessions nobody marked
   const overdue = overdueSessions(state.sessions, today, me);
-  root.append(section('Past sessions not yet marked',
-    overdue.length
-      ? h('div', null, h('p', { class: 'muted small' }, 'Mark these done or missed, or reschedule them. Nothing is marked automatically.'),
-        overdue.map((s) => sessionCard(s, { showDate: true })))
-      : h('p', { class: 'muted' }, 'All caught up. No unmarked past sessions.')));
+  if (overdue.length) {
+    root.append(h('section', null, secHead('Still to mark'),
+      h('div', { class: 'card' }, h('p', { class: 'small muted', style: 'margin-bottom:.3rem' }, 'Past sessions are never marked automatically. Did they happen?'),
+        h('div', { class: 'list-rows' }, overdue.map((s) => h('div', { class: 'list-row' },
+          h('div', { class: 'grow' }, h('b', null, s.title), h('span', { class: 'small muted' }, `${formatShort(s.date)} · ${s.participants.length > 1 ? 'Together' : PROFILES[s.participants[0]].name}`)),
+          h('button', { class: 'btn btn-sm btn-primary', onclick: () => actions.setSessionStatus(s, 'completed'), 'aria-label': `Mark ${s.title} done` }, 'Done'),
+          h('button', { class: 'icon-btn', 'aria-label': `More for ${s.title}`, onclick: () => sessionMenu(s, true) }, icon('more'))))))));
+  }
 
-  // ---- discussion queue
+  // ---- next together
+  const next = nextSharedSession(state.sessions, today);
+  if (next) {
+    root.append(h('section', null, secHead('Next together', { href: `#schedule/${next.date}`, label: relativeDay(next.date, today) }),
+      sessionCard(next, { compact: true, showDate: true })));
+  }
+
+  // ---- partner's day
+  const other = PROFILE_IDS.find((x) => x !== me);
+  const theirs = todays.filter((s) => s.participants.length === 1 && s.participants[0] === other);
+  if (theirs.length) {
+    root.append(h('section', null, secHead(`${PROFILES[other].name} today`),
+      h('div', { class: 'card' }, h('div', { class: 'list-rows' }, theirs.map((s) => {
+        const done = (s.tasks || []).filter((t) => isChecked(state.checksById, other, taskItemId(s, t))).length;
+        return h('a', { class: 'list-row', href: `#schedule/${s.date}` }, avatar(other),
+          h('div', { class: 'grow' }, h('b', null, s.title), h('span', { class: 'small muted' }, s.type === 'rest' ? 'Rest' : `${done} of ${(s.tasks || []).length} tasks`)),
+          icon('chevron', { size: 18 }));
+      })))));
+  }
+
+  // ---- discussions
   const open = sortDiscussions(state.discussions.filter((d) => d.status === 'open'));
-  root.append(section(`Discussion queue (${open.length} open)`,
+  root.append(h('section', null, secHead('To discuss', { href: '#discuss', label: `${open.length} open` }),
     open.length
-      ? h('ul', { class: 'disc-mini' }, open.slice(0, 4).map((d) => h('li', null,
-        d.priority === 'high' && h('span', { class: 'badge badge-high' }, 'High'), ' ',
-        h('a', { href: '#discuss' }, d.title),
-        h('span', { class: 'muted small' }, ` · ${DISCUSSION_KINDS.find((k) => k.id === d.kind)?.label ?? ''}`))))
-      : h('p', { class: 'muted' }, 'Nothing waiting. Raise questions from the Topics or Discuss tabs.'),
-    h('a', { class: 'link-more', href: '#discuss' }, 'Open discussions →')));
+      ? h('div', { class: 'card' }, h('div', { class: 'list-rows' }, open.slice(0, 3).map((d) => h('a', { class: 'list-row', href: '#discuss' },
+        h('div', { class: 'grow' }, h('b', null, d.title), d.priority === 'high' && h('span', { class: 'small', style: 'color:var(--danger);font-weight:750' }, 'High priority')),
+        icon('chevron', { size: 18 })))))
+      : h('p', { class: 'muted' }, 'Nothing waiting.')));
 
-  // ---- upcoming special days
-  const special = upcomingSpecialDays(state.sessions, today).filter((s) => s.date !== today).slice(0, 6);
-  root.append(section('Coming up: rest, buffer, practice and exam',
-    special.length
-      ? h('ul', { class: 'special-list' }, special.map((s) => h('li', null,
-        h('span', { class: ['dot', `type-${s.type}`], 'aria-hidden': 'true' }),
-        h('strong', null, formatShort(s.date)), ` · ${s.title} `,
-        h('span', { class: 'muted small' }, `(${s.participants.map((p) => PROFILES[p].name).join(' + ')})`))))
-      : h('p', { class: 'muted' }, 'Nothing special coming up.')));
+  // ---- special days
+  const special = upcomingSpecialDays(state.sessions, today).filter((s) => s.date > today);
+  if (special.length) {
+    root.append(h('section', null, secHead('Coming up'),
+      h('div', { class: 'special-row' }, special.map((s) => h('a', { class: ['special', `special-${s.type}`], href: `#schedule/${s.date}` },
+        h('span', { class: 'eyebrow' }, formatShort(s.date)),
+        h('b', null, { rest: 'Rest', buffer: 'Buffer', practice: 'Practice', exam: 'Exam' }[s.type]),
+        h('span', { class: 'small muted' }, s.participants.length > 1 ? 'Together' : PROFILES[s.participants[0]].name))))));
+  }
 
-  // ---- recent activity
-  root.append(section('Recent activity',
-    state.activity.length
-      ? h('ul', { class: 'activity' }, state.activity.slice(0, 12).map((a) => h('li', null,
-        h('span', { class: ['mini', `mini-${a.profileId}`] }, PROFILES[a.profileId]?.initial ?? '?'),
-        h('span', null, a.text),
-        h('time', { class: 'muted small' }, formatTimestamp(a.createdAt)))))
-      : h('p', { class: 'muted' }, 'No activity yet. Updates from either of you will appear here live.')));
+  // ---- activity
+  if (state.activity.length) {
+    root.append(h('section', null, secHead('Recent activity'),
+      h('div', { class: 'card' }, h('ul', { class: 'list-rows activity' }, state.activity.slice(0, 6).map((a) => h('li', { class: 'list-row' },
+        PROFILES[a.profileId] ? avatar(a.profileId, 'xs') : null,
+        h('span', { class: 'grow small' }, a.text),
+        h('time', { class: 'small muted' }, formatTimestamp(a.createdAt))))))));
+  }
 }
 
-function queueSummary() {
-  const q = davidQueueStatus(state.workspace?.davidQueue, state.checksById);
-  if (!q.items.length) return null;
-  return h('p', { class: 'small queue-sum' },
-    `Queue: ${q.doneCount}/${q.items.length} items (${q.doneHours}/${q.totalHours} h)`,
-    q.next ? h('span', { class: 'muted' }, ` · next: ${q.next.code} ${q.next.item.split(':')[0]}`) : ' · complete',
-    ' ', h('a', { href: '#topics/queue' }, 'View queue'));
+function nextStudyFor(profileId, today) {
+  return state.sessions.filter((s) => !s.archived && s.date > today && involves(s, profileId) && !['rest', 'other'].includes(s.type))
+    .sort((a, b) => (a.date < b.date ? -1 : 1))[0];
 }
-
-export { progressBadge };

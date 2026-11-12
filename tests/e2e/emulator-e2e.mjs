@@ -54,12 +54,12 @@ await step('F01 first visit signs in silently and shows the approval gate (no st
 await step('F03 approving a device unlocks it live (no refresh) and shows the profile chooser', async () => {
   await admin.collection('approvedDevices').doc(uidA).set({ label: 'A', approvedAt: FieldValue.serverTimestamp() });
   await admin.collection('approvedDevices').doc(uidB).set({ label: 'B', approvedAt: FieldValue.serverTimestamp() });
-  await A.page.getByRole('heading', { name: 'Who is using this device?' }).waitFor({ timeout: 15000 });
-  await B.page.getByRole('heading', { name: 'Who is using this device?' }).waitFor({ timeout: 15000 });
+  await A.page.getByRole('heading', { name: "Who's studying?" }).waitFor({ timeout: 15000 });
+  await B.page.getByRole('heading', { name: "Who's studying?" }).waitFor({ timeout: 15000 });
   await A.page.getByRole('button', { name: 'Kyle' }).click();
   await B.page.getByRole('button', { name: 'David' }).click();
-  await A.page.getByRole('heading', { name: 'Hi Kyle' }).waitFor();
-  await B.page.getByRole('heading', { name: 'Hi David' }).waitFor();
+  await A.page.locator('.appbar .avatar-kyle').waitFor();
+  await B.page.locator('.appbar .avatar-david').waitFor();
 });
 
 await step('F02 unapproved device stays gated; direct reads are refused by the rules', async () => {
@@ -75,22 +75,22 @@ await step('F02 unapproved device stays gated; direct reads are refused by the r
 await step('F08 Kyle\'s change appears on David\'s device without refresh', async () => {
   await A.page.goto(`${URL_}#topics/ch03`);
   await B.page.goto(`${URL_}#topics/ch03`);
-  await A.page.locator('#st-kyle-ch03').selectOption('completed');
+  await A.page.getByRole('radio', { name: 'First pass completed' }).click();
   await A.page.locator('.sync-synced').waitFor({ timeout: 10000 });
-  await B.page.locator('#topic-ch03 .who-kyle .badge', { hasText: 'First pass completed' }).waitFor({ timeout: 10000 });
-  assert.equal(await B.page.locator('#topic-ch03 .who-david .badge').textContent(), 'Not started');
+  await B.page.locator('#topic-ch03 .who-kyle .status', { hasText: 'First pass completed' }).waitFor({ timeout: 10000 }); // live, sheet still open
+  assert.equal(await B.page.locator('#topic-ch03 .who-david .status').textContent(), 'Not started');
 });
 
 await step('F08 David\'s change appears on Kyle\'s device; activity feed updates live', async () => {
-  await B.page.locator('#st-david-ch03').selectOption('in_progress');
-  await A.page.locator('#topic-ch03 .who-david .badge', { hasText: 'In progress' }).waitFor({ timeout: 10000 });
+  await B.page.getByRole('radio', { name: 'In progress' }).click();
+  await A.page.locator('#topic-ch03 .who-david .status', { hasText: 'In progress' }).waitFor({ timeout: 10000 });
   await A.page.goto(`${URL_}#today`);
   await A.page.locator('.activity li', { hasText: 'David started Ch 3' }).waitFor({ timeout: 10000 });
 });
 
 await step('F12 discussion added on one device appears on the other', async () => {
   await B.page.goto(`${URL_}#discuss`);
-  await B.page.getByRole('button', { name: '＋ New item' }).click();
+  await B.page.getByRole('button', { name: 'New', exact: true }).click();
   await B.page.getByRole('dialog').locator('#nd-title').fill('Explain salting with an example');
   await B.page.getByRole('dialog').getByRole('button', { name: 'Add' }).click();
   await A.page.goto(`${URL_}#discuss`);
@@ -100,7 +100,7 @@ await step('F12 discussion added on one device appears on the other', async () =
 await step('F15 reload keeps saved changes (persisted in Firestore)', async () => {
   await A.page.reload();
   await A.page.goto(`${URL_}#topics/ch03`);
-  await A.page.locator('#topic-ch03 .who-kyle .badge', { hasText: 'First pass completed' }).waitFor({ timeout: 15000 });
+  await A.page.locator('#topic-ch03 .who-kyle .status', { hasText: 'First pass completed' }).waitFor({ timeout: 15000 });
   const doc = await admin.doc('workspaces/cos330-2026/progress/kyle__ch03').get();
   assert.equal(doc.data().status, 'completed');
   assert.equal(doc.data().updatedByUid, uidA);
