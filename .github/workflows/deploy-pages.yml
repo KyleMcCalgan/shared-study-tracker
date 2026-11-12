@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'website/**'
+      - 'scripts/stamp-version.mjs'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -31,6 +32,8 @@ jobs:
           if grep -rIlE '"private_key"|"type": *"service_account"|BEGIN (RSA )?PRIVATE KEY' website/; then
             echo "::error::Credential-like content found in website/. Refusing to publish."; exit 1
           fi
+      - name: Version-stamp module URLs (cache busting; Pages caches files for 10 min)
+        run: node scripts/stamp-version.mjs website "${GITHUB_SHA}"
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

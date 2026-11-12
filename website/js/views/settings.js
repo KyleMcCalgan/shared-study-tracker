@@ -91,6 +91,15 @@ function exportJson() {
 
 // ------------------------------------------------------------------ gate screens
 
+function slowHelp() {
+  return h('div', { class: 'stack' },
+    h('p', { class: 'warning' }, 'This is taking longer than usual. Check your connection. If the site was just updated, a reload usually fixes it.'),
+    h('button', {
+      class: 'btn btn-primary btn-block',
+      onclick: () => { const u = new URL(location.href); u.searchParams.set('r', Date.now().toString(36)); location.replace(u.toString()); },
+    }, 'Reload'));
+}
+
 /** Small multi-colour "G" (static, trusted markup). */
 function googleMark() {
   const tpl = document.createElement('template');
@@ -110,7 +119,8 @@ export function gateScreen(kind, {
     case 'signing-in':
     case 'checking-access':
       add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Connecting…'),
-        h('p', { class: 'muted', role: 'status' }, kind === 'checking-access' ? 'Checking your access.' : 'Starting up.'));
+        h('p', { class: 'muted', role: 'status' }, kind === 'checking-access' ? 'Checking your access.' : 'Starting up.'),
+        state.slow && slowHelp());
       break;
     case 'signed-out':
       add(title('Sign in'),
@@ -129,7 +139,8 @@ export function gateScreen(kind, {
         h('button', { class: 'btn btn-primary btn-block', onclick: onSignOut }, 'Use a different account'));
       break;
     case 'loading':
-      add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Loading your plan…'), h('p', { class: 'muted', role: 'status' }, 'Fetching the schedule and progress.'));
+      add(h('div', { class: 'spinner', 'aria-hidden': 'true' }), title('Loading your plan…'), h('p', { class: 'muted', role: 'status' }, 'Fetching the schedule and progress.'),
+        state.slow && slowHelp());
       break;
     case 'config-missing':
       add(title('Firebase configuration missing'),

@@ -39,6 +39,10 @@ async function boot() {
     render({ routeChanged: true });
   });
   subscribe(() => render());
+  // Watchdog: never spin forever. If start-up stalls, offer a reload.
+  setTimeout(() => {
+    if (['boot', 'signing-in', 'checking-access', 'loading'].includes(state.phase)) setState({ slow: true });
+  }, 15000);
 
   try {
     if (isPreviewAllowed()) {
