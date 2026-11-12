@@ -57,6 +57,9 @@ async function noHorizontalOverflow(page, label = '') {
       .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > W + 0.5 && !inScroller(e); })
       .filter((e) => ![...e.children].some((c) => c.getBoundingClientRect().right > W + 0.5))
       .slice(0, 4).map((e) => `${e.tagName.toLowerCase()}.${[...e.classList].join('.')} (right ${Math.round(e.getBoundingClientRect().right)}) "${(e.textContent || '').trim().slice(0, 40)}"`);
+    // Content wider than its own box (e.g. unbreakable text)
+    [...document.querySelectorAll('body *')].filter((e) => e.scrollWidth > e.clientWidth + 1 && e.clientWidth > 0 && !['auto', 'scroll', 'hidden'].includes(getComputedStyle(e).overflowX))
+      .slice(-4).forEach((e) => culprits.push(`content>${e.tagName.toLowerCase()}.${[...e.classList].join('.')} (${e.scrollWidth}>${e.clientWidth}) "${(e.textContent || '').trim().slice(0, 40)}"`));
     return { sw: document.documentElement.scrollWidth, cw: W, culprits };
   });
   assert.ok(sw <= cw + 1, `horizontal overflow on ${label}: scrollWidth ${sw} > clientWidth ${cw}; culprits: ${culprits.join(' | ')}`);
