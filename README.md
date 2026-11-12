@@ -56,6 +56,7 @@ firestore.rules, firestore.indexes.json, firebase.json
 
 ## Setup and maintenance
 
+- **Changing the code, rules or schedule (what deploys how, which tests are affected):** [`docs/making-changes.md`](docs/making-changes.md)
 - **First-time Firebase setup:** [`docs/firebase-setup.md`](docs/firebase-setup.md)
 - **Deployment and GitHub Pages:** [`docs/deployment.md`](docs/deployment.md)
 - **Security model and trade-offs:** [`docs/security.md`](docs/security.md)
@@ -66,8 +67,10 @@ firestore.rules, firestore.indexes.json, firebase.json
 ```bash
 npm install
 npm run serve            # http://localhost:8080/website/
-# Preview with the real seed data, in memory only (nothing saved):
+# Preview with the real seed data, in memory only (nothing saved, no approval):
 #   http://localhost:8080/website/?preview
+# VS Code Live Server also works: "Go Live" with the project folder open, then
+#   http://127.0.0.1:5500/website/?preview
 ```
 
 ### Approve a new device (owner)

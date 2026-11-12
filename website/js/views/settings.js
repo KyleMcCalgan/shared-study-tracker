@@ -118,6 +118,8 @@ export function gateScreen(kind, { onRetry, onChooseProfile } = {}) {
     case 'unapproved':
       add(title('Device approval required'),
         lead('This tracker is private to Kyle and David. Each browser is approved once. No password needed.'),
+        !state.preview && ['localhost', '127.0.0.1'].includes(location.hostname) && h('p', { class: 'warning' },
+          'Working on the code locally? Add ?preview to the address to use sample data. No approval needed, and nothing is saved.'),
         h('div', { class: 'uid-box' },
           h('p', { class: 'eyebrow' }, 'Your device code'),
           h('code', { class: 'uid-big' }, state.uid || ''),
