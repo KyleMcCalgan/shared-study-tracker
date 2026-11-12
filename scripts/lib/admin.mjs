@@ -6,6 +6,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve, dirname, relative, isAbsolute } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 export const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -36,7 +37,15 @@ export async function initAdmin() {
     if (!existsSync(credPath)) throw new Error(`GOOGLE_APPLICATION_CREDENTIALS file not found: ${credPath}`);
     const rel = relative(repoRoot, resolve(credPath));
     if (!rel.startsWith('..') && !isAbsolute(rel)) {
-      throw new Error('Refusing to use a service-account key stored inside the repository. Move it outside the project folder (e.g. %USERPROFILE%\\.secrets\\).');
+      // A key inside the project is allowed only if git is guaranteed to ignore it.
+      let ignored = false;
+      try { execFileSync('git', ['check-ignore', '-q', rel], { cwd: repoRoot, stdio: 'ignore' }); ignored = true; } catch { ignored = false; }
+      let tracked = false;
+      try { execFileSync('git', ['ls-files', '--error-unmatch', rel], { cwd: repoRoot, stdio: 'ignore' }); tracked = true; } catch { tracked = false; }
+      if (!ignored || tracked) {
+        throw new Error(`Refusing to use "${rel}": it is inside the project but ${tracked ? 'tracked by git' : 'NOT git-ignored'}. Add it to .gitignore (or move it outside the project) first.`);
+      }
+      if (rel.startsWith('website')) throw new Error('Refusing to use a key inside website/ (that folder is published).');
     }
     const keyProject = JSON.parse(readFileSync(credPath, 'utf8')).project_id;
     if (keyProject && keyProject !== projectId) throw new Error(`Service account is for project "${keyProject}" but the target is "${projectId}".`);
