@@ -469,6 +469,14 @@ export function parseSchedule(markdown, { sourceFilename = 'source-schedule.md',
     }
     const base = { date, participants: ['david'], line: i + 1, section: `§7.2 ${m[1]} ${m[2]} Nov` };
     const { main: ovTitle, paren: ovParen } = stripTrailingParen(ov.david.replace(/\s*Evening .*$/, ''));
+    // "(open)": nothing scheduled; a non-study placeholder telling David to add his own sessions.
+    if (/^open\b/i.test(paren || '')) {
+      if (tasks.length || eveningTasks.length) throw new ParseError(`David's open day ${date} (line ${i + 1}) must not list tasks`);
+      addSession({
+        ...base, id: `${date}-david-open`, type: 'other', title: ovTitle || 'Open day', timeLabel: 'Open day', notes,
+      });
+      continue;
+    }
     if (/other exam/i.test(lead)) {
       addSession({
         ...base, id: `${date}-david-other-exam`, type: 'other', title: 'Other exam — no COS330 by day',
@@ -476,10 +484,15 @@ export function parseSchedule(markdown, { sourceFilename = 'source-schedule.md',
       });
       if (eveningTasks.length) {
         const evOv = /Evening (.*)$/.exec(ov.david);
+        const evText = evOv ? clean(evOv[1]) : '';
+        const evOptional = /\boptional\b/i.test(evText) || /only if/i.test(eveningTasks[0].condition || '');
+        const evTitle = evText.replace(/^S [\d.]+ h(?: optional)?:\s*/, '');
+        const cond = eveningTasks[0].condition || 'evening';
         addSession({
-          ...base, id: `${date}-david-evening`, type: 'individual', optional: true,
-          title: evOv ? `Evening (optional): ${clean(evOv[1]).replace(/^S [\d.]+ h optional:\s*/, '')}` : 'Evening (optional)',
-          timeLabel: 'Evening, only if rested', durationLabel: evOv ? clean(evOv[1]).match(/S [\d.]+ h/)?.[0] ?? null : null,
+          ...base, id: `${date}-david-evening`, type: 'individual', optional: evOptional,
+          title: `Evening${evOptional ? ' (optional)' : ''}${evTitle ? `: ${evTitle}` : ''}`,
+          timeLabel: cond.charAt(0).toUpperCase() + cond.slice(1).split(';')[0],
+          durationLabel: evText.match(/S [\d.]+ h/)?.[0] ?? null,
           topicIds: chaptersIn(ov.david.replace(/^.*Evening/, ''), examinable).map(topicIdFor),
           tasks: eveningTasks, notes: [],
         });
@@ -648,8 +661,8 @@ export function parseSchedule(markdown, { sourceFilename = 'source-schedule.md',
   if (restSession) protectedDates.push({ date: restSession.date, appliesTo: [...PROFILE_IDS], reason: 'Protected golf / rest day. Never used to recover lost time; nobody schedules a Saturday catch-up (Sections 8 and 11.1). Weather swap with Sun 15 is allowed (Section 8).' });
   protectedDates.push({ date: practiceDate, appliesTo: [...PROFILE_IDS], reason: 'Practice and revision only. Never used to recover lost time; no first-time chapter learning (Sections 11.1 and 12.1).' });
   protectedDates.push({ date: examDate, appliesTo: [...PROFILE_IDS], reason: 'Exam day. Light revision only, finished by midday; do not start new material (Section 12.2).' });
-  const otherExam = sessions.find((s) => s.type === 'other' && s.participants.includes('david'));
-  if (otherExam) protectedDates.push({ date: otherExam.date, appliesTo: ['david'], reason: 'David\'s other exam. No COS330 by day; evening only if rested (Section 7.2).' });
+  const otherExam = sessions.find((s) => s.type === 'other' && s.participants.includes('david') && s.id.endsWith('-david-other-exam'));
+  if (otherExam) protectedDates.push({ date: otherExam.date, appliesTo: ['david'], reason: 'David\'s other exam. No COS330 by day; light study in the evening only (Section 7.2).' });
   if (noStudyMatch) {
     const d = resolveDay(noStudyMatch[1], noStudyMatch[2], 'no-study');
     protectedDates.push({ date: d, appliesTo: [...PROFILE_IDS], reason: 'Agreed no-study day (Section 2, item 1).' });
@@ -676,9 +689,9 @@ export function parseSchedule(markdown, { sourceFilename = 'source-schedule.md',
     'No progress is seeded. Every chapter starts as "Not started" for both, as Section 2 item 8 and Section 13 state.',
     'The course knowledge map is not imported. The schedule says it does not use its priority section (Section 2, item 7).',
   );
+  assumptions.push('David\'s open days (Section 7.2 "(open)") are imported as one non-study "Open day" note each, so nothing shows as overdue; David adds his own sessions in the app.');
   ambiguities.push(
-    'Weather swap (Section 8): golf may move from Sat 14 to Sun 15, with Sunday\'s tasks done on Saturday. This is not automated; use Reschedule on both sessions if it happens.',
-    'David\'s daily hours before 18 Nov are suggestions and assumptions, not commitments (Sections 2.5 and 7). Missing them is not shown as a failure.',
+    'David\'s Fri 13–Mon 16 are open (Section 7.2). The tracker cannot know what he studies there until he adds sessions or ticks queue items.',
     'Thu 19 is adaptive: the schedule says not to lock it until the evening of 18 Nov (Section 9.3). The imported blocks are the default template.',
     'Mock questions and memo for Fri 20 are "not generated yet" (Section 12.1). The tracker does not contain them.',
   );

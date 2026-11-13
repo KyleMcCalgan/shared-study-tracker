@@ -26,21 +26,29 @@ test('parses the real schedule faithfully', () => {
 
 test('session structure matches the source sections', () => {
   const { seed } = parse();
+  const ws = (x) => x.workspace;
   const by = (id) => seed.sessions.find((s) => s.id === id);
-  // Kyle: 6 study days (§6) + golf rest + Thu buffer
-  assert.equal(seed.sessions.filter((s) => s.id.endsWith('-kyle-study')).length, 6);
-  assert.equal(by('2026-11-14-kyle-golf-rest').type, 'rest');
+  // Kyle: 7 study days (§6, Fri 13–Thu 19; no golf day in v4) + Thu buffer
+  assert.equal(seed.sessions.filter((s) => s.id.endsWith('-kyle-study')).length, 7);
+  assert.ok(!seed.sessions.some((s) => s.type === 'rest' && s.participants.length === 1));
+  assert.equal(by('2026-11-18-kyle-study').tasks.reduce((a, t) => a + t.hours, 0), 4); // light day
   assert.equal(by('2026-11-19-kyle-deepening-buffer').type, 'buffer');
   assert.deepEqual(by('2026-11-13-kyle-study').tasks.map((t) => [t.tier, t.hours]), [['MUST', 1.5], ['MUST', 3], ['SHOULD', 1], ['COULD', 0.5]]);
-  // David
-  assert.equal(by('2026-11-14-david-study').optional, true);
-  assert.equal(by('2026-11-18-david-other-exam').type, 'other');
-  assert.equal(by('2026-11-18-david-evening').optional, true);
+  // David: open days Fri 13–Mon 16 (non-study placeholders), other exam Tue 17 + light evening, light Wed 18
+  for (const d of ['13', '14', '15', '16']) {
+    const open = by(`2026-11-${d}-david-open`);
+    assert.equal(open.type, 'other');
+    assert.equal(open.tasks.length, 0);
+  }
+  assert.ok(!seed.sessions.some((s) => s.date < '2026-11-17' && s.participants.includes('david') && s.type !== 'other' && s.type !== 'rest'));
+  assert.equal(by('2026-11-17-david-other-exam').type, 'other');
+  assert.equal(by('2026-11-17-david-evening').optional, false);
+  assert.equal(by('2026-11-18-david-study').tasks.reduce((a, t) => a + t.hours, 0), 3);
+  assert.deepEqual(ws(seed).protectedDates.filter((p) => p.appliesTo.length === 1).map((p) => [p.date, p.appliesTo[0]]), [['2026-11-17', 'david']]);
   assert.deepEqual(by('2026-11-19-david-study').tasks.map((t) => t.code), ['T1', 'T3', 'T4']);
-  // Joint J1–J7 with optional flags from §9.1
+  // Joint J5–J7 with optional flags from §9.1 (J1–J4 removed in v4)
   const joints = seed.sessions.filter((s) => s.type === 'joint').map((s) => [s.code, s.date, s.optional]);
   assert.deepEqual(joints, [
-    ['J1', '2026-11-15', true], ['J2', '2026-11-16', true], ['J3', '2026-11-17', true], ['J4', '2026-11-18', true],
     ['J5', '2026-11-19', false], ['J6', '2026-11-20', false], ['J7', '2026-11-21', true],
   ]);
   assert.deepEqual(by('2026-11-20-joint-j6').tasks.map((t) => t.code), ['P4', 'P6']);
@@ -49,7 +57,6 @@ test('session structure matches the source sections', () => {
   assert.equal(exam.startTime, '15:00');
   assert.equal(exam.endTime, '18:00');
   // no study sessions are invented on protected days
-  assert.ok(!seed.sessions.some((s) => s.date === '2026-11-14' && s.participants.includes('kyle') && s.type !== 'rest'));
   assert.ok(!seed.sessions.some((s) => s.date === '2026-11-20' && s.type === 'individual'));
   // no clock times are invented
   assert.ok(seed.sessions.filter((s) => s.type !== 'exam').every((s) => s.startTime === null && s.endTime === null));

@@ -6,15 +6,15 @@
 |---|---|
 | Source file (original name) | `COS330_SHARED_STUDY_SCHEDULE_v3.md` |
 | Archived copy | `docs/source-schedule.md` (byte-identical to the supplied file) |
-| Source version / revised | v3 · Thursday 12 November 2026 |
-| Source SHA-256 | `e511d9bb436734c1e875be8f6b29e66a23d39cb50d5cc71a5a778b0f00d05014` |
-| Snapshot generated | 2026-11-12T22:07:11.068Z |
+| Source version / revised | v4 · Friday 13 November 2026 |
+| Source SHA-256 | `73853118abaef6dff758e7d07638dde58b70fa1e0bbac76603d848b131fe9b04` |
+| Snapshot generated | 2026-11-13T07:15:00.569Z |
 | Workspace ID | `cos330-2026` |
 | Module | COS330 Computer Security, University of Pretoria, Prof Venter |
 | Exam | Saturday 21 November 2026, 15:00–18:00 · Informatorium Orange and CBT labs. Arrive 14:30. No preseating. |
 | Scope | Chapters 1–11 and 13. Chapter 12 excluded. |
 | Topics (chapters) | 12 |
-| Sessions | 27 |
+| Sessions | 23 |
 | Seeded discussion items | 3 |
 | David queue items | 16 (13.25 h) |
 | Progress records seeded | **0**. Everyone starts at "Not started" (schedule §2.8, §13) |
@@ -23,11 +23,11 @@
 
 | ID | Ch | Title | Group | Slides | Kyle target | David target | Joint planned | Technical examples |
 |---|---|---|---|---|---|---|---|---|
-| `ch01` | 1 | Overview | Fundamentals and cryptography | 41 | MUST | MV | J1, J5-T6 | 1 |
-| `ch02` | 2 | Cryptographic tools | Fundamentals and cryptography | 47 | MUST | MV | J1, J5-T6 | 1 |
-| `ch03` | 3 | User authentication | Authentication and access control | 36 | MUST | MV | J2, J5-T6 | 1 |
-| `ch04` | 4 | Access control | Authentication and access control | 50 | MUST | MV | J2, J5-T6 | 1 |
-| `ch05` | 5 | Database and data centre security | Database and data centre security | 47 | MUST | MV | J3, J4, J5-T6 | 2 |
+| `ch01` | 1 | Overview | Fundamentals and cryptography | 41 | MUST | MV | J5-T6 | 1 |
+| `ch02` | 2 | Cryptographic tools | Fundamentals and cryptography | 47 | MUST | MV | J5-T6 | 1 |
+| `ch03` | 3 | User authentication | Authentication and access control | 36 | MUST | MV | J5-T6 | 1 |
+| `ch04` | 4 | Access control | Authentication and access control | 50 | MUST | MV | J5-T6 | 1 |
+| `ch05` | 5 | Database and data centre security | Database and data centre security | 47 | MUST | MV | J5-T6 | 2 |
 | `ch06` | 6 | Malicious software | Malware and denial of service | 59 | MUST | MV | J5-T2 | 1 |
 | `ch07` | 7 | Denial-of-service attacks | Malware and denial of service | 24 | MUST | Exposure (conditional) | J5-T2 | 1 |
 | `ch08` | 8 | Intrusion detection | Intrusion detection, firewalls and IPS | 46 | MUST | MV | J5-T2 | 1 |
@@ -42,44 +42,39 @@ Excluded from scope: Chapter 12 (no topic created).
 
 | Date | ID | Type | Who | Title | Time | Topics | Tasks | Optional | Source |
 |---|---|---|---|---|---|---|---|---|---|
-| Thu 12 Nov | `2026-11-12-no-study` | Rest | Kyle + David | No study day (agreed) | All day / unscheduled | – | 0 |  | L135 |
-| Fri 13 Nov | `2026-11-13-kyle-study` | Individual | Kyle | Ch 1 and Ch 2 | All day / unscheduled | ch01, ch02 | 4 |  | L155 |
-| Fri 13 Nov | `2026-11-13-david-study` | Individual | David | Ch 1, Ch 2 part A | All day / unscheduled | ch01, ch02 | 3 |  | L246 |
-| Sat 14 Nov | `2026-11-14-kyle-golf-rest` | Rest | Kyle | Protected golf / rest day | All day / unscheduled | – | 0 |  | L163 |
-| Sat 14 Nov | `2026-11-14-david-study` | Individual | David | Optional: Ch 2 part B | All day / unscheduled | ch02 | 1 | yes | L252 |
-| Sun 15 Nov | `2026-11-15-kyle-study` | Individual | Kyle | Ch 3, Ch 4 and the start of Ch 5 | All day / unscheduled | ch03, ch04, ch05 | 5 |  | L167 |
-| Sun 15 Nov | `2026-11-15-david-study` | Individual | David | Ch 3, Ch 4 part A | All day / unscheduled | ch03, ch04 | 3 |  | L255 |
-| Sun 15 Nov | `2026-11-15-joint-j1` | Joint | Kyle + David | J1: Ch 1–2 (CIA vocabulary, symmetric vs public key vs hash/MAC/signature, transposition steps) | All day / unscheduled | ch01, ch02 | 0 | yes | L309 |
-| Mon 16 Nov | `2026-11-16-kyle-study` | Individual | Kyle | Ch 5 part B and Ch 6 | All day / unscheduled | ch05, ch06 | 5 |  | L177 |
-| Mon 16 Nov | `2026-11-16-david-study` | Individual | David | Ch 4 part B, Ch 5 part A | All day / unscheduled | ch04, ch05 | 3 |  | L262 |
-| Mon 16 Nov | `2026-11-16-joint-j2` | Joint | Kyle + David | J2: Ch 3–4 (authentication factors, password attacks, DAC/MAC/RBAC/ABAC, UNIX permissions) | All day / unscheduled | ch03, ch04 | 0 | yes | L310 |
-| Tue 17 Nov | `2026-11-17-kyle-study` | Individual | Kyle | Ch 7, Ch 8 and Ch 9 part A | All day / unscheduled | ch07, ch08, ch09 | 5 |  | L187 |
-| Tue 17 Nov | `2026-11-17-david-study` | Individual | David | Ch 5 part B | All day / unscheduled | ch05 | 2 |  | L268 |
-| Tue 17 Nov | `2026-11-17-joint-j3` | Joint | Kyle + David | J3: Ch 5 (SQLi types, revocation, inference, encryption) | All day / unscheduled | ch05 | 0 | yes | L311 |
-| Wed 18 Nov | `2026-11-18-kyle-study` | Individual | Kyle | Ch 9 part B, Ch 10 and Ch 11 part A | All day / unscheduled | ch09, ch10, ch11 | 5 |  | L197 |
-| Wed 18 Nov | `2026-11-18-david-other-exam` | Other | David | Other exam — no COS330 by day | Daytime | – | 0 |  | L273 |
-| Wed 18 Nov | `2026-11-18-david-evening` | Individual | David | Evening (optional): Ch 6 part A | Evening, only if rested | ch06 | 1 | yes | L273 |
-| Wed 18 Nov | `2026-11-18-joint-j4` | Joint | Kyle + David | J4: Ch 5 recap and Ch 6 preview | Evening | ch05, ch06 | 0 | yes | L312 |
-| Thu 19 Nov | `2026-11-19-kyle-study` | Individual | Kyle | Finish first pass, then the main joint day | All day / unscheduled | ch11, ch13 | 2 |  | L207 |
-| Thu 19 Nov | `2026-11-19-kyle-deepening-buffer` | Buffer | Kyle | SHOULD deepening / catch-up time | All day / unscheduled | – | 1 |  | L213 |
-| Thu 19 Nov | `2026-11-19-david-study` | Individual | David | Next outstanding queue items first; target Ch 6–13 with MV/exposure mix | All day / unscheduled | ch06, ch07, ch08, ch09, ch10, ch11, ch13 | 3 |  | L277 |
-| Thu 19 Nov | `2026-11-19-joint-j5` | Joint | Kyle + David | J5: Main joint day (adaptive block plan) | All day / unscheduled | ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch13 | 3 |  | L313 |
-| Fri 20 Nov | `2026-11-20-joint-j6` | Joint | Kyle + David | J6: Marking and rapid-fire (practice day) | All day / unscheduled | – | 2 |  | L314 |
-| Fri 20 Nov | `2026-11-20-practice` | Practice | Kyle + David | Practice and revision only | All day / unscheduled | – | 4 |  | L460 |
-| Sat 21 Nov | `2026-11-21-joint-j7` | Joint | Kyle + David | J7: Each names five easily confused pairs and explains one | Morning | – | 0 | yes | L315 |
-| Sat 21 Nov | `2026-11-21-revision` | Practice | Kyle + David | Light revision, finished by midday | Morning | – | 4 |  | L481 |
+| Thu 12 Nov | `2026-11-12-no-study` | Rest | Kyle + David | No study day (agreed) | All day / unscheduled | – | 0 |  | L137 |
+| Fri 13 Nov | `2026-11-13-kyle-study` | Individual | Kyle | Ch 1 and Ch 2 | All day / unscheduled | ch01, ch02 | 4 |  | L157 |
+| Fri 13 Nov | `2026-11-13-david-open` | Other | David | Open day: add your own study sessions | Open day | – | 0 |  | L248 |
+| Sat 14 Nov | `2026-11-14-kyle-study` | Individual | Kyle | Ch 3, Ch 4 and the start of Ch 5 | All day / unscheduled | ch03, ch04, ch05 | 5 |  | L165 |
+| Sat 14 Nov | `2026-11-14-david-open` | Other | David | Open day: add your own study sessions | Open day | – | 0 |  | L250 |
+| Sun 15 Nov | `2026-11-15-kyle-study` | Individual | Kyle | Ch 5 part B and Ch 6 | All day / unscheduled | ch05, ch06 | 5 |  | L174 |
+| Sun 15 Nov | `2026-11-15-david-open` | Other | David | Open day: add your own study sessions | Open day | – | 0 |  | L252 |
+| Mon 16 Nov | `2026-11-16-kyle-study` | Individual | Kyle | Ch 7, Ch 8 and Ch 9 part A | All day / unscheduled | ch07, ch08, ch09 | 5 |  | L183 |
+| Mon 16 Nov | `2026-11-16-david-open` | Other | David | Open day: add your own study sessions | Open day | – | 0 |  | L254 |
+| Tue 17 Nov | `2026-11-17-kyle-study` | Individual | Kyle | Ch 9 part B, Ch 10 and Ch 11 part A | All day / unscheduled | ch09, ch10, ch11 | 5 |  | L192 |
+| Tue 17 Nov | `2026-11-17-david-other-exam` | Other | David | Other exam — no COS330 by day | Daytime | – | 0 |  | L256 |
+| Tue 17 Nov | `2026-11-17-david-evening` | Individual | David | Evening: next unfinished queue item (light) | Evening, after his exam | – | 1 |  | L256 |
+| Wed 18 Nov | `2026-11-18-kyle-study` | Individual | Kyle | Ch 11 part B and Ch 13 | All day / unscheduled | ch11, ch13 | 3 |  | L201 |
+| Wed 18 Nov | `2026-11-18-david-study` | Individual | David | Next unfinished queue items | All day / unscheduled | – | 2 |  | L259 |
+| Thu 19 Nov | `2026-11-19-kyle-study` | Individual | Kyle | Catch-up and deepening, then the main joint day | All day / unscheduled | – | 1 |  | L210 |
+| Thu 19 Nov | `2026-11-19-kyle-deepening-buffer` | Buffer | Kyle | SHOULD deepening / catch-up time | All day / unscheduled | – | 1 |  | L215 |
+| Thu 19 Nov | `2026-11-19-david-study` | Individual | David | Next outstanding queue items first; MV/exposure mix on whatever he has not reached | All day / unscheduled | – | 3 |  | L263 |
+| Thu 19 Nov | `2026-11-19-joint-j5` | Joint | Kyle + David | J5: Main joint day (adaptive block plan) | All day / unscheduled | ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch13 | 3 |  | L293 |
+| Fri 20 Nov | `2026-11-20-joint-j6` | Joint | Kyle + David | J6: Marking and rapid-fire (practice day) | All day / unscheduled | – | 2 |  | L294 |
+| Fri 20 Nov | `2026-11-20-practice` | Practice | Kyle + David | Practice and revision only | All day / unscheduled | – | 4 |  | L442 |
+| Sat 21 Nov | `2026-11-21-joint-j7` | Joint | Kyle + David | J7: Each names five easily confused pairs and explains one | Morning | – | 0 | yes | L295 |
+| Sat 21 Nov | `2026-11-21-revision` | Practice | Kyle + David | Light revision, finished by midday | Morning | – | 4 |  | L463 |
 | Sat 21 Nov | `2026-11-21-exam` | Exam | Kyle + David | COS330 final exam | 15:00–18:00 | ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch13 | 0 |  | L3 |
 
 ## Days with no planned study work
 
-- **Kyle:** Thu 12 Nov (No study day (agreed)) · Sat 14 Nov (Protected golf / rest day)
-- **David:** Thu 12 Nov (No study day (agreed)) · Sat 14 Nov (Optional: Ch 2 part B) · Wed 18 Nov (Other exam — no COS330 by day; Evening (optional): Ch 6 part A; J4: Ch 5 recap and Ch 6 preview)
+- **Kyle:** Thu 12 Nov (No study day (agreed))
+- **David:** Thu 12 Nov (No study day (agreed)) · Fri 13 Nov (Open day: add your own study sessions) · Sat 14 Nov (Open day: add your own study sessions) · Sun 15 Nov (Open day: add your own study sessions) · Mon 16 Nov (Open day: add your own study sessions)
 
 ## Protected dates (never auto-filled by catch-up)
 
 - **Thu 12 Nov** (Kyle + David): Agreed no-study day (Section 2, item 1).
-- **Sat 14 Nov** (Kyle + David): Protected golf / rest day. Never used to recover lost time; nobody schedules a Saturday catch-up (Sections 8 and 11.1). Weather swap with Sun 15 is allowed (Section 8).
-- **Wed 18 Nov** (David): David's other exam. No COS330 by day; evening only if rested (Section 7.2).
+- **Tue 17 Nov** (David): David's other exam. No COS330 by day; light study in the evening only (Section 7.2).
 - **Fri 20 Nov** (Kyle + David): Practice and revision only. Never used to recover lost time; no first-time chapter learning (Sections 11.1 and 12.1).
 - **Sat 21 Nov** (Kyle + David): Exam day. Light revision only, finished by midday; do not start new material (Section 12.2).
 
@@ -112,7 +107,7 @@ Excluded from scope: Chapter 12 (no topic created).
 
 ## Assumptions made by the importer
 
-- David's 2026-11-19 session topics are taken from the overview ("Next outstanding queue items first; target Ch 6–13 with MV/exposure mix (5.25 h independent; conditional Section 9.3)"); actual work depends on his queue position (Section 9.3).
+- David's 2026-11-19 session topics are taken from the overview ("Next outstanding queue items first; MV/exposure mix on whatever he has not reached (5.25 h independent; conditional Section 9.3)"); actual work depends on his queue position (Section 9.3).
 - Module code "COS330" comes from the schedule. The specification text says "COS326"; the schedule is authoritative for course facts (spec §3.2), so the workspace ID is "cos330-2026".
 - Dates such as "Fri 13" are resolved within the exam month and year and checked against the weekday; all matched.
 - No clock times are given for study or joint sessions (Section 9: "No clock times are set"). They show as "All day / unscheduled time" unless the schedule gives a phrase such as "evening" or "morning". Only the exam has clock times.
@@ -123,11 +118,11 @@ Excluded from scope: Chapter 12 (no topic created).
 - Section 14 open questions are imported as Discuss items with raisedBy = "From schedule". Neither Kyle nor David is named as their author.
 - No progress is seeded. Every chapter starts as "Not started" for both, as Section 2 item 8 and Section 13 state.
 - The course knowledge map is not imported. The schedule says it does not use its priority section (Section 2, item 7).
+- David's open days (Section 7.2 "(open)") are imported as one non-study "Open day" note each, so nothing shows as overdue; David adds his own sessions in the app.
 
 ## Ambiguities left for Kyle and David to handle in the app
 
-- Weather swap (Section 8): golf may move from Sat 14 to Sun 15, with Sunday's tasks done on Saturday. This is not automated; use Reschedule on both sessions if it happens.
-- David's daily hours before 18 Nov are suggestions and assumptions, not commitments (Sections 2.5 and 7). Missing them is not shown as a failure.
+- David's Fri 13–Mon 16 are open (Section 7.2). The tracker cannot know what he studies there until he adds sessions or ticks queue items.
 - Thu 19 is adaptive: the schedule says not to lock it until the evening of 18 Nov (Section 9.3). The imported blocks are the default template.
 - Mock questions and memo for Fri 20 are "not generated yet" (Section 12.1). The tracker does not contain them.
 
@@ -142,7 +137,7 @@ Check this report against `docs/source-schedule.md` line by line before seeding 
 - [ ] Exam date, time and venue match §1.
 - [ ] All 12 examinable chapters are listed with the §13.1 titles; Chapter 12 is absent.
 - [ ] Every Kyle day in §6 has one session, with the same MUST/SHOULD/COULD tasks and hours.
-- [ ] Every David day in §7.2 has a session; Sat 14 is optional, and Wed 18 shows the other exam plus an optional evening.
-- [ ] J1–J7 match §9.1 dates, lengths and optional flags.
-- [ ] Sat 14 is a rest day for Kyle; Fri 20 is practice only; Sat 21 has light revision plus the exam.
+- [ ] Every David day in §7.2 has a session; Fri 13–Mon 16 are open days, and Tue 17 shows the other exam plus a light evening.
+- [ ] J5–J7 match §9.1 dates, lengths and optional flags.
+- [ ] Sat 14 is a study day for Kyle and Wed 18 is light; Fri 20 is practice only; Sat 21 has light revision plus the exam.
 - [ ] No progress is pre-marked.

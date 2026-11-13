@@ -31,19 +31,20 @@ test('stats use all 12 syllabus topics as denominator; missing progress = not st
 test('overdue: only past planned study sessions for that profile, never rest/exam', () => {
   const od = overdueSessions(sessions, '2026-11-16', 'kyle').map((s) => s.id);
   assert.ok(od.includes('2026-11-13-kyle-study'));
-  assert.ok(od.includes('2026-11-15-joint-j1'));
-  assert.ok(!od.includes('2026-11-14-kyle-golf-rest'));
+  assert.ok(od.includes('2026-11-15-kyle-study'));
   assert.ok(!od.includes('2026-11-12-no-study'));
-  assert.ok(!od.some((id) => id.includes('david-study')));
+  assert.ok(!od.some((id) => id.includes('david')));
+  // David's open days are notes, not study sessions, so they never show as overdue
+  assert.deepEqual(overdueSessions(sessions, '2026-11-17', 'david').map((s) => s.id), []);
   const marked = sessions.map((s) => (s.id === '2026-11-13-kyle-study' ? { ...s, status: 'missed' } : s));
   assert.ok(!overdueSessions(marked, '2026-11-16', 'kyle').some((s) => s.id === '2026-11-13-kyle-study'));
 });
 
 test('next shared session and filters', () => {
-  assert.equal(nextSharedSession(sessions, '2026-11-13').id, '2026-11-15-joint-j1');
+  assert.equal(nextSharedSession(sessions, '2026-11-13').id, '2026-11-19-joint-j5');
   assert.equal(nextSharedSession(sessions, '2026-11-19').id, '2026-11-19-joint-j5');
-  const j = sessions.find((s) => s.id === '2026-11-16-joint-j2');
-  const rest = sessions.find((s) => s.id === '2026-11-14-kyle-golf-rest');
+  const j = sessions.find((s) => s.id === '2026-11-19-joint-j5');
+  const rest = sessions.find((s) => s.id === '2026-11-19-kyle-deepening-buffer');
   assert.ok(matchesFilter(j, 'together') && matchesFilter(j, 'kyle') && matchesFilter(j, 'david'));
   assert.ok(matchesFilter(rest, 'restbuffer') && !matchesFilter(rest, 'david') && !matchesFilter(rest, 'together'));
 });
@@ -52,8 +53,8 @@ test('reschedule guards: protected days warn, past/exam/after-exam blocked (F13/
   const kyleMon = sessions.find((s) => s.id === '2026-11-16-kyle-study');
   const today = '2026-11-16';
   assert.equal(checkReschedule({ session: kyleMon, newDate: '2026-11-19', today, workspace }).ok, true);
-  const toGolf = checkReschedule({ session: kyleMon, newDate: '2026-11-14', today: '2026-11-13', workspace });
-  assert.ok(toGolf.ok && toGolf.warnings.length === 1 && /golf/i.test(toGolf.warnings[0]));
+  const toSat = checkReschedule({ session: kyleMon, newDate: '2026-11-14', today: '2026-11-13', workspace });
+  assert.ok(toSat.ok && toSat.warnings.length === 0); // Sat 14 is a normal study day in v4
   const toPractice = checkReschedule({ session: kyleMon, newDate: '2026-11-20', today, workspace });
   assert.ok(toPractice.warnings.some((w) => /Practice and revision only/.test(w)));
   assert.equal(checkReschedule({ session: kyleMon, newDate: '2026-11-15', today, workspace }).ok, false); // past
@@ -61,9 +62,9 @@ test('reschedule guards: protected days warn, past/exam/after-exam blocked (F13/
   const exam = sessions.find((s) => s.type === 'exam');
   assert.equal(checkReschedule({ session: exam, newDate: '2026-11-20', today, workspace }).ok, false);
   // David's other exam day only warns for David's sessions
-  const davidMon = sessions.find((s) => s.id === '2026-11-16-david-study');
-  assert.equal(protectedReasons(workspace, '2026-11-18', davidMon.participants).length, 1);
-  assert.equal(protectedReasons(workspace, '2026-11-18', kyleMon.participants).length, 0);
+  const davidWed = sessions.find((s) => s.id === '2026-11-18-david-study');
+  assert.equal(protectedReasons(workspace, '2026-11-17', davidWed.participants).length, 1);
+  assert.equal(protectedReasons(workspace, '2026-11-17', kyleMon.participants).length, 0);
   assert.deepEqual(bufferSlots(sessions, '2026-11-16', ['kyle']).map((s) => s.id), ['2026-11-19-kyle-deepening-buffer']);
 });
 
@@ -74,9 +75,9 @@ test('David queue status and shared task checkbox ids', () => {
   assert.equal(q.next.code, 'Q3');
   assert.equal(q.lastDone.code, 'Q4');
   assert.equal(q.totalHours, 13.25);
-  const fri = sessions.find((s) => s.id === '2026-11-13-david-study');
-  assert.equal(taskItemId(fri, fri.tasks[0]), 'q01');
-  assert.equal(taskItemId(fri, fri.tasks[2]), '2026-11-13-david-study--could-1');
+  assert.equal(taskItemId({ id: 'x' }, { id: 'q1', checkItemId: 'q01' }), 'q01');
+  const wed = sessions.find((s) => s.id === '2026-11-18-david-study');
+  assert.equal(taskItemId(wed, wed.tasks[0]), '2026-11-18-david-study--must-1');
   assert.deepEqual(exampleStats(topics, { kyle__ex_none: {} }, 'kyle'), { total: 13, done: 0 });
 });
 

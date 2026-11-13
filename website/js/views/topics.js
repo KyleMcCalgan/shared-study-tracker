@@ -276,7 +276,7 @@ function queuePanel() {
       h('span', { class: 'grow' }, h('span', { class: 'card-title' }, `${PROFILES.david.name}'s queue`),
         h('span', { class: 'small muted' }, `${q.doneCount} of ${q.items.length} · ${q.doneHours} of ${q.totalHours} h${q.next ? ` · next ${q.next.code}` : ' · complete'}`)),
       icon('chevron', { size: 20, cls: 'chev' })),
-    h('p', { class: 'small muted queue-intro' }, 'Ordered queue from the schedule. Prerequisites first, newer chapters whenever there\'s time. E means exposure only, never counted as a first pass.',
+    h('p', { class: 'small muted queue-intro' }, 'Checklist from the schedule, in order: prerequisites first, newer chapters whenever there\'s time. Add your own sessions on the Schedule tab for open days, and tick items here as you finish them. E means exposure only, never counted as a first pass.',
       !canTick && ` Only ${PROFILES.david.name} can tick these.`),
     h('ul', { class: 'tasks' }, q.items.map((item) => {
       const id = `q-${item.id}`;

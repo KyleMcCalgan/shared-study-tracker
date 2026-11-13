@@ -218,8 +218,8 @@ await test('Week strip: next week, then tapping a day shows that day', async (pa
 
 await test('F13/F14 rest day and practice day marked; protected in reschedule', async (page) => {
   await choose(page, 'Kyle');
-  await page.goto(`${BASE}?preview#schedule/2026-11-14`);
-  await page.locator('#session-2026-11-14-kyle-golf-rest', { hasText: 'No required work' }).waitFor();
+  await page.goto(`${BASE}?preview#schedule/2026-11-12`);
+  await page.locator('#session-2026-11-12-no-study', { hasText: 'No required work' }).waitFor();
   await page.goto(`${BASE}?preview#schedule/2026-11-16`);
   await openMenu(page, '2026-11-16-kyle-study', /Move to another day/);
   const dlg = page.getByRole('dialog', { name: 'Move to another day' });
@@ -294,13 +294,16 @@ await test('F12 add discussion; discussed does not change progress', async (page
   assert.equal(await page.locator(T('discussion'), { hasText: 'Capability list vs ACL' }).count(), 0);
 });
 
-await test('David queue ticks sync with session task', async (page) => {
+await test('David open day shows; queue ticks persist', async (page) => {
   await choose(page, 'David');
+  await page.goto(`${BASE}?preview#schedule/2026-11-13`);
+  await page.locator('#session-2026-11-13-david-open', { hasText: 'add your own study' }).waitFor();
   await page.goto(`${BASE}?preview#topics/queue`);
   await page.locator('#q-q01').check();
   await page.locator('#q-q01:checked').waitFor({ state: 'attached' });
   await page.goto(`${BASE}?preview#schedule/2026-11-13`);
-  await page.locator('#session-2026-11-13-david-study #chk-david-q01:checked').waitFor({ state: 'attached' });
+  await page.goto(`${BASE}?preview#topics/queue`);
+  await page.locator('#q-q01:checked').waitFor({ state: 'attached' });
 });
 
 await test('Navigating closes an open sheet', async (page) => {

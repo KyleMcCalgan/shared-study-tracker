@@ -3,8 +3,8 @@
   "workspaceId": "cos330-2026",
   "sourceFile": "docs/source-schedule.md",
   "sourceScheduleFilename": "COS330_SHARED_STUDY_SCHEDULE_v3.md",
-  "sourceHash": "e511d9bb436734c1e875be8f6b29e66a23d39cb50d5cc71a5a778b0f00d05014",
-  "importedAt": "2026-11-12T22:07:11.068Z",
+  "sourceHash": "73853118abaef6dff758e7d07638dde58b70fa1e0bbac76603d848b131fe9b04",
+  "importedAt": "2026-11-13T07:15:00.569Z",
   "workspace": {
     "title": "COS330 Shared Study Tracker",
     "moduleCode": "COS330",
@@ -40,9 +40,9 @@
       12
     ],
     "sourceScheduleFilename": "COS330_SHARED_STUDY_SCHEDULE_v3.md",
-    "sourceVersion": "3",
-    "sourceRevised": "Thursday 12 November 2026",
-    "sourceHash": "e511d9bb436734c1e875be8f6b29e66a23d39cb50d5cc71a5a778b0f00d05014",
+    "sourceVersion": "4",
+    "sourceRevised": "Friday 13 November 2026",
+    "sourceHash": "73853118abaef6dff758e7d07638dde58b70fa1e0bbac76603d848b131fe9b04",
     "schemaVersion": 1,
     "protectedDates": [
       {
@@ -54,19 +54,11 @@
         "reason": "Agreed no-study day (Section 2, item 1)."
       },
       {
-        "date": "2026-11-14",
-        "appliesTo": [
-          "kyle",
-          "david"
-        ],
-        "reason": "Protected golf / rest day. Never used to recover lost time; nobody schedules a Saturday catch-up (Sections 8 and 11.1). Weather swap with Sun 15 is allowed (Section 8)."
-      },
-      {
-        "date": "2026-11-18",
+        "date": "2026-11-17",
         "appliesTo": [
           "david"
         ],
-        "reason": "David's other exam. No COS330 by day; evening only if rested (Section 7.2)."
+        "reason": "David's other exam. No COS330 by day; light study in the evening only (Section 7.2)."
       },
       {
         "date": "2026-11-20",
@@ -87,11 +79,11 @@
     ],
     "dayGoals": {
       "2026-11-13": "Foundations and cryptography learned",
-      "2026-11-14": "Rest",
-      "2026-11-15": "Authentication and access control learned",
-      "2026-11-16": "Database security and malware learned",
-      "2026-11-17": "DoS, IDS, first half of firewalls",
-      "2026-11-18": "Buffer overflow and input handling learned",
+      "2026-11-14": "Authentication and access control learned",
+      "2026-11-15": "Database security and malware learned",
+      "2026-11-16": "DoS, IDS, first half of firewalls",
+      "2026-11-17": "Buffer overflow and input handling learned",
+      "2026-11-18": "Light day: Kyle finishes the first pass; David continues the queue",
       "2026-11-19": "Kyle aims for MUST coverage of all chapters; David records actual MV/exposure/untouched chapters, no assumed completion",
       "2026-11-20": "Mock, marking, active recall",
       "2026-11-21": "Rested, arrive 14:30, exam 15:00"
@@ -106,7 +98,7 @@
         "topicIds": [
           "ch01"
         ],
-        "line": 226
+        "line": 228
       },
       {
         "id": "q02",
@@ -117,7 +109,7 @@
         "topicIds": [
           "ch02"
         ],
-        "line": 227
+        "line": 229
       },
       {
         "id": "q03",
@@ -128,7 +120,7 @@
         "topicIds": [
           "ch02"
         ],
-        "line": 228
+        "line": 230
       },
       {
         "id": "q04",
@@ -139,7 +131,7 @@
         "topicIds": [
           "ch03"
         ],
-        "line": 229
+        "line": 231
       },
       {
         "id": "q05",
@@ -150,7 +142,7 @@
         "topicIds": [
           "ch04"
         ],
-        "line": 230
+        "line": 232
       },
       {
         "id": "q06",
@@ -161,7 +153,7 @@
         "topicIds": [
           "ch04"
         ],
-        "line": 231
+        "line": 233
       },
       {
         "id": "q07",
@@ -172,7 +164,7 @@
         "topicIds": [
           "ch05"
         ],
-        "line": 232
+        "line": 234
       },
       {
         "id": "q08",
@@ -183,7 +175,7 @@
         "topicIds": [
           "ch05"
         ],
-        "line": 233
+        "line": 235
       },
       {
         "id": "q09",
@@ -194,7 +186,7 @@
         "topicIds": [
           "ch06"
         ],
-        "line": 234
+        "line": 236
       },
       {
         "id": "q10",
@@ -205,7 +197,7 @@
         "topicIds": [
           "ch06"
         ],
-        "line": 235
+        "line": 237
       },
       {
         "id": "q11",
@@ -216,7 +208,7 @@
         "topicIds": [
           "ch07"
         ],
-        "line": 236
+        "line": 238
       },
       {
         "id": "q12",
@@ -227,7 +219,7 @@
         "topicIds": [
           "ch08"
         ],
-        "line": 237
+        "line": 239
       },
       {
         "id": "q13",
@@ -238,7 +230,7 @@
         "topicIds": [
           "ch09"
         ],
-        "line": 238
+        "line": 240
       },
       {
         "id": "q14",
@@ -249,7 +241,7 @@
         "topicIds": [
           "ch10"
         ],
-        "line": 239
+        "line": 241
       },
       {
         "id": "q15",
@@ -260,7 +252,7 @@
         "topicIds": [
           "ch11"
         ],
-        "line": 240
+        "line": 242
       },
       {
         "id": "q16",
@@ -271,7 +263,7 @@
         "topicIds": [
           "ch13"
         ],
-        "line": 241
+        "line": 243
       }
     ],
     "queueTotalHours": 13.25,
@@ -376,9 +368,10 @@
       ]
     },
     "recoveryRules": [
-      "The golf day (Sat 14) and the practice day (Fri 20) are never used to recover lost time.",
+      "The practice day (Fri 20) is never used to recover lost time.",
+      "The light day (Wed 18) is not stretched to catch up.",
       "No day is extended past 6 h to catch up.",
-      "Catch-up uses each day's SHOULD slot, a +0.5 h extension (cap 6 h) and Thursday's deepening time, in that order."
+      "Catch-up uses each day's SHOULD slot, a +0.5 h extension (cap 6 h, full days only) and Thursday's deepening time, in that order."
     ],
     "tierNote": "Verified = taken from the course files (slide counts, slide numbers, practicals). Estimate = my planning guess (hours, pace, complexity). Assumption = something I had to assume about you or about the material. Section 4 keeps these apart. MUST/SHOULD/COULD describe time-allocation priorities, never examination likelihood or exclusions; all prescribed slides remain examinable."
   },
@@ -403,7 +396,6 @@
         "david": "MV"
       },
       "jointPlanned": [
-        "J1",
         "J5-T6"
       ],
       "examples": [
@@ -411,10 +403,10 @@
           "id": "ex-ch01-1",
           "text": "CIA/impact table for a chosen system",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L530"
+          "sourceRef": "docs/source-schedule.md#L512"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L505",
+      "sourceRef": "docs/source-schedule.md#L487",
       "imported": true,
       "archived": false
     },
@@ -438,7 +430,6 @@
         "david": "MV"
       },
       "jointPlanned": [
-        "J1",
         "J5-T6"
       ],
       "examples": [
@@ -446,10 +437,10 @@
           "id": "ex-ch02-1",
           "text": "Double columnar transposition (Practical 1), ≈18 min budget",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L531"
+          "sourceRef": "docs/source-schedule.md#L513"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L506",
+      "sourceRef": "docs/source-schedule.md#L488",
       "imported": true,
       "archived": false
     },
@@ -473,7 +464,6 @@
         "david": "MV"
       },
       "jointPlanned": [
-        "J2",
         "J5-T6"
       ],
       "examples": [
@@ -481,10 +471,10 @@
           "id": "ex-ch03-1",
           "text": "Judge five passwords with reasons",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L532"
+          "sourceRef": "docs/source-schedule.md#L514"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L507",
+      "sourceRef": "docs/source-schedule.md#L489",
       "imported": true,
       "archived": false
     },
@@ -508,7 +498,6 @@
         "david": "MV"
       },
       "jointPlanned": [
-        "J2",
         "J5-T6"
       ],
       "examples": [
@@ -516,10 +505,10 @@
           "id": "ex-ch04-1",
           "text": "UNIX permission string; ACL and capability list from a matrix",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L533"
+          "sourceRef": "docs/source-schedule.md#L515"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L508",
+      "sourceRef": "docs/source-schedule.md#L490",
       "imported": true,
       "archived": false
     },
@@ -543,8 +532,6 @@
         "david": "MV"
       },
       "jointPlanned": [
-        "J3",
-        "J4",
         "J5-T6"
       ],
       "examples": [
@@ -552,16 +539,16 @@
           "id": "ex-ch05-1",
           "text": "Cascading revocation graph (Fig 5.6, Practical 4 Problem 5.8)",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L534"
+          "sourceRef": "docs/source-schedule.md#L516"
         },
         {
           "id": "ex-ch05-2",
           "text": "SQLi attack types; inference example (Fig 5.8)",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L535"
+          "sourceRef": "docs/source-schedule.md#L517"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L509",
+      "sourceRef": "docs/source-schedule.md#L491",
       "imported": true,
       "archived": false
     },
@@ -592,10 +579,10 @@
           "id": "ex-ch06-1",
           "text": "Malware classification table (propagation vs payload)",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L536"
+          "sourceRef": "docs/source-schedule.md#L518"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L510",
+      "sourceRef": "docs/source-schedule.md#L492",
       "imported": true,
       "archived": false
     },
@@ -626,10 +613,10 @@
           "id": "ex-ch07-1",
           "text": "TCP handshake and half-open table",
           "davidNote": "exposure only",
-          "sourceRef": "docs/source-schedule.md#L537"
+          "sourceRef": "docs/source-schedule.md#L519"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L511",
+      "sourceRef": "docs/source-schedule.md#L493",
       "imported": true,
       "archived": false
     },
@@ -660,10 +647,10 @@
           "id": "ex-ch08-1",
           "text": "Snort rule header",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L538"
+          "sourceRef": "docs/source-schedule.md#L520"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L512",
+      "sourceRef": "docs/source-schedule.md#L494",
       "imported": true,
       "archived": false
     },
@@ -694,10 +681,10 @@
           "id": "ex-ch09-1",
           "text": "Packet-filter rule evaluation (Table 9.1)",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L539"
+          "sourceRef": "docs/source-schedule.md#L521"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L513",
+      "sourceRef": "docs/source-schedule.md#L495",
       "imported": true,
       "archived": false
     },
@@ -728,10 +715,10 @@
           "id": "ex-ch10-1",
           "text": "Hex stack trace before/after overflow (Fig 10.2, 10.6)",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L540"
+          "sourceRef": "docs/source-schedule.md#L522"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L514",
+      "sourceRef": "docs/source-schedule.md#L496",
       "imported": true,
       "archived": false
     },
@@ -762,10 +749,10 @@
           "id": "ex-ch11-1",
           "text": "8-bit signed example (−59 on the slide, −69 in two's complement)",
           "davidNote": null,
-          "sourceRef": "docs/source-schedule.md#L541"
+          "sourceRef": "docs/source-schedule.md#L523"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L515",
+      "sourceRef": "docs/source-schedule.md#L497",
       "imported": true,
       "archived": false
     },
@@ -796,10 +783,10 @@
           "id": "ex-ch13-1",
           "text": "Table 13.1 recall",
           "davidNote": "exposure only",
-          "sourceRef": "docs/source-schedule.md#L542"
+          "sourceRef": "docs/source-schedule.md#L524"
         }
       ],
-      "sourceRef": "docs/source-schedule.md#L516",
+      "sourceRef": "docs/source-schedule.md#L498",
       "imported": true,
       "archived": false
     }
@@ -826,7 +813,7 @@
       "outcome": null,
       "notes": "The schedule starts the following day (Section 2, item 1).",
       "goal": null,
-      "sourceRef": "docs/source-schedule.md#L135",
+      "sourceRef": "docs/source-schedule.md#L137",
       "sourceSection": "§5 overview",
       "imported": true,
       "archived": false,
@@ -860,34 +847,34 @@
           "tier": "MUST",
           "text": "Ch 1: S4–7 (definition, CIA, impact levels), S10–15 (terminology, assets, vulnerabilities, threats, attacks, countermeasures), S21–22 (Table 1.3, passive vs active attacks), S34 (learn the names of the 13 design principles), S35–36 (attack surfaces). Example: fill a CIA table with Low/Moderate/High and a reason for one system you choose.",
           "hours": 1.5,
-          "sourceRef": "docs/source-schedule.md#L157"
+          "sourceRef": "docs/source-schedule.md#L159"
         },
         {
           "id": "must-2",
           "tier": "MUST",
           "text": "Ch 2: S3–8 (symmetric encryption and attacks), S9–13 (DES, 3DES, AES; Tables 2.1 and 2.2), S17 (block vs stream), S18–26 (message authentication, MAC, hash properties), S27–35 (public-key encryption), S36–38 (digital signatures), and Practical 1 (S46–47): do one complete double columnar transposition, decrypting with the second key first. The ST1 Q4 marked solution is a worked example: attempt first, then compare.",
           "hours": 3,
-          "sourceRef": "docs/source-schedule.md#L158"
+          "sourceRef": "docs/source-schedule.md#L160"
         },
         {
           "id": "should-1",
           "tier": "SHOULD",
           "text": "Ch 2: S14–16, S22–24 (figures), S39–44 (certificates, digital envelopes, random numbers, stored-data encryption), a second timed transposition run.",
           "hours": 1,
-          "sourceRef": "docs/source-schedule.md#L159"
+          "sourceRef": "docs/source-schedule.md#L161"
         },
         {
           "id": "could-1",
           "tier": "COULD",
           "text": "Ch 1: S8–9 (ten challenges), S16–19 (Table 1.2, open the images), S23–33 (17 FIPS families).",
           "hours": 0.5,
-          "sourceRef": "docs/source-schedule.md#L160"
+          "sourceRef": "docs/source-schedule.md#L162"
         }
       ],
       "outcome": "can explain CIA and the threat vocabulary; can compare symmetric, public-key, hash, MAC and signature; can run the transposition.",
       "notes": "This day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
       "goal": "Foundations and cryptography learned",
-      "sourceRef": "docs/source-schedule.md#L155",
+      "sourceRef": "docs/source-schedule.md#L157",
       "sourceSection": "§6 Fri 13 Nov",
       "imported": true,
       "archived": false,
@@ -897,56 +884,26 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-13-david-study",
+      "id": "2026-11-13-david-open",
       "date": "2026-11-13",
       "sourceDate": "2026-11-13",
       "startTime": null,
       "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "suggested 1.5 h",
-      "type": "individual",
+      "timeLabel": "Open day",
+      "durationLabel": null,
+      "type": "other",
       "code": null,
-      "title": "Ch 1, Ch 2 part A",
+      "title": "Open day: add your own study sessions",
       "participants": [
         "david"
       ],
-      "topicIds": [
-        "ch01",
-        "ch02"
-      ],
+      "topicIds": [],
       "optional": false,
-      "tasks": [
-        {
-          "id": "q1",
-          "tier": "MUST",
-          "text": "Q1 Ch 1",
-          "hours": 0.75,
-          "condition": null,
-          "checkItemId": "q01",
-          "sourceRef": "docs/source-schedule.md#L247"
-        },
-        {
-          "id": "q2",
-          "tier": "MUST",
-          "text": "Q2 Ch 2 part A",
-          "hours": 0.75,
-          "condition": null,
-          "checkItemId": "q02",
-          "sourceRef": "docs/source-schedule.md#L248"
-        },
-        {
-          "id": "could-1",
-          "tier": "COULD",
-          "text": "Extra reading of Ch 2 S14–17",
-          "hours": 0.5,
-          "condition": null,
-          "sourceRef": "docs/source-schedule.md#L249"
-        }
-      ],
+      "tasks": [],
       "outcome": null,
-      "notes": "Example: write the CIA triad with one example each, from memory.",
+      "notes": "Nothing is scheduled. Add your own study sessions where you can, working down the queue from Q1.",
       "goal": "Foundations and cryptography learned",
-      "sourceRef": "docs/source-schedule.md#L246",
+      "sourceRef": "docs/source-schedule.md#L248",
       "sourceSection": "§7.2 Fri 13 Nov",
       "imported": true,
       "archived": false,
@@ -956,79 +913,9 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-14-kyle-golf-rest",
+      "id": "2026-11-14-kyle-study",
       "date": "2026-11-14",
       "sourceDate": "2026-11-14",
-      "startTime": null,
-      "endTime": null,
-      "timeLabel": null,
-      "durationLabel": null,
-      "type": "rest",
-      "code": null,
-      "title": "Protected golf / rest day",
-      "participants": [
-        "kyle"
-      ],
-      "topicIds": [],
-      "optional": false,
-      "tasks": [],
-      "outcome": null,
-      "notes": "No study. See Section 8.\nFully free for Kyle. No reading, no assignments, no quizzes, no catch-up, no mandatory joint session.\nNot a buffer. It is never used to recover lost time. If Kyle falls behind, use Section 11. Nobody schedules a Saturday catch-up.\nWhy Saturday: Fri 13 gives one day of momentum, then Sun–Wed run as four connected days into Thursday. Saturday is your stated preference. It also keeps Sun–Wed as four consecutive study days leading into Thursday; with Sunday as the rest day, Fri and Sat would be study days followed by a break and I see no advantage.\nWeather swap: if golf is rained out, swap the days. Move golf to Sun 15 and do Sun's tasks on Sat 14. Do not add hours to other days.\nDavid: no COS330 is required on this day. His optional hour is purely his choice.",
-      "goal": "Rest",
-      "sourceRef": "docs/source-schedule.md#L163",
-      "sourceSection": "§6 / §8",
-      "imported": true,
-      "archived": false,
-      "status": "planned",
-      "statusReason": "",
-      "userNotes": "",
-      "rescheduledFrom": null
-    },
-    {
-      "id": "2026-11-14-david-study",
-      "date": "2026-11-14",
-      "sourceDate": "2026-11-14",
-      "startTime": null,
-      "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "no COS330 required",
-      "type": "individual",
-      "code": null,
-      "title": "Optional: Ch 2 part B",
-      "participants": [
-        "david"
-      ],
-      "topicIds": [
-        "ch02"
-      ],
-      "optional": true,
-      "tasks": [
-        {
-          "id": "q3",
-          "tier": "SHOULD",
-          "text": "Q3 Ch 2 part B, including one full transposition run.",
-          "hours": 1,
-          "condition": "only if David is free",
-          "checkItemId": "q03",
-          "sourceRef": "docs/source-schedule.md#L253"
-        }
-      ],
-      "outcome": null,
-      "notes": "David chooses whether to rest or study; the golf day is Kyle's protected day and nothing here depends on it.",
-      "goal": "Rest",
-      "sourceRef": "docs/source-schedule.md#L252",
-      "sourceSection": "§7.2 Sat 14 Nov",
-      "imported": true,
-      "archived": false,
-      "status": "planned",
-      "statusReason": "",
-      "userNotes": "",
-      "rescheduledFrom": null
-    },
-    {
-      "id": "2026-11-15-kyle-study",
-      "date": "2026-11-15",
-      "sourceDate": "2026-11-15",
       "startTime": null,
       "endTime": null,
       "timeLabel": null,
@@ -1051,42 +938,42 @@
           "tier": "MUST",
           "text": "Ch 3: S3–5 (definition, four means), S7–11 (assurance levels; open the S11 image for Table 3.2), S12–15 (eight password attacks, UNIX password scheme, salt, rainbow tables), S19–20 (selection strategies, proactive checking), S22–24 (memory cards, smart tokens, smart cards), S28–30 (biometrics). Example: judge five passwords of your own choosing and give a reason for each.",
           "hours": 1.5,
-          "sourceRef": "docs/source-schedule.md#L169"
+          "sourceRef": "docs/source-schedule.md#L167"
         },
         {
           "id": "must-2",
           "tier": "MUST",
           "text": "Ch 4: S4–6, S11–13 (DAC, MAC, RBAC, ABAC; subjects, objects, rights; access matrix), S14–15 (ACL vs capability list), S18–21 (UNIX permissions and ACLs), S23–24 (RBAC), S25–28 (ABAC), S29–35 (ICAM overview). Example: read a UNIX permission string; build an ACL and a capability list from a small matrix.",
           "hours": 2.25,
-          "sourceRef": "docs/source-schedule.md#L170"
+          "sourceRef": "docs/source-schedule.md#L168"
         },
         {
           "id": "must-3",
           "tier": "MUST",
           "text": "Ch 5 part A: S3–16 (why databases are hard to secure, relational background, SQL basics; the lecturer says S1–13 must be known; start of SQL injection).",
           "hours": 0.75,
-          "sourceRef": "docs/source-schedule.md#L171"
+          "sourceRef": "docs/source-schedule.md#L169"
         },
         {
           "id": "should-1",
           "tier": "SHOULD",
           "text": "Ch 3 S21, S25–27, S31–33 (card types, smart-card exchange, eID, remote authentication); Ch 4 S36–39 (identity federation).",
           "hours": 1,
-          "sourceRef": "docs/source-schedule.md#L172"
+          "sourceRef": "docs/source-schedule.md#L170"
         },
         {
           "id": "could-1",
           "tier": "COULD",
           "text": "Practical 2 (Ch 3 S35–36) and Practical 3 (Ch 4 S43–50).",
           "hours": 0.5,
-          "sourceRef": "docs/source-schedule.md#L173"
+          "sourceRef": "docs/source-schedule.md#L171"
         }
       ],
       "outcome": "Ch 3 and Ch 4 learned; Ch 5 background done.",
-      "notes": "Joint (optional): J1 (≤30 min), Ch 1–2. It replaces part of the SHOULD slot.\nThis day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
+      "notes": "This day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
       "goal": "Authentication and access control learned",
-      "sourceRef": "docs/source-schedule.md#L167",
-      "sourceSection": "§6 Sun 15 Nov",
+      "sourceRef": "docs/source-schedule.md#L165",
+      "sourceSection": "§6 Sat 14 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1095,90 +982,27 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-15-david-study",
-      "date": "2026-11-15",
-      "sourceDate": "2026-11-15",
+      "id": "2026-11-14-david-open",
+      "date": "2026-11-14",
+      "sourceDate": "2026-11-14",
       "startTime": null,
       "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "suggested 1.5 h",
-      "type": "individual",
+      "timeLabel": "Open day",
+      "durationLabel": null,
+      "type": "other",
       "code": null,
-      "title": "Ch 3, Ch 4 part A",
+      "title": "Open day: add your own study sessions",
       "participants": [
         "david"
       ],
-      "topicIds": [
-        "ch03",
-        "ch04"
-      ],
+      "topicIds": [],
       "optional": false,
-      "tasks": [
-        {
-          "id": "q4",
-          "tier": "MUST",
-          "text": "Q4 Ch 3",
-          "hours": 0.75,
-          "condition": null,
-          "checkItemId": "q04",
-          "sourceRef": "docs/source-schedule.md#L256"
-        },
-        {
-          "id": "q5",
-          "tier": "MUST",
-          "text": "Q5 Ch 4 part A",
-          "hours": 0.75,
-          "condition": null,
-          "checkItemId": "q05",
-          "sourceRef": "docs/source-schedule.md#L257"
-        },
-        {
-          "id": "could-1",
-          "tier": "COULD",
-          "text": "Judge five passwords of his own with reasons",
-          "hours": 0.5,
-          "condition": null,
-          "sourceRef": "docs/source-schedule.md#L258"
-        }
-      ],
-      "outcome": null,
-      "notes": "If Sat was skipped: do Q3 first, then Q4.\nOptional: J1 (≤30 min), Ch 1–2.",
-      "goal": "Authentication and access control learned",
-      "sourceRef": "docs/source-schedule.md#L255",
-      "sourceSection": "§7.2 Sun 15 Nov",
-      "imported": true,
-      "archived": false,
-      "status": "planned",
-      "statusReason": "",
-      "userNotes": "",
-      "rescheduledFrom": null
-    },
-    {
-      "id": "2026-11-15-joint-j1",
-      "date": "2026-11-15",
-      "sourceDate": "2026-11-15",
-      "startTime": null,
-      "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "≤30 min, optional",
-      "type": "joint",
-      "code": "J1",
-      "title": "J1: Ch 1–2 (CIA vocabulary, symmetric vs public key vs hash/MAC/signature, transposition steps)",
-      "participants": [
-        "kyle",
-        "david"
-      ],
-      "topicIds": [
-        "ch01",
-        "ch02"
-      ],
-      "optional": true,
       "tasks": [],
       "outcome": null,
-      "notes": "",
+      "notes": "Nothing is scheduled. Add your own study sessions where you can, continuing the queue.",
       "goal": "Authentication and access control learned",
-      "sourceRef": "docs/source-schedule.md#L309",
-      "sourceSection": "§9.1",
+      "sourceRef": "docs/source-schedule.md#L250",
+      "sourceSection": "§7.2 Sat 14 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1187,9 +1011,9 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-16-kyle-study",
-      "date": "2026-11-16",
-      "sourceDate": "2026-11-16",
+      "id": "2026-11-15-kyle-study",
+      "date": "2026-11-15",
+      "sourceDate": "2026-11-15",
       "startTime": null,
       "endTime": null,
       "timeLabel": null,
@@ -1211,42 +1035,42 @@
           "tier": "MUST",
           "text": "Ch 5 part B: S17–23 (SQLi avenues, three attack types, countermeasures), S24–26 (administration models, GRANT/REVOKE, cascading revocation with Fig 5.6), S29–31 (inference), S32–34 (database encryption). Example: work Practical 4 Problem 5.8 by hand. Note: the revocation rule is not printed on any text slide. The knowledge map reverse-engineered a rule from the semester test and marks it as an assumption (Knowledge Map 4.1); treat Fig 5.6 and the textbook as the reference.",
           "hours": 2.25,
-          "sourceRef": "docs/source-schedule.md#L179"
+          "sourceRef": "docs/source-schedule.md#L176"
         },
         {
           "id": "must-2",
           "tier": "MUST",
           "text": "Ch 6 part A: S3–9 (definition, Table 6.1, classification), S17–22 (viruses: components, four phases, types), S23–26 (worms and target discovery).",
           "hours": 1.5,
-          "sourceRef": "docs/source-schedule.md#L180"
+          "sourceRef": "docs/source-schedule.md#L177"
         },
         {
           "id": "must-3",
           "tier": "MUST",
           "text": "Ch 6 part B: S34–38 (mobile code, drive-by, watering hole, malvertising, clickjacking), S40–41 (ransomware), S43–44 (bots), S46 (phishing), S47–50 (backdoor, rootkit), S51–55 (countermeasures). Example: build your own classification table (propagation vs payload).",
           "hours": 1.25,
-          "sourceRef": "docs/source-schedule.md#L181"
+          "sourceRef": "docs/source-schedule.md#L178"
         },
         {
           "id": "should-1",
           "tier": "SHOULD",
           "text": "Ch 5 S27–28 (database RBAC), S42–46 (Practical 4 Problems 5.2 and 5.9).",
           "hours": 0.5,
-          "sourceRef": "docs/source-schedule.md#L182"
+          "sourceRef": "docs/source-schedule.md#L179"
         },
         {
           "id": "could-1",
           "tier": "COULD",
           "text": "Ch 5 S35–40 (data centre security).",
           "hours": 0.5,
-          "sourceRef": "docs/source-schedule.md#L183"
+          "sourceRef": "docs/source-schedule.md#L180"
         }
       ],
       "outcome": "Ch 5 and Ch 6 learned. If this day runs long, the SHOULD slot is the catch-up block.",
-      "notes": "Joint (optional): J2 (≤40 min), Ch 3–4.\nThis day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
+      "notes": "This day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
       "goal": "Database security and malware learned",
-      "sourceRef": "docs/source-schedule.md#L177",
-      "sourceSection": "§6 Mon 16 Nov",
+      "sourceRef": "docs/source-schedule.md#L174",
+      "sourceSection": "§6 Sun 15 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1255,90 +1079,27 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-16-david-study",
-      "date": "2026-11-16",
-      "sourceDate": "2026-11-16",
+      "id": "2026-11-15-david-open",
+      "date": "2026-11-15",
+      "sourceDate": "2026-11-15",
       "startTime": null,
       "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "suggested 1.5 h",
-      "type": "individual",
+      "timeLabel": "Open day",
+      "durationLabel": null,
+      "type": "other",
       "code": null,
-      "title": "Ch 4 part B, Ch 5 part A",
+      "title": "Open day: add your own study sessions",
       "participants": [
         "david"
       ],
-      "topicIds": [
-        "ch04",
-        "ch05"
-      ],
+      "topicIds": [],
       "optional": false,
-      "tasks": [
-        {
-          "id": "q6",
-          "tier": "MUST",
-          "text": "Q6 Ch 4 part B",
-          "hours": 0.5,
-          "condition": null,
-          "checkItemId": "q06",
-          "sourceRef": "docs/source-schedule.md#L263"
-        },
-        {
-          "id": "q7",
-          "tier": "MUST",
-          "text": "Q7 Ch 5 part A",
-          "hours": 0.75,
-          "condition": null,
-          "checkItemId": "q07",
-          "sourceRef": "docs/source-schedule.md#L264"
-        },
-        {
-          "id": "must-1",
-          "tier": "MUST",
-          "text": "Recall: explain Ch 3–4 aloud without notes",
-          "hours": 0.25,
-          "condition": null,
-          "sourceRef": "docs/source-schedule.md#L265"
-        }
-      ],
-      "outcome": null,
-      "notes": "Optional: J2 (≤40 min), Ch 3–4.",
-      "goal": "Database security and malware learned",
-      "sourceRef": "docs/source-schedule.md#L262",
-      "sourceSection": "§7.2 Mon 16 Nov",
-      "imported": true,
-      "archived": false,
-      "status": "planned",
-      "statusReason": "",
-      "userNotes": "",
-      "rescheduledFrom": null
-    },
-    {
-      "id": "2026-11-16-joint-j2",
-      "date": "2026-11-16",
-      "sourceDate": "2026-11-16",
-      "startTime": null,
-      "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "≤40 min, optional",
-      "type": "joint",
-      "code": "J2",
-      "title": "J2: Ch 3–4 (authentication factors, password attacks, DAC/MAC/RBAC/ABAC, UNIX permissions)",
-      "participants": [
-        "kyle",
-        "david"
-      ],
-      "topicIds": [
-        "ch03",
-        "ch04"
-      ],
-      "optional": true,
       "tasks": [],
       "outcome": null,
-      "notes": "",
+      "notes": "Nothing is scheduled. Add your own study sessions where you can, continuing the queue.",
       "goal": "Database security and malware learned",
-      "sourceRef": "docs/source-schedule.md#L310",
-      "sourceSection": "§9.1",
+      "sourceRef": "docs/source-schedule.md#L252",
+      "sourceSection": "§7.2 Sun 15 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1347,9 +1108,9 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-17-kyle-study",
-      "date": "2026-11-17",
-      "sourceDate": "2026-11-17",
+      "id": "2026-11-16-kyle-study",
+      "date": "2026-11-16",
+      "sourceDate": "2026-11-16",
       "startTime": null,
       "endTime": null,
       "timeLabel": null,
@@ -1372,42 +1133,42 @@
           "tier": "MUST",
           "text": "Ch 7: S3–4, S6–11 (spoofing, backscatter, SYN spoofing, flooding), S12–13 (DDoS and botnets), S16–19 (reflection and amplification), S20–22 (defences). Example: step through the TCP three-way handshake and show how the half-open table fills.",
           "hours": 1.25,
-          "sourceRef": "docs/source-schedule.md#L189"
+          "sourceRef": "docs/source-schedule.md#L185"
         },
         {
           "id": "must-2",
           "tier": "MUST",
           "text": "Ch 8: S3–7 (intruder classes, short), S13 (six behaviour phases), S17–23 (IDS definitions, HIDS vs NIDS, anomaly vs signature), S24–25 (host IDS and data sources), S29–32 (NIDS and techniques), S37–38 (honeypots), S40–41 (Snort architecture and rule header). Example: read a Snort rule header field by field.",
           "hours": 2.25,
-          "sourceRef": "docs/source-schedule.md#L190"
+          "sourceRef": "docs/source-schedule.md#L186"
         },
         {
           "id": "must-3",
           "tier": "MUST",
           "text": "Ch 9 part A: S3–7, S9–20 (packet filter, stateful inspection, application gateway, circuit-level gateway, SOCKS). Example: apply a small rule set to sample packets (open the Table 9.1 image on S11).",
           "hours": 1.25,
-          "sourceRef": "docs/source-schedule.md#L191"
+          "sourceRef": "docs/source-schedule.md#L187"
         },
         {
           "id": "should-1",
           "tier": "SHOULD",
           "text": "Ch 7 S14–15, S23–24; Ch 8 S26–28, S33–36 (open the table and figure images).",
           "hours": 0.75,
-          "sourceRef": "docs/source-schedule.md#L192"
+          "sourceRef": "docs/source-schedule.md#L188"
         },
         {
           "id": "could-1",
           "tier": "COULD",
           "text": "Ch 6 Practical 5 (S57–59); Ch 8 Table 8.1 (S14–16).",
           "hours": 0.5,
-          "sourceRef": "docs/source-schedule.md#L193"
+          "sourceRef": "docs/source-schedule.md#L189"
         }
       ],
       "outcome": "Ch 7 and Ch 8 learned; firewall types learned.",
-      "notes": "Joint (optional): J3 (≤30 min), Ch 5.\nThis day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
+      "notes": "This day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
       "goal": "DoS, IDS, first half of firewalls",
-      "sourceRef": "docs/source-schedule.md#L187",
-      "sourceSection": "§6 Tue 17 Nov",
+      "sourceRef": "docs/source-schedule.md#L183",
+      "sourceSection": "§6 Mon 16 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1416,79 +1177,27 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-17-david-study",
-      "date": "2026-11-17",
-      "sourceDate": "2026-11-17",
+      "id": "2026-11-16-david-open",
+      "date": "2026-11-16",
+      "sourceDate": "2026-11-16",
       "startTime": null,
       "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "suggested 1.0 h; eve of his other exam, keep it light",
-      "type": "individual",
+      "timeLabel": "Open day",
+      "durationLabel": null,
+      "type": "other",
       "code": null,
-      "title": "Ch 5 part B",
+      "title": "Open day: add your own study sessions",
       "participants": [
         "david"
       ],
-      "topicIds": [
-        "ch05"
-      ],
+      "topicIds": [],
       "optional": false,
-      "tasks": [
-        {
-          "id": "q8",
-          "tier": "MUST",
-          "text": "Q8 Ch 5 part B",
-          "hours": 0.75,
-          "condition": null,
-          "checkItemId": "q08",
-          "sourceRef": "docs/source-schedule.md#L269"
-        },
-        {
-          "id": "must-1",
-          "tier": "MUST",
-          "text": "Recall: UNIX permission string and a cascading-revocation example (Fig 5.6) on paper",
-          "hours": 0.25,
-          "condition": null,
-          "sourceRef": "docs/source-schedule.md#L270"
-        }
-      ],
-      "outcome": null,
-      "notes": "Optional: J3 (≤30 min), Ch 5. Skip it if the other exam needs the time.",
-      "goal": "DoS, IDS, first half of firewalls",
-      "sourceRef": "docs/source-schedule.md#L268",
-      "sourceSection": "§7.2 Tue 17 Nov",
-      "imported": true,
-      "archived": false,
-      "status": "planned",
-      "statusReason": "",
-      "userNotes": "",
-      "rescheduledFrom": null
-    },
-    {
-      "id": "2026-11-17-joint-j3",
-      "date": "2026-11-17",
-      "sourceDate": "2026-11-17",
-      "startTime": null,
-      "endTime": null,
-      "timeLabel": null,
-      "durationLabel": "≤30 min, optional, skip freely",
-      "type": "joint",
-      "code": "J3",
-      "title": "J3: Ch 5 (SQLi types, revocation, inference, encryption)",
-      "participants": [
-        "kyle",
-        "david"
-      ],
-      "topicIds": [
-        "ch05"
-      ],
-      "optional": true,
       "tasks": [],
       "outcome": null,
-      "notes": "",
+      "notes": "Nothing is scheduled. Add your own study sessions where you can. About 3.5 h across Fri 13–Mon 16 keeps the whole queue reachable by Thu 19 (Section 4.4).",
       "goal": "DoS, IDS, first half of firewalls",
-      "sourceRef": "docs/source-schedule.md#L311",
-      "sourceSection": "§9.1",
+      "sourceRef": "docs/source-schedule.md#L254",
+      "sourceSection": "§7.2 Mon 16 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1497,9 +1206,9 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-18-kyle-study",
-      "date": "2026-11-18",
-      "sourceDate": "2026-11-18",
+      "id": "2026-11-17-kyle-study",
+      "date": "2026-11-17",
+      "sourceDate": "2026-11-17",
       "startTime": null,
       "endTime": null,
       "timeLabel": null,
@@ -1522,42 +1231,42 @@
           "tier": "MUST",
           "text": "Ch 9 part B: S21–23 (bastion hosts), S24–28 (DMZ, VPN, topologies; some renders were cropped, so open the slides), S29–33 (IPS, HIPS, NIPS).",
           "hours": 1.25,
-          "sourceRef": "docs/source-schedule.md#L199"
+          "sourceRef": "docs/source-schedule.md#L194"
         },
         {
           "id": "must-2",
           "tier": "MUST",
           "text": "Ch 10: S3–10, S12–17 (stack frames and stack smashing), S18 (unsafe C routines), S19–20 (shellcode idea), S25–33 (compile-time vs run-time defences). Example: hand-trace the hex stack before and after the overflow (Fig 10.2, Fig 10.6).",
           "hours": 2.5,
-          "sourceRef": "docs/source-schedule.md#L200"
+          "sourceRef": "docs/source-schedule.md#L195"
         },
         {
           "id": "must-3",
           "tier": "MUST",
           "text": "Ch 11 part A: S3–7, S11–16 (input handling, injection, the PHP examples), S22–24 (numeric validation, the 8-bit example). Note: the slide gives −59 for 10111011 (sign-magnitude); two's complement gives −69. Know both.",
           "hours": 1.25,
-          "sourceRef": "docs/source-schedule.md#L201"
+          "sourceRef": "docs/source-schedule.md#L196"
         },
         {
           "id": "should-1",
           "tier": "SHOULD",
           "text": "Ch 10 S34–37 (other overflows), Ch 9 S34–36 (digital immune system, Snort Inline).",
           "hours": 0.5,
-          "sourceRef": "docs/source-schedule.md#L202"
+          "sourceRef": "docs/source-schedule.md#L197"
         },
         {
           "id": "could-1",
           "tier": "COULD",
           "text": "Ch 9 S37–40, Ch 10 Practical 8.",
           "hours": 0.5,
-          "sourceRef": "docs/source-schedule.md#L203"
+          "sourceRef": "docs/source-schedule.md#L198"
         }
       ],
       "outcome": "Ch 9 and Ch 10 learned; Ch 11 half done.",
-      "notes": "Joint (optional): J4 (≤30 min), after David's exam.\nThis day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
+      "notes": "This day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
       "goal": "Buffer overflow and input handling learned",
-      "sourceRef": "docs/source-schedule.md#L197",
-      "sourceSection": "§6 Wed 18 Nov",
+      "sourceRef": "docs/source-schedule.md#L192",
+      "sourceSection": "§6 Tue 17 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1566,9 +1275,9 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-18-david-other-exam",
-      "date": "2026-11-18",
-      "sourceDate": "2026-11-18",
+      "id": "2026-11-17-david-other-exam",
+      "date": "2026-11-17",
+      "sourceDate": "2026-11-17",
       "startTime": null,
       "endTime": null,
       "timeLabel": "Daytime",
@@ -1583,10 +1292,10 @@
       "optional": false,
       "tasks": [],
       "outcome": null,
-      "notes": "other exam. No COS330 by day.\nOptional: J4 (≤30 min).",
+      "notes": "other exam. No COS330 by day.",
       "goal": "Buffer overflow and input handling learned",
-      "sourceRef": "docs/source-schedule.md#L273",
-      "sourceSection": "§7.2 Wed 18 Nov",
+      "sourceRef": "docs/source-schedule.md#L256",
+      "sourceSection": "§7.2 Tue 17 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1595,39 +1304,36 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-18-david-evening",
-      "date": "2026-11-18",
-      "sourceDate": "2026-11-18",
+      "id": "2026-11-17-david-evening",
+      "date": "2026-11-17",
+      "sourceDate": "2026-11-17",
       "startTime": null,
       "endTime": null,
-      "timeLabel": "Evening, only if rested",
+      "timeLabel": "Evening, after his exam",
       "durationLabel": "S 1.5 h",
       "type": "individual",
       "code": null,
-      "title": "Evening (optional): Ch 6 part A",
+      "title": "Evening: next unfinished queue item (light)",
       "participants": [
         "david"
       ],
-      "topicIds": [
-        "ch06"
-      ],
-      "optional": true,
+      "topicIds": [],
+      "optional": false,
       "tasks": [
         {
           "id": "should-1",
           "tier": "SHOULD",
-          "text": "continue the earliest outstanding queue item, ideally Q9 Ch 6 part A — about 1.0–1.5 h including recall; if Ch 6 has already been completed, move into Ch 7 or Ch 8",
-          "hours": null,
-          "condition": "evening, only if rested",
-          "hoursLabel": "about 1.0–1.5 h including recall",
-          "sourceRef": "docs/source-schedule.md#L274"
+          "text": "continue the earliest unfinished queue item, with a short recall of what he has covered so far.",
+          "hours": 1.5,
+          "condition": "evening, after his exam; keep it light",
+          "sourceRef": "docs/source-schedule.md#L257"
         }
       ],
       "outcome": null,
       "notes": "",
       "goal": "Buffer overflow and input handling learned",
-      "sourceRef": "docs/source-schedule.md#L273",
-      "sourceSection": "§7.2 Wed 18 Nov",
+      "sourceRef": "docs/source-schedule.md#L256",
+      "sourceSection": "§7.2 Tue 17 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1636,31 +1342,98 @@
       "rescheduledFrom": null
     },
     {
-      "id": "2026-11-18-joint-j4",
+      "id": "2026-11-18-kyle-study",
       "date": "2026-11-18",
       "sourceDate": "2026-11-18",
       "startTime": null,
       "endTime": null,
-      "timeLabel": "Evening",
-      "durationLabel": "≤30 min, optional, skip freely",
-      "type": "joint",
-      "code": "J4",
-      "title": "J4: Ch 5 recap and Ch 6 preview",
+      "timeLabel": null,
+      "durationLabel": "light day, about 4 h",
+      "type": "individual",
+      "code": null,
+      "title": "Ch 11 part B and Ch 13",
       "participants": [
-        "kyle",
-        "david"
+        "kyle"
       ],
       "topicIds": [
-        "ch05",
-        "ch06"
+        "ch11",
+        "ch13"
       ],
-      "optional": true,
-      "tasks": [],
+      "optional": false,
+      "tasks": [
+        {
+          "id": "must-1",
+          "tier": "MUST",
+          "text": "Ch 11 part B: S17–21 (XSS, validating syntax, canonicalization), S25, S32, S34–36 (fuzzing, race conditions, safe OS interaction, least privilege).",
+          "hours": 1.25,
+          "sourceRef": "docs/source-schedule.md#L205"
+        },
+        {
+          "id": "must-2",
+          "tier": "MUST",
+          "text": "Ch 13: S3–4, S8–16 (benefits, deployment models, service models), S18–19 (Table 13.1), S21–30 (NIST guidelines, seven CSA threats), S31 (multi-instance vs multi-tenant), S34–41 (IoT, fog, Table 13.4, requirements), S42–43 (MiniSec).",
+          "hours": 1.75,
+          "sourceRef": "docs/source-schedule.md#L206"
+        },
+        {
+          "id": "should-1",
+          "tier": "SHOULD",
+          "text": "One hour from the SHOULD backlog (Section 10.3), your choice, ideally a technical one such as a second hex trace or a packet-filter rule set.",
+          "hours": 1,
+          "sourceRef": "docs/source-schedule.md#L207"
+        }
+      ],
+      "outcome": "first pass of Ch 1–11 and 13 finished at MUST depth.",
+      "notes": "A light day: about 4 h of study and the rest of the day open. Do not stretch it to catch up; Thursday is the catch-up day.\nThis day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
+      "goal": "Light day: Kyle finishes the first pass; David continues the queue",
+      "sourceRef": "docs/source-schedule.md#L201",
+      "sourceSection": "§6 Wed 18 Nov",
+      "imported": true,
+      "archived": false,
+      "status": "planned",
+      "statusReason": "",
+      "userNotes": "",
+      "rescheduledFrom": null
+    },
+    {
+      "id": "2026-11-18-david-study",
+      "date": "2026-11-18",
+      "sourceDate": "2026-11-18",
+      "startTime": null,
+      "endTime": null,
+      "timeLabel": null,
+      "durationLabel": "light, about 3 h",
+      "type": "individual",
+      "code": null,
+      "title": "Next unfinished queue items",
+      "participants": [
+        "david"
+      ],
+      "topicIds": [],
+      "optional": false,
+      "tasks": [
+        {
+          "id": "must-1",
+          "tier": "MUST",
+          "text": "Continue the queue from the next unfinished item, in order.",
+          "hours": 2.5,
+          "condition": null,
+          "sourceRef": "docs/source-schedule.md#L260"
+        },
+        {
+          "id": "must-2",
+          "tier": "MUST",
+          "text": "Recall: explain the chapters finished so far aloud, without notes.",
+          "hours": 0.5,
+          "condition": null,
+          "sourceRef": "docs/source-schedule.md#L261"
+        }
+      ],
       "outcome": null,
-      "notes": "",
-      "goal": "Buffer overflow and input handling learned",
-      "sourceRef": "docs/source-schedule.md#L312",
-      "sourceSection": "§9.1",
+      "notes": "A light day; the rest of the day is open.",
+      "goal": "Light day: Kyle finishes the first pass; David continues the queue",
+      "sourceRef": "docs/source-schedule.md#L259",
+      "sourceSection": "§7.2 Wed 18 Nov",
       "imported": true,
       "archived": false,
       "status": "planned",
@@ -1678,35 +1451,25 @@
       "durationLabel": "5.25 h independent plus joint blocks",
       "type": "individual",
       "code": null,
-      "title": "Finish first pass, then the main joint day",
+      "title": "Catch-up and deepening, then the main joint day",
       "participants": [
         "kyle"
       ],
-      "topicIds": [
-        "ch11",
-        "ch13"
-      ],
+      "topicIds": [],
       "optional": false,
       "tasks": [
         {
-          "id": "must-1",
-          "tier": "MUST",
-          "text": "Ch 11 part B: S17–21 (XSS, validating syntax, canonicalization), S25, S32, S34–36 (fuzzing, race conditions, safe OS interaction, least privilege).",
-          "hours": 1.25,
-          "sourceRef": "docs/source-schedule.md#L211"
-        },
-        {
-          "id": "must-2",
-          "tier": "MUST",
-          "text": "Ch 13: S3–4, S8–16 (benefits, deployment models, service models), S18–19 (Table 13.1), S21–30 (NIST guidelines, seven CSA threats), S31 (multi-instance vs multi-tenant), S34–41 (IoT, fog, Table 13.4, requirements), S42–43 (MiniSec).",
-          "hours": 1.75,
-          "sourceRef": "docs/source-schedule.md#L212"
+          "id": "should-1",
+          "tier": "SHOULD",
+          "text": "Write challenge questions for David: five short questions with answers per chapter pair, for the J5 blocks.",
+          "hours": 1,
+          "sourceRef": "docs/source-schedule.md#L214"
         }
       ],
-      "outcome": "first pass of Ch 1–11 and 13 finished at MUST depth.",
-      "notes": "Kyle's independent time is inside blocks T1, T3 and T4 (Section 9.3).\nThis day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
+      "outcome": "every MUST item done; the technical procedures practised a second time.",
+      "notes": "No new chapters. Kyle's independent time is inside blocks T1, T3 and T4 (Section 9.3).\nThis day's SHOULD slot doubles as the catch-up block: if behind, spend it on unfinished MUST items first (Section 6 intro).",
       "goal": "Kyle aims for MUST coverage of all chapters; David records actual MV/exposure/untouched chapters, no assumed completion",
-      "sourceRef": "docs/source-schedule.md#L207",
+      "sourceRef": "docs/source-schedule.md#L210",
       "sourceSection": "§6 Thu 19 Nov",
       "imported": true,
       "archived": false,
@@ -1722,7 +1485,7 @@
       "startTime": null,
       "endTime": null,
       "timeLabel": null,
-      "durationLabel": "2.25 h",
+      "durationLabel": "4.25 h",
       "type": "buffer",
       "code": null,
       "title": "SHOULD deepening / catch-up time",
@@ -1733,17 +1496,17 @@
       "optional": false,
       "tasks": [
         {
-          "id": "should-1",
+          "id": "should-2",
           "tier": "SHOULD",
-          "text": "deepening from the backlog in Section 10.3, chosen by technical load: second hex trace, packet-filter rules, transposition run, SQLi/XSS examples. Use it to prepare challenge questions for David.",
-          "hours": 2.25,
-          "sourceRef": "docs/source-schedule.md#L213"
+          "text": "deepening and catch-up: first finish any MUST items still outstanding from Fri 13–Wed 18, then work the backlog in Section 10.3 by technical load: second hex trace, packet-filter rules, transposition run, SQLi/XSS examples.",
+          "hours": 4.25,
+          "sourceRef": "docs/source-schedule.md#L215"
         }
       ],
       "outcome": null,
       "notes": "Catch-up uses each day's SHOULD slot, a +0.5 h extension (cap 6 h) and Thursday's deepening time, in that order (Section 11.1).\nIf either student is fatigued, reduce Kyle's SHOULD deepening first (Section 9.3 rule 4).",
       "goal": "Kyle aims for MUST coverage of all chapters; David records actual MV/exposure/untouched chapters, no assumed completion",
-      "sourceRef": "docs/source-schedule.md#L213",
+      "sourceRef": "docs/source-schedule.md#L215",
       "sourceSection": "§6 Thu 19 Nov (SHOULD) / §11.1",
       "imported": true,
       "archived": false,
@@ -1762,28 +1525,20 @@
       "durationLabel": "5.25 h independent; conditional Section 9.3",
       "type": "individual",
       "code": null,
-      "title": "Next outstanding queue items first; target Ch 6–13 with MV/exposure mix",
+      "title": "Next outstanding queue items first; MV/exposure mix on whatever he has not reached",
       "participants": [
         "david"
       ],
-      "topicIds": [
-        "ch06",
-        "ch07",
-        "ch08",
-        "ch09",
-        "ch10",
-        "ch11",
-        "ch13"
-      ],
+      "topicIds": [],
       "optional": false,
       "tasks": [
         {
           "id": "t1",
           "tier": "BLOCK",
           "code": "T1",
-          "text": "next outstanding queue items, ideally Ch 6–8 if David is on schedule.",
+          "text": "next outstanding queue items, ideally Ch 6–8 if David has reached them.",
           "hours": 2,
-          "sourceRef": "docs/source-schedule.md#L278"
+          "sourceRef": "docs/source-schedule.md#L264"
         },
         {
           "id": "t3",
@@ -1791,7 +1546,7 @@
           "code": "T3",
           "text": "continue into Ch 9–10, including one packet-filter or stack-trace exercise where feasible.",
           "hours": 2,
-          "sourceRef": "docs/source-schedule.md#L279"
+          "sourceRef": "docs/source-schedule.md#L265"
         },
         {
           "id": "t4",
@@ -1799,13 +1554,13 @@
           "code": "T4",
           "text": "continue into Ch 11 and Ch 13; if time is tight, explicitly mark any chapter as exposure or not yet reached.",
           "hours": 1.25,
-          "sourceRef": "docs/source-schedule.md#L280"
+          "sourceRef": "docs/source-schedule.md#L266"
         }
       ],
       "outcome": null,
       "notes": "use the adaptive template in Section 9.3, with 5.25 h independent and 2.5 h joint. Start at the next actually unfinished Q-item after checking David's progress on the evening of the 18th.\nDo not double-count the 2.5 h joint discussion as independent first-pass reading. The original Q10–Q16 queue is 6.5 h, so a Thursday-only attempt requires at least 1.25 h of pre-completion or an explicit reduction in depth.",
       "goal": "Kyle aims for MUST coverage of all chapters; David records actual MV/exposure/untouched chapters, no assumed completion",
-      "sourceRef": "docs/source-schedule.md#L277",
+      "sourceRef": "docs/source-schedule.md#L263",
       "sourceSection": "§7.2 Thu 19 Nov",
       "imported": true,
       "archived": false,
@@ -1851,7 +1606,7 @@
           "code": "T2",
           "durationLabel": "45 min",
           "text": "Teach-back + an appropriate technical example, ideally malware/DoS/IDS — David: Explain only topics both have prepared; otherwise do a clearly labelled introductory overview",
-          "sourceRef": "docs/source-schedule.md#L338"
+          "sourceRef": "docs/source-schedule.md#L318"
         },
         {
           "id": "t5",
@@ -1859,7 +1614,7 @@
           "code": "T5",
           "durationLabel": "60 min",
           "text": "Ch 9–11 applications and Ch 13 model comparisons, adapted to progress — David: Explain-back only for studied content; otherwise identify outstanding first-pass topics",
-          "sourceRef": "docs/source-schedule.md#L343"
+          "sourceRef": "docs/source-schedule.md#L323"
         },
         {
           "id": "t6",
@@ -1867,13 +1622,13 @@
           "code": "T6",
           "durationLabel": "45 min",
           "text": "Cross-chapter questions, record Friday practice priorities — David: Focus on unresolved shared concepts and old-chapter retrieval",
-          "sourceRef": "docs/source-schedule.md#L345"
+          "sourceRef": "docs/source-schedule.md#L325"
         }
       ],
       "outcome": null,
       "notes": "Do not lock this schedule until the evening of 18 November. Use the actual progress tracker to choose between the following options. An unstudied topic cannot become \"learned\" merely because Kyle explained it for ten minutes.\nFull day: T1 independent 2 h · T2 joint 45 min · lunch 45 min · T3 independent 2 h · break 15 min · T4 independent 1 h 15 min · T5 joint 60 min · break 15 min · T6 joint 45 min (Section 9.3).\nAdjustment rule 1: If David is ahead of Q9, move the joint content forward accordingly and spend extra time on independent questions, not duplicated teaching.\nAdjustment rule 2: If David is at Q6–Q9, shorten the old-chapter T6 block and allocate the joint time to the new topics he has actually prepared; continue first-pass reading independently.\nAdjustment rule 3: If David is behind Q6, use Scenario D: a minimum-exposure sweep across remaining chapter headings and their key concepts, with technical drills reserved for selected procedures. Do not mark those chapters as first-pass complete.\nAdjustment rule 4: If either student is fatigued, reduce Kyle's SHOULD deepening and shorten T6 first. Preserve the required independent study and critical technical practice wherever feasible; do not extend beyond the ~9 h elapsed template.\nAdjustment rule 5: Friday 20 remains practice and revision. If a chapter is still untouched, the practice results and tracker must acknowledge that rather than claiming all content was covered.",
       "goal": "Kyle aims for MUST coverage of all chapters; David records actual MV/exposure/untouched chapters, no assumed completion",
-      "sourceRef": "docs/source-schedule.md#L313",
+      "sourceRef": "docs/source-schedule.md#L293",
       "sourceSection": "§9.1",
       "imported": true,
       "archived": false,
@@ -1906,7 +1661,7 @@
           "code": "P4",
           "durationLabel": "75 min",
           "text": "Marking and discussion: Mark against the memo; discuss why answers score or lose marks; note whether a loss came from missing knowledge or missing explanation",
-          "sourceRef": "docs/source-schedule.md#L473"
+          "sourceRef": "docs/source-schedule.md#L455"
         },
         {
           "id": "p6",
@@ -1914,13 +1669,13 @@
           "code": "P6",
           "durationLabel": "30 min",
           "text": "Rapid-fire: Easily confused pairs and definitions, both directions",
-          "sourceRef": "docs/source-schedule.md#L475"
+          "sourceRef": "docs/source-schedule.md#L457"
         }
       ],
       "outcome": null,
       "notes": "",
       "goal": "Mock, marking, active recall",
-      "sourceRef": "docs/source-schedule.md#L314",
+      "sourceRef": "docs/source-schedule.md#L294",
       "sourceSection": "§9.1",
       "imported": true,
       "archived": false,
@@ -1953,7 +1708,7 @@
           "code": "P1",
           "durationLabel": "40 min",
           "text": "Active-recall warm-up (Independent): Blank-page recall of each chapter group, about 3 min per chapter, then check against the slides",
-          "sourceRef": "docs/source-schedule.md#L468"
+          "sourceRef": "docs/source-schedule.md#L450"
         },
         {
           "id": "p2",
@@ -1961,7 +1716,7 @@
           "code": "P2",
           "durationLabel": "60 min",
           "text": "Technical drills (Independent, timed): Rotate across all major procedure types: transposition, revocation graph, TCP handshake, packet-filter rule evaluation, hex stack trace, 8-bit example and SQLi/XSS. If seven full problems cannot fit, do short representative versions and complete any unfinished types in P5. Track which procedures each person actually attempted",
-          "sourceRef": "docs/source-schedule.md#L469"
+          "sourceRef": "docs/source-schedule.md#L451"
         },
         {
           "id": "p3",
@@ -1969,7 +1724,7 @@
           "code": "P3",
           "durationLabel": "110 min",
           "text": "Timed mock (Independent, closed book): 60 marks (1.8 min per mark), all twelve chapters represented, in test-style formats",
-          "sourceRef": "docs/source-schedule.md#L471"
+          "sourceRef": "docs/source-schedule.md#L453"
         },
         {
           "id": "p5",
@@ -1977,13 +1732,13 @@
           "code": "P5",
           "durationLabel": "45 min",
           "text": "Targeted repair (Independent): From Section 14: retrieval practice on the chapters that showed gaps, using the slides as the answer key. This is not new learning.",
-          "sourceRef": "docs/source-schedule.md#L474"
+          "sourceRef": "docs/source-schedule.md#L456"
         }
       ],
       "outcome": null,
       "notes": "No planned first-time chapter learning. The target is productive, not exhausting: 6 h active and about 6 h 50 min elapsed with the specified breaks. Each person attempts everything independently before comparing. Use the semester test only to match the lecturer's format and expectations (matching, tables to copy, select-all picture items, argued short answers, one long procedure, a scenario). Mock questions and a memorandum are not generated yet. Ask Claude to produce two separate files (unseen paper and private answer key) by Thursday evening after the 19 Nov session; do not display solutions while sitting the mock. Questions should sample across all 12 examinable chapters, not just those already covered, and any omissions must be called out.\nBlock order: P1 → P2 → break 30 min → P3 → break 20 min → P4 (joint, J6) → P5 → P6 (joint, J6).\nCoverage check. Map the 60-mark mock against Ch 1–11 and 13: each chapter must appear at least once, although the marks need not be equal. Use P2 to cover practical mechanisms that a short mock cannot test in depth.\nOptions. If both feel well prepared, replace P3 + P5 with a full 100-mark, 3-hour mock plus 90 min marking. If either is behind (Scenario C or D), run a 40-mark mock on the studied chapters and extend P2. Stop at a sensible hour and sleep.",
       "goal": "Mock, marking, active recall",
-      "sourceRef": "docs/source-schedule.md#L460",
+      "sourceRef": "docs/source-schedule.md#L442",
       "sourceSection": "§12.1",
       "imported": true,
       "archived": false,
@@ -2013,7 +1768,7 @@
       "outcome": null,
       "notes": "",
       "goal": "Rested, arrive 14:30, exam 15:00",
-      "sourceRef": "docs/source-schedule.md#L315",
+      "sourceRef": "docs/source-schedule.md#L295",
       "sourceSection": "§9.1",
       "imported": true,
       "archived": false,
@@ -2045,34 +1800,34 @@
           "tier": "BLOCK",
           "durationLabel": "20 min",
           "text": "write the main procedures from memory (transposition steps, revocation graph, stack layout, CIA impact levels)",
-          "sourceRef": "docs/source-schedule.md#L484"
+          "sourceRef": "docs/source-schedule.md#L466"
         },
         {
           "id": "rev-2",
           "tier": "BLOCK",
           "durationLabel": "20 min",
           "text": "easily confused pairs (DAC/MAC/RBAC/ABAC, virus/worm/Trojan/bot, packet filter/stateful/proxy, anomaly/signature, compile-time/run-time defences, IaaS/PaaS/SaaS)",
-          "sourceRef": "docs/source-schedule.md#L485"
+          "sourceRef": "docs/source-schedule.md#L467"
         },
         {
           "id": "rev-3",
           "tier": "BLOCK",
           "durationLabel": "15 min",
           "text": "your own list of common mistakes from Section 14",
-          "sourceRef": "docs/source-schedule.md#L486"
+          "sourceRef": "docs/source-schedule.md#L468"
         },
         {
           "id": "rev-4",
           "tier": "BLOCK",
           "durationLabel": "10 min",
           "text": "exam technique (make each point and explain it; copy tables carefully; select-all is all-or-nothing).",
-          "sourceRef": "docs/source-schedule.md#L487"
+          "sourceRef": "docs/source-schedule.md#L469"
         }
       ],
       "outcome": null,
       "notes": "Morning: 60–75 min of light revision, finished by midday:\nDo not: start new material, sit another mock, or hold an intensive joint session close to the exam.",
       "goal": "Rested, arrive 14:30, exam 15:00",
-      "sourceRef": "docs/source-schedule.md#L481",
+      "sourceRef": "docs/source-schedule.md#L463",
       "sourceSection": "§12.2",
       "imported": true,
       "archived": false,
@@ -2140,7 +1895,7 @@
       "sessionId": null,
       "sourceDateAdded": "12 Nov",
       "imported": true,
-      "sourceRef": "docs/source-schedule.md#L570"
+      "sourceRef": "docs/source-schedule.md#L552"
     },
     {
       "id": "schedule-question-2",
@@ -2156,7 +1911,7 @@
       "sessionId": null,
       "sourceDateAdded": "12 Nov",
       "imported": true,
-      "sourceRef": "docs/source-schedule.md#L571"
+      "sourceRef": "docs/source-schedule.md#L553"
     },
     {
       "id": "schedule-question-3",
@@ -2178,7 +1933,7 @@
       "sessionId": null,
       "sourceDateAdded": "12 Nov",
       "imported": true,
-      "sourceRef": "docs/source-schedule.md#L572"
+      "sourceRef": "docs/source-schedule.md#L554"
     }
   ]
 }

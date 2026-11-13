@@ -35,7 +35,7 @@ function chipLabel(s) {
   if (s.type === 'exam') return 'Exam';
   if (s.type === 'practice') return 'Practice';
   if (s.type === 'joint') return s.code ? `${s.code} together` : 'Together';
-  if (s.type === 'other') return `${PROFILES[s.participants[0]].name}: busy`;
+  if (s.type === 'other') return `${PROFILES[s.participants[0]].name}: ${/^Open day/.test(s.title) ? 'open' : 'busy'}`;
   return `${PROFILES[s.participants[0]].name} study`;
 }
 const chipKind = (s) => ({ individual: 'green', joint: 'pink', practice: 'pink', exam: 'terra' }[s.type] || 'grey');

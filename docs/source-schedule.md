@@ -1,6 +1,6 @@
-# COS330 — SHARED STUDY SCHEDULE (KYLE & DAVID) — VERSION 3
+# COS330 — SHARED STUDY SCHEDULE (KYLE & DAVID) — VERSION 4
 
-Final exam: Saturday 21 November 2026, 15:00–18:00 · Version 3 revised Thursday 12 November 2026 · Status: **READY FOR SHARED PROJECT CONTEXT — adjust against actual progress**
+Final exam: Saturday 21 November 2026, 15:00–18:00 · Version 4 revised Friday 13 November 2026 · Status: **READY FOR SHARED PROJECT CONTEXT — adjust against actual progress**
 
 **How to use this file in a Claude conversation.** This document is a planning baseline, not an automatic record of completed studying. Ask "What should Kyle study today?", "What should David do next?", "What is our next joint session about?", "Which chapters are not covered yet?", "What do we practise together?" or "We missed a day, adjust the plan." Claude answers from Sections 5–9 and 11, and updates Sections 13–15 only from what you report. Nothing is marked done unless you say so.
 
@@ -29,8 +29,8 @@ Final exam: Saturday 21 November 2026, 15:00–18:00 · Version 3 revised Thursd
 1. **Today (Thu 12 Nov) is a no-study day.** The schedule starts on **Fri 13 Nov**.
 2. **Both Kyle and David relearn all twelve examinable chapters from close to zero.** Ch 1–5 are not revision. The only difference between them is available time.
 3. The previous test was largely a past paper they had prepared for. **Test results are ignored when planning.** No chapter gets more or less time because of it, and no topic is labelled a personal weakness. Difficulties are recorded only when a student reports them (Section 14).
-4. **Kyle:** about 4–6 focused hours on a normal study day (plan uses 5.5 h; **Estimate**). One full golf/rest day is protected (Section 8).
-5. **David:** the other exam on **Wed 18 Nov** comes first. His COS330 hours before then are small and flexible (the 1–1.5 h daily suggestions are **assumptions**, not commitments). He may move ahead into Ch 6–13 whenever time permits instead of being confined to Ch 1–5. Thu 19 adapts to his *actual* queue position.
+4. **Kyle:** about 4–6 focused hours on a normal study day (plan uses 5.5 h; **Estimate**). Version 4: Sat 14 is a normal study day (no golf day) and **Wed 18 is a light day** of about 4 h (Section 8).
+5. **David:** the other exam on **Tue 17 Nov** comes first. **Fri 13–Mon 16 are open days**: nothing is scheduled and David adds his own sessions where he can, working down the queue (Section 7.1). He studies lightly on the evening of Tue 17 after his exam and on Wed 18. He may move ahead into Ch 6–13 whenever time permits. Thu 19 adapts to his *actual* queue position.
 6. Thu 19 Nov is the major joint day. **Fri 20 Nov is practice and revision only.** Sat 21 Nov is the exam.
 7. The course knowledge map is a factual index and is **not changed** by this rebuild. Its priority section (Knowledge Map Section 7) leaned on the test, so **this schedule does not use it**.
 8. No progress has been reported so far, so every status below is "Not started".
@@ -60,7 +60,7 @@ Final exam: Saturday 21 November 2026, 15:00–18:00 · Version 3 revised Thursd
 ### 3.3 Structural changes and why
 
 - **Chapters are split across days where needed.** Ch 5, Ch 9 and Ch 11 each span two days because a whole chapter does not fit neatly into one 5.5-hour day. The order is unchanged.
-- **Ch 13 sits on Thursday morning.** That is the tail of your order, not a move. It is the chapter least likely to suffer from having little time to revisit, because it is mostly tables, lists and descriptions.
+- **Ch 13 sits on Wednesday 18 (the light day).** That is the tail of your order, not a move. It is the chapter least likely to suffer from having little time to revisit, because it is mostly tables, lists and descriptions. Kyle's first pass therefore ends on Wednesday, leaving Thursday for catch-up, deepening and the joint day.
 - **Spaced revisits are added for the technical mechanisms** so they are not studied once and left: the transposition, the revocation graph, the TCP handshake, the packet-filter rules, the hex stack trace and the 8-bit example each come back in a Thursday or Friday drill (Sections 9 and 12).
 
 ### 3.4 Alternative considered and rejected
@@ -113,20 +113,22 @@ Sensitivity check: if study takes **25% longer per unit of material**, full dept
 
 | Person / period | Independent active study | Joint active study | Breaks / elapsed | Important qualification |
 |---|---:|---:|---|---|
-| **Kyle, Fri 13–Wed 18** (Fri, Sun–Wed; golf Sat) | 27.5 h planned (5 × 5.5 h), range 20–30 h at 4–6 h/day | Up to 2 h 10 min of *optional* early discussions (J1–J4), usually replaces SHOULD time | Independent blocks exclude ordinary short breaks | No COS330 Thu 12 or Sat 14 |
+| **Kyle, Fri 13–Tue 17** (five full days, Sat 14 included) | 27.5 h planned (5 × 5.5 h), range 20–30 h at 4–6 h/day | None scheduled (J1–J4 removed in v4) | Independent blocks exclude ordinary short breaks | No COS330 Thu 12 |
+| **Kyle, Wed 18** (light day) | 4 h (3 h MUST + 1 h SHOULD) | None | The rest of the day is open | First pass finishes here |
 | **Kyle, Thu 19** | 5.25 h | 2.5 h | **7 h 45 min active**, ~9 h elapsed including 1 h 15 min breaks | This is a long day, not an ordinary 5.25 h study day; shorten optional deepening if tired |
-| **David, Fri 13–Tue 17** | 5.5 h of *suggested* minimum sessions, including 0.5 h recall; optional additional sessions are not guaranteed | Early sessions optional and not a substitute for first reading | Actual availability unknown | His other examination takes priority |
-| **David, Wed 18** | 0 required; optional 1–1.5 h after his exam *only if rested* | Optional meeting | Actual availability unknown | No daytime COS330 |
-| **David, Thu 19** | 5.25 h | 2.5 h | **7 h 45 min active**, ~9 h elapsed | Independent blocks cannot cover 6.5 h of originally allocated queue tasks at full MV depth |
+| **David, Fri 13–Mon 16** | Open: David adds his own sessions | None | Actual availability unknown | Nothing is scheduled for him |
+| **David, Tue 17** | ~1.5 h light study in the evening, after his other exam | None | Actual availability unknown | No daytime COS330 |
+| **David, Wed 18** (light day) | ~3 h | None | The rest of the day is open | |
+| **David, Thu 19** | 5.25 h | 2.5 h | **7 h 45 min active**, ~9 h elapsed | Independent blocks cannot cover the late queue items at full MV depth without earlier work |
 | **Both, Fri 20** | ~4 h 15 min individual work incl. mock, drills and targeted recall | 1 h 45 min joint marking and quiz | **6 h active**, ~6 h 50 min elapsed incl. breaks | Practice/revision only |
 
-**Arithmetic / capacity audit:** Kyle has **32.75 h independent** planned through Thu 19 (27.5 + 5.25), **plus** up to 2.5 h joint on Thu 19; never add joint time to the 32.75 h figure and then describe it as independent. David's complete Q1–Q16 queue is **13.25 h of independent first-pass tasks**; the Thu 19 allocations to Q10–Q16 alone total **6.5 h**, not 5.25 h. To fit his Thursday, some tasks must genuinely be shortened or completed earlier. Joint teach-backs reinforce material but **do not replace the original first-pass time**. See Section 9.3.
+**Arithmetic / capacity audit:** Kyle has **36.75 h independent** planned through Thu 19 (27.5 + 4 + 5.25), **plus** up to 2.5 h joint on Thu 19; never add joint time to the 36.75 h figure and then describe it as independent. David's complete Q1–Q16 queue is **13.25 h of independent first-pass tasks**; the scheduled time from Tue 17 to Thu 19 is **9.75 h** (1.5 + 3 + 5.25). The other **≈3.5 h** must come from sessions David adds himself on Fri 13–Mon 16, or the late chapters must genuinely be shortened. Joint teach-backs reinforce material but **do not replace the original first-pass time**. See Section 9.3.
 
 ### 4.4 What this means
 
-**Kyle.** Full depth (51.5 h) cannot fit into 32.75 h of independent preparation. The MUST tier (26.75 h) fits on paper and leaves about 6 h of independent time for selected SHOULD tasks or recovery. This is **breadth-first essential coverage**, not mastery of every prescribed detail. Actual pace and demonstrated recall determine whether that coverage is achieved. Thu 19 requires 7 h 45 min active including the joint session, so its SHOULD portion is expendable.
+**Kyle.** Full depth (51.5 h) cannot fit into 36.75 h of independent preparation. The MUST tier (26.75 h) is complete by the end of Wed 18, which leaves Thursday's 5.25 h independent time for catch-up, selected SHOULD tasks and question writing. This is **breadth-first essential coverage**, not mastery of every prescribed detail. Actual pace and demonstrated recall determine whether that coverage is achieved. Thu 19 requires 7 h 45 min active including the joint session, so its deepening portion is expendable.
 
-**David.** The 13.25 h queue is an aggressive minimum-viable *independent* target, not full learning. The required pre-18 suggestions (5.5 h, including recall) + 5.25 h Thu give **10.75 h active independent**, leaving at least **2.5 h of shortfall** before considering the effect of recall and topic splits. Optional earlier work is therefore **needed**, not merely a bonus, to complete all original MV queue items; if it does not happen, Section 9.3 and Scenario D provide honest reduced-depth alternatives. Do not state David has completed all chapters at MV depth if he has only seen them at exposure level.
+**David.** The 13.25 h queue is an aggressive minimum-viable *independent* target, not full learning. The scheduled Tue 17 evening (1.5 h), Wed 18 (3 h) and Thu 19 (5.25 h) give **9.75 h active independent**, leaving about **3.5 h** that David must find on his open days (Fri 13–Mon 16). Work he adds on those days is therefore **needed**, not merely a bonus, to complete all original MV queue items; if it does not happen, Section 9.3 and Scenario D provide honest reduced-depth alternatives. Do not state David has completed all chapters at MV depth if he has only seen them at exposure level.
 
 **Shared trade-off.** The exam scope does not shrink when study time is shortened. Every Ch 1–11 and 13 slide remains eligible, even if time forces a faster or shallower pass. The plan's tiers allocate scarce time; they do **not** predict examinability.
 
@@ -136,13 +138,13 @@ Thu 12 Nov: no study (agreed). Details are in Sections 6 (Kyle), 7 (David) and 9
 
 | Date | Kyle's study | David's study | Joint session | Main goal |
 |---|---|---|---|---|
-| **Fri 13** | Ch 1, Ch 2 (M 4.5 h, S 1.0 h) | Ch 1, Ch 2 part A (M 1.5 h) | None | Foundations and cryptography learned |
-| **Sat 14** | 🏌️ **PROTECTED GOLF / REST DAY. No study.** | No COS330 required (S 1.0 h optional: Ch 2 part B, only if free) | **None** | Rest |
-| **Sun 15** | Ch 3, Ch 4, Ch 5 part A (M 4.5 h, S 1.0 h) | Ch 3, Ch 4 part A (M 1.5 h) | J1 optional, ≤30 min: Ch 1–2 | Authentication and access control learned |
-| **Mon 16** | Ch 5 part B, Ch 6 (M 5.0 h, S 0.5 h) | Ch 4 part B, Ch 5 part A (M 1.5 h) | J2 optional, ≤40 min: Ch 3–4 | Database security and malware learned |
-| **Tue 17** | Ch 7, Ch 8, Ch 9 part A (M 4.75 h, S 0.75 h) | Ch 5 part B (M 1.0 h, light) | J3 optional, ≤30 min: Ch 5 | DoS, IDS, first half of firewalls |
-| **Wed 18** | Ch 9 part B, Ch 10, Ch 11 part A (M 5.0 h, S 0.5 h) | **Other exam. No COS330 by day.** Evening S 1.5 h optional: Ch 6 part A | J4 optional, ≤30 min after his exam | Buffer overflow and input handling learned |
-| **Thu 19** | Ch 11 part B, Ch 13, then deepening (M 3.0 h, S 2.25 h) | Next outstanding queue items first; target Ch 6–13 with MV/exposure mix (5.25 h independent; conditional Section 9.3) | **J5: main joint day** (≈2.5 h joint; ≈9 h elapsed with breaks) | Kyle aims for MUST coverage of all chapters; David records actual MV/exposure/untouched chapters, no assumed completion |
+| **Fri 13** | Ch 1, Ch 2 (M 4.5 h, S 1.0 h) | Open day: add your own study sessions | None | Foundations and cryptography learned |
+| **Sat 14** | Ch 3, Ch 4, Ch 5 part A (M 4.5 h, S 1.0 h) | Open day: add your own study sessions | None | Authentication and access control learned |
+| **Sun 15** | Ch 5 part B, Ch 6 (M 5.0 h, S 0.5 h) | Open day: add your own study sessions | None | Database security and malware learned |
+| **Mon 16** | Ch 7, Ch 8, Ch 9 part A (M 4.75 h, S 0.75 h) | Open day: add your own study sessions | None | DoS, IDS, first half of firewalls |
+| **Tue 17** | Ch 9 part B, Ch 10, Ch 11 part A (M 5.0 h, S 0.5 h) | **Other exam. No COS330 by day.** Evening S 1.5 h: next unfinished queue item (light) | None | Buffer overflow and input handling learned |
+| **Wed 18** | Light day: Ch 11 part B, Ch 13 (M 3.0 h, S 1.0 h) | Next unfinished queue items (about 3 h, light) | None | Light day: Kyle finishes the first pass; David continues the queue |
+| **Thu 19** | No new chapters: catch-up, deepening and questions for David (S 5.25 h) | Next outstanding queue items first; MV/exposure mix on whatever he has not reached (5.25 h independent; conditional Section 9.3) | **J5: main joint day** (≈2.5 h joint; ≈9 h elapsed with breaks) | Kyle aims for MUST coverage of all chapters; David records actual MV/exposure/untouched chapters, no assumed completion |
 | **Fri 20** | **Practice and revision only** (≈6 h, ≈7 h with breaks) | Same | **J6** marking and rapid-fire | Mock, marking, active recall |
 | **Sat 21** | 60–75 min light revision, finished by midday | Same | J7 optional, ≤20 min | Rested, arrive 14:30, exam 15:00 |
 
@@ -160,64 +162,64 @@ How tasks are tagged: **MUST** = essential concepts, first-pass learning and key
 - **COULD** Ch 1: S8–9 (ten challenges), S16–19 (Table 1.2, open the images), S23–33 (17 FIPS families). — 0.5 h
 - **Outcome:** can explain CIA and the threat vocabulary; can compare symmetric, public-key, hash, MAC and signature; can run the transposition.
 
-### Sat 14 Nov — 🏌️ PROTECTED GOLF / REST DAY
-
-No study. See Section 8.
-
-### Sun 15 Nov — Ch 3, Ch 4 and the start of Ch 5 (target 5.5 h)
+### Sat 14 Nov — Ch 3, Ch 4 and the start of Ch 5 (target 5.5 h)
 
 - **MUST** Ch 3: S3–5 (definition, four means), S7–11 (assurance levels; open the S11 image for Table 3.2), S12–15 (eight password attacks, UNIX password scheme, salt, rainbow tables), S19–20 (selection strategies, proactive checking), S22–24 (memory cards, smart tokens, smart cards), S28–30 (biometrics). *Example:* judge five passwords of your own choosing and give a reason for each. — 1.5 h
 - **MUST** Ch 4: S4–6, S11–13 (DAC, MAC, RBAC, ABAC; subjects, objects, rights; access matrix), S14–15 (ACL vs capability list), S18–21 (UNIX permissions and ACLs), S23–24 (RBAC), S25–28 (ABAC), S29–35 (ICAM overview). *Example:* read a UNIX permission string; build an ACL and a capability list from a small matrix. — 2.25 h
 - **MUST** Ch 5 part A: S3–16 (why databases are hard to secure, relational background, SQL basics; the lecturer says S1–13 must be known; start of SQL injection). — 0.75 h
 - **SHOULD** Ch 3 S21, S25–27, S31–33 (card types, smart-card exchange, eID, remote authentication); Ch 4 S36–39 (identity federation). — 1.0 h
 - **COULD** Practical 2 (Ch 3 S35–36) and Practical 3 (Ch 4 S43–50). — 0.5 h
-- **Joint (optional):** J1 (≤30 min), Ch 1–2. It replaces part of the SHOULD slot.
 - **Outcome:** Ch 3 and Ch 4 learned; Ch 5 background done.
 
-### Mon 16 Nov — Ch 5 part B and Ch 6 (target 5.5 h; the heaviest MUST day)
+### Sun 15 Nov — Ch 5 part B and Ch 6 (target 5.5 h; the heaviest MUST day)
 
 - **MUST** Ch 5 part B: S17–23 (SQLi avenues, three attack types, countermeasures), S24–26 (administration models, `GRANT`/`REVOKE`, cascading revocation with Fig 5.6), S29–31 (inference), S32–34 (database encryption). *Example:* work Practical 4 Problem 5.8 by hand. **Note:** the revocation rule is *not printed on any text slide*. The knowledge map reverse-engineered a rule from the semester test and marks it as an assumption (Knowledge Map 4.1); treat Fig 5.6 and the textbook as the reference. — 2.25 h
 - **MUST** Ch 6 part A: S3–9 (definition, Table 6.1, classification), S17–22 (viruses: components, four phases, types), S23–26 (worms and target discovery). — 1.5 h
 - **MUST** Ch 6 part B: S34–38 (mobile code, drive-by, watering hole, malvertising, clickjacking), S40–41 (ransomware), S43–44 (bots), S46 (phishing), S47–50 (backdoor, rootkit), S51–55 (countermeasures). *Example:* build your own classification table (propagation vs payload). — 1.25 h
 - **SHOULD** Ch 5 S27–28 (database RBAC), S42–46 (Practical 4 Problems 5.2 and 5.9). — 0.5 h
 - **COULD** Ch 5 S35–40 (data centre security). — 0.5 h
-- **Joint (optional):** J2 (≤40 min), Ch 3–4.
 - **Outcome:** Ch 5 and Ch 6 learned. If this day runs long, the SHOULD slot is the catch-up block.
 
-### Tue 17 Nov — Ch 7, Ch 8 and Ch 9 part A (target 5.5 h)
+### Mon 16 Nov — Ch 7, Ch 8 and Ch 9 part A (target 5.5 h)
 
 - **MUST** Ch 7: S3–4, S6–11 (spoofing, backscatter, SYN spoofing, flooding), S12–13 (DDoS and botnets), S16–19 (reflection and amplification), S20–22 (defences). *Example:* step through the TCP three-way handshake and show how the half-open table fills. — 1.25 h
 - **MUST** Ch 8: S3–7 (intruder classes, short), S13 (six behaviour phases), S17–23 (IDS definitions, HIDS vs NIDS, anomaly vs signature), S24–25 (host IDS and data sources), S29–32 (NIDS and techniques), S37–38 (honeypots), S40–41 (Snort architecture and rule header). *Example:* read a Snort rule header field by field. — 2.25 h
 - **MUST** Ch 9 part A: S3–7, S9–20 (packet filter, stateful inspection, application gateway, circuit-level gateway, SOCKS). *Example:* apply a small rule set to sample packets (open the Table 9.1 image on S11). — 1.25 h
 - **SHOULD** Ch 7 S14–15, S23–24; Ch 8 S26–28, S33–36 (open the table and figure images). — 0.75 h
 - **COULD** Ch 6 Practical 5 (S57–59); Ch 8 Table 8.1 (S14–16). — 0.5 h
-- **Joint (optional):** J3 (≤30 min), Ch 5.
 - **Outcome:** Ch 7 and Ch 8 learned; firewall types learned.
 
-### Wed 18 Nov — Ch 9 part B, Ch 10 and Ch 11 part A (target 5.5 h)
+### Tue 17 Nov — Ch 9 part B, Ch 10 and Ch 11 part A (target 5.5 h)
 
 - **MUST** Ch 9 part B: S21–23 (bastion hosts), S24–28 (DMZ, VPN, topologies; some renders were cropped, so open the slides), S29–33 (IPS, HIPS, NIPS). — 1.25 h
 - **MUST** Ch 10: S3–10, S12–17 (stack frames and stack smashing), S18 (unsafe C routines), S19–20 (shellcode idea), S25–33 (compile-time vs run-time defences). *Example:* hand-trace the hex stack before and after the overflow (Fig 10.2, Fig 10.6). — 2.5 h
 - **MUST** Ch 11 part A: S3–7, S11–16 (input handling, injection, the PHP examples), S22–24 (numeric validation, the 8-bit example). **Note:** the slide gives −59 for `10111011` (sign-magnitude); two's complement gives −69. Know both. — 1.25 h
 - **SHOULD** Ch 10 S34–37 (other overflows), Ch 9 S34–36 (digital immune system, Snort Inline). — 0.5 h
 - **COULD** Ch 9 S37–40, Ch 10 Practical 8. — 0.5 h
-- **Joint (optional):** J4 (≤30 min), after David's exam.
 - **Outcome:** Ch 9 and Ch 10 learned; Ch 11 half done.
 
-### Thu 19 Nov — finish first pass, then the main joint day (5.25 h independent plus joint blocks)
+### Wed 18 Nov — Ch 11 part B and Ch 13 (light day, about 4 h)
 
-Kyle's independent time is inside blocks T1, T3 and T4 (Section 9.3).
+A light day: about 4 h of study and the rest of the day open. Do not stretch it to catch up; Thursday is the catch-up day.
 
 - **MUST** Ch 11 part B: S17–21 (XSS, validating syntax, canonicalization), S25, S32, S34–36 (fuzzing, race conditions, safe OS interaction, least privilege). — 1.25 h
 - **MUST** Ch 13: S3–4, S8–16 (benefits, deployment models, service models), S18–19 (Table 13.1), S21–30 (NIST guidelines, seven CSA threats), S31 (multi-instance vs multi-tenant), S34–41 (IoT, fog, Table 13.4, requirements), S42–43 (MiniSec). — 1.75 h
-- **SHOULD** deepening from the backlog in Section 10.3, chosen by technical load: second hex trace, packet-filter rules, transposition run, SQLi/XSS examples. Use it to prepare challenge questions for David. — 2.25 h
+- **SHOULD** One hour from the SHOULD backlog (Section 10.3), your choice, ideally a technical one such as a second hex trace or a packet-filter rule set. — 1.0 h
 - **Outcome:** first pass of Ch 1–11 and 13 finished at MUST depth.
+
+### Thu 19 Nov — catch-up and deepening, then the main joint day (5.25 h independent plus joint blocks)
+
+No new chapters. Kyle's independent time is inside blocks T1, T3 and T4 (Section 9.3).
+
+- **SHOULD** Write challenge questions for David: five short questions with answers per chapter pair, for the J5 blocks. — 1.0 h
+- **SHOULD** deepening and catch-up: first finish any MUST items still outstanding from Fri 13–Wed 18, then work the backlog in Section 10.3 by technical load: second hex trace, packet-filter rules, transposition run, SQLi/XSS examples. — 4.25 h
+- **Outcome:** every MUST item done; the technical procedures practised a second time.
 
 ---
 
 ## 7. DAVID'S DETAILED DAILY ASSIGNMENTS
 
-His other exam comes first. Everything before the 18th is flexible. The work is an **ordered queue** (Section 7.1): generally tackle prerequisite topics first, but **if time allows, continue into newer chapters rather than waiting for Thu 19**. A missed day simply moves the queue on. Depth targets **MV** (minimum viable) and **E** (exposure) are defined in Section 10.2. Time before 18 Nov is an estimate, not an obligation.
+His other exam (Tue 17) comes first. **Fri 13–Mon 16 are open days: nothing is scheduled, and David adds his own sessions in the tracker where he can.** The work is an **ordered queue** (Section 7.1), used as an undated checklist: generally tackle prerequisite topics first, but **if time allows, continue into newer chapters rather than waiting for Thu 19**. Depth targets **MV** (minimum viable) and **E** (exposure) are defined in Section 10.2.
 
 ### 7.1 The queue (hours are estimates)
 
@@ -243,39 +245,23 @@ His other exam comes first. Everything before the 18th is flexible. The work is 
 
 ### 7.2 Daily expectations
 
-**Fri 13 Nov (suggested 1.5 h):**
-- **MUST** Q1 Ch 1 — 0.75 h
-- **MUST** Q2 Ch 2 part A — 0.75 h
-- **COULD** Extra reading of Ch 2 S14–17 — 0.5 h
-- *Example:* write the CIA triad with one example each, from memory.
+**Fri 13 Nov (open):** Nothing is scheduled. Add your own study sessions where you can, working down the queue from Q1.
 
-**Sat 14 Nov (no COS330 required):** David chooses whether to rest or study; the golf day is Kyle's protected day and nothing here depends on it.
-- **SHOULD** (only if David is free): Q3 Ch 2 part B, including one full transposition run. — 1.0 h
+**Sat 14 Nov (open):** Nothing is scheduled. Add your own study sessions where you can, continuing the queue.
 
-**Sun 15 Nov (suggested 1.5 h):**
-- **MUST** Q4 Ch 3 — 0.75 h
-- **MUST** Q5 Ch 4 part A — 0.75 h
-- **COULD** Judge five passwords of his own with reasons — 0.5 h
-- *If Sat was skipped:* do Q3 first, then Q4.
-- *Optional:* J1 (≤30 min), Ch 1–2.
+**Sun 15 Nov (open):** Nothing is scheduled. Add your own study sessions where you can, continuing the queue.
 
-**Mon 16 Nov (suggested 1.5 h):**
-- **MUST** Q6 Ch 4 part B — 0.5 h
-- **MUST** Q7 Ch 5 part A — 0.75 h
-- **MUST** Recall: explain Ch 3–4 aloud without notes — 0.25 h
-- *Optional:* J2 (≤40 min), Ch 3–4.
+**Mon 16 Nov (open):** Nothing is scheduled. Add your own study sessions where you can. About 3.5 h across Fri 13–Mon 16 keeps the whole queue reachable by Thu 19 (Section 4.4).
 
-**Tue 17 Nov (suggested 1.0 h; eve of his other exam, keep it light):**
-- **MUST** Q8 Ch 5 part B — 0.75 h
-- **MUST** Recall: UNIX permission string and a cascading-revocation example (Fig 5.6) on paper — 0.25 h
-- *Optional:* J3 (≤30 min), Ch 5. Skip it if the other exam needs the time.
+**Tue 17 Nov:** other exam. **No COS330 by day.**
+- **SHOULD** (evening, after his exam; keep it light): continue the earliest unfinished queue item, with a short recall of what he has covered so far. — 1.5 h
 
-**Wed 18 Nov:** other exam. **No COS330 by day.**
-- **SHOULD** (evening, only if rested): continue the earliest outstanding queue item, ideally Q9 Ch 6 part A — about 1.0–1.5 h including recall; if Ch 6 has already been completed, move into Ch 7 or Ch 8
-- *Optional:* J4 (≤30 min).
+**Wed 18 Nov (light, about 3 h):** A light day; the rest of the day is open.
+- **MUST** Continue the queue from the next unfinished item, in order. — 2.5 h
+- **MUST** Recall: explain the chapters finished so far aloud, without notes. — 0.5 h
 
 **Thu 19 Nov:** use the adaptive template in Section 9.3, with **5.25 h independent and 2.5 h joint**. Start at the next actually unfinished Q-item after checking David's progress on the evening of the 18th.
-- **T1 (2.0 h):** next outstanding queue items, ideally Ch 6–8 if David is on schedule.
+- **T1 (2.0 h):** next outstanding queue items, ideally Ch 6–8 if David has reached them.
 - **T3 (2.0 h):** continue into Ch 9–10, including one packet-filter or stack-trace exercise where feasible.
 - **T4 (1.25 h):** continue into Ch 11 and Ch 13; if time is tight, explicitly mark any chapter as **exposure** or **not yet reached**.
 - **Do not double-count the 2.5 h joint discussion as independent first-pass reading.** The original Q10–Q16 queue is 6.5 h, so a Thursday-only attempt requires at least 1.25 h of pre-completion or an explicit reduction in depth.
@@ -283,33 +269,27 @@ His other exam comes first. Everything before the 18th is flexible. The work is 
 ### 7.3 Totals and checkpoint rules
 
 - **Original queue:** Q1–Q16 add up to **13.25 h** of independent tasks. Q1–Q9 total **6.75 h**, and Q10–Q16 total **6.5 h**. Neither joint discussion time nor breaks may be used to make this sum appear smaller.
-- **Before the 18th:** the dated suggestions total **5.5 h including 0.5 h recall**, not the 6.75 h needed for Q1–Q9. Optional work is therefore essential for reaching the original queue target. It is fine if David cannot manage it; the shortfall must be visible.
-- **Checkpoints:** on Sun 15 after J1, Tue 17 after any J3, and Wed 18 evening, record David's **last genuinely completed queue item** and his available time for Thu 19. If he has extra time, use it on the **next Q-item**, including Ch 6–13. Do not continue rereading Ch 1–5 just because they were previously tested.
+- **Before Thu 19:** the scheduled time is the Tue 17 evening (1.5 h) and Wed 18 (3 h). Fri 13–Mon 16 are open, so the sessions David adds there decide how far through the queue he gets. About 3.5 h of his own sessions keeps the whole queue reachable. It is fine if David cannot manage it; the shortfall must be visible.
+- **Checkpoints:** on Mon 16, Tue 17 evening and Wed 18 evening, record David's **last genuinely completed queue item** (tick it in the tracker) and his available time for Thu 19. If he has extra time, use it on the **next Q-item**, including Ch 6–13. Do not continue rereading Ch 1–5 just because they were previously tested.
 - **Thursday choices:** if all Q1–Q9 are complete, Thu 19 still has 6.5 h of new queue tasks for a 5.25 h independent window. Choose **(A)** complete at least 1.25 h of Q10–Q16 before Thursday if possible, **or (B)** use a shortened MV/exposure mix on Thursday, recording the reduced depth honestly (Section 9.3). If Q1–Q9 are not complete, prioritise remaining prerequisite material and downgrade later chapters to exposure as required. The 19th is **not** guaranteed full mastery.
-- **Practical rule:** if David has less than 3 h of total independent time available by Tue 17, switch immediately to Scenario D rather than relying on an impossible catch-up on Thu 19.
+- **Practical rule:** if David has less than 3 h of total independent time by the end of Tue 17, switch immediately to Scenario D rather than relying on an impossible catch-up on Thu 19.
 
-## 8. PROTECTED GOLF / REST DAY — SATURDAY 14 NOVEMBER
+## 8. LIGHT DAY — WEDNESDAY 18 NOVEMBER
 
-- **Fully free for Kyle.** No reading, no assignments, no quizzes, no catch-up, no mandatory joint session.
-- **Not a buffer.** It is never used to recover lost time. If Kyle falls behind, use Section 11. Nobody schedules a Saturday catch-up.
-- **Why Saturday:** Fri 13 gives one day of momentum, then Sun–Wed run as four connected days into Thursday. Saturday is your stated preference. It also keeps Sun–Wed as four consecutive study days leading into Thursday; with Sunday as the rest day, Fri and Sat would be study days followed by a break and I see no advantage.
-- **Weather swap:** if golf is rained out, swap the days. Move golf to Sun 15 and do Sun's tasks on Sat 14. Do not add hours to other days.
-- **David:** no COS330 is required on this day. His optional hour is purely his choice.
+- **Version 4 change:** the Sat 14 golf day is gone. Sat 14 is a normal study day for Kyle, and Kyle's plan moved one day earlier, so his first pass now ends on Wed 18.
+- **Light for both.** Kyle has about 4 h (Ch 11 part B, Ch 13, one SHOULD hour); David has about 3 h of queue work. The rest of the day is open.
+- **Not stretched.** Wed 18 is not extended to catch up. Use Thursday's deepening and catch-up time instead (Section 11).
 
 ---
 
 ## 9. JOINT DISCUSSIONS — SCHEDULE AND STRUCTURE
 
-No clock times are set. Durations are approximate. Before the 18th every session is **short and optional**; Kyle's plan does not depend on any of them.
+No clock times are set. Durations are approximate. Version 4 removed the optional early sessions J1–J4 (David's days before Tue 17 are open). If both want a short discussion earlier, add it in the tracker as a joint session.
 
 ### 9.1 Schedule
 
 | # | When | Length | Topics | Status |
 |---|---|---|---|---|
-| **J1** | Sun 15 | ≤30 min, optional | Ch 1–2 (CIA vocabulary, symmetric vs public key vs hash/MAC/signature, transposition steps) | ☐ |
-| **J2** | Mon 16 | ≤40 min, optional | Ch 3–4 (authentication factors, password attacks, DAC/MAC/RBAC/ABAC, UNIX permissions) | ☐ |
-| **J3** | Tue 17 | ≤30 min, optional, skip freely | Ch 5 (SQLi types, revocation, inference, encryption) | ☐ |
-| **J4** | Wed 18 evening | ≤30 min, optional, skip freely | Ch 5 recap and Ch 6 preview | ☐ |
 | **J5** | **Thu 19** | ≈2.5 h of joint blocks in a ≈9 h day | See 9.3 | ☐ |
 | **J6** | **Fri 20** | ≈1 h 45 min (marking 75 min + rapid-fire 30 min) | Section 12 | ☐ |
 | **J7** | Sat 21 morning | ≤20 min, optional | Each names five easily confused pairs and explains one | ☐ |
@@ -334,10 +314,10 @@ Use this for every session. The purpose is understanding, not Kyle lecturing. **
 
 | Block | Duration | David (independent) | Kyle (independent) / joint activity |
 |---|---:|---|---|
-| **T1 Independent** | 2 h | Work on the next unfinished Q-items; aim for Ch 6–8 or the next later pair if already covered | Ch 11 part B; start Ch 13 |
+| **T1 Independent** | 2 h | Work on the next unfinished Q-items; aim for Ch 6–8 or the next later pair if already covered | Catch-up on any outstanding MUST items; write challenge questions for David |
 | **T2 Joint** | 45 min | Explain only topics both have prepared; otherwise do a clearly labelled introductory overview | Teach-back + an appropriate technical example, ideally malware/DoS/IDS |
 | *Lunch* | 45 min | Rest | Rest |
-| **T3 Independent** | 2 h | Continue queue; prioritise Ch 9 packet-filter rules and Ch 10 stack trace if still outstanding | Complete Ch 13; optional technical deepening |
+| **T3 Independent** | 2 h | Continue queue; prioritise Ch 9 packet-filter rules and Ch 10 stack trace if still outstanding | Technical deepening (Section 10.3) |
 | *Break* | 15 min | Rest | Rest |
 | **T4 Independent** | 1 h 15 min | Continue queue; prioritise Ch 11 and Ch 13 core concepts/exposure | Catch-up, optional deepening, or rest |
 | **T5 Joint** | 60 min | Explain-back only for studied content; otherwise identify outstanding first-pass topics | Ch 9–11 applications and Ch 13 model comparisons, adapted to progress |
@@ -391,21 +371,23 @@ Roughly 18.75 h of Kyle's SHOULD items are unscheduled. Pick by technical load, 
 
 ### 11.1 Rules that never change
 
-- **The golf day (Sat 14) and the practice day (Fri 20) are never used to recover lost time.**
+- **The practice day (Fri 20) is never used to recover lost time.**
+- **The light day (Wed 18) is not stretched to catch up.**
 - No day is extended past 6 h to catch up.
-- Catch-up uses each day's SHOULD slot, a +0.5 h extension (cap 6 h) and Thursday's deepening time, in that order.
+- Catch-up uses each day's SHOULD slot, a +0.5 h extension (cap 6 h, full days only) and Thursday's deepening time, in that order.
 
 ### 11.2 Kyle's recovery buffers
 
 | If the missed day is | MUST hours lost | Buffer available later | Shortfall |
 |---|---|---|---|
-| Fri 13 | 4.5 | 7.0 h | none (2.5 h spare) |
-| Sun 15 | 4.5 | 5.5 h | none (1.0 h spare) |
-| Mon 16 | 5.0 | 4.5 h | 0.5 h |
-| Tue 17 | 4.75 | 3.25 h | 1.5 h |
-| Wed 18 | 5.0 | 2.25 h | 2.75 h |
+| Fri 13 | 4.5 | 10.0 h | none (5.5 h spare) |
+| Sat 14 | 4.5 | 8.5 h | none (4.0 h spare) |
+| Sun 15 | 5.0 | 7.5 h | none (2.5 h spare) |
+| Mon 16 | 4.75 | 6.25 h | none (1.5 h spare) |
+| Tue 17 | 5.0 | 5.25 h | none (0.25 h spare) |
+| Wed 18 | 3.0 | 4.25 h | none (1.25 h spare) |
 
-Buffer = later SHOULD slots + 0.5 h extensions + Thursday's 2.25 h deepening. The later the miss, the less room there is. The trims in 11.3 can only be taken from chapters not yet studied, so they cover the Mon and Tue shortfalls but **not** a Wed miss (only about 1.45 h of trims remain). If Wed is missed, go straight to Scenario B.
+Buffer = later SHOULD slots + 0.5 h extensions on later full days + Thursday's 4.25 h deepening and catch-up. The later the miss, the less room there is, and a Tue 17 miss uses almost all of Thursday. The trims in 11.3 are the fallback if a miss runs longer than planned.
 
 ### 11.3 MUST-lite trims (Kyle's emergency list, about 3.5 h)
 
@@ -417,32 +399,32 @@ Use only for the shortfall, only on chapters not yet studied: Ch 4 S29–35 ICAM
 1. Drop that day's SHOULD and COULD entirely (do not reschedule them).
 2. Move its MUST items into the next days' SHOULD slots, in order, using the table above.
 3. Add at most +0.5 h to a later day (cap 6 h). Do not stretch every day.
-4. If a shortfall remains (Mon, Tue or Wed miss), use the trims in 11.3.
-5. Example: Tue is missed → Wed's SHOULD slot (0.5 h) + 0.5 h extension, then Thursday's deepening (2.25 h), then trims for the remaining 1.5 h.
+4. If a shortfall remains, use the trims in 11.3.
+5. Example: Tue is missed → Wed's SHOULD hour (1.0 h), then Thursday's deepening and catch-up (4.25 h). Wed itself is not extended.
 
 **B — Kyle misses two study days.**
 1. The buffers cannot absorb this. Switch every chapter **not yet studied** to the **MV tier** (the queue in 7.1), which is about half the MUST hours.
 2. Keep MUST depth for chapters already finished.
-3. Example: Mon and Tue missed → Wed and Thu give 10.75 h, and the remaining MV items need about 8.25 h, so everything still gets covered.
+3. Example: Mon and Tue missed → Wed and Thu give 9.25 h, and the MV items for Ch 7–11 and 13 need about 6 h, so everything still gets covered.
 4. Keep the transposition, revocation, handshake, rule-evaluation, hex-trace and 8-bit examples. Cut breadth before cutting these.
 
-**C — Kyle falls significantly behind** (more than two days of MUST lost, or fewer than about 15 h done by the end of Tue 17).
+**C — Kyle falls significantly behind** (more than two days of MUST lost, or fewer than about 15 h done by the end of Mon 16).
 1. Follow the **minimum-viable plan**: the MV queue (13.25 h) for all remaining chapters in order, then the exposure tier for anything left.
 2. Practise technical procedures first and fully: transposition, revocation, handshake, packet-filter rules, hex stack trace, 8-bit example.
 3. Keep Thursday's joint blocks, but shift them toward explain-back rather than new content.
 4. On Friday 20, reduce the *depth* of the mock (see Section 12): a 40-mark paper on chapters studied plus the technical drills.
 
 **D — David makes less progress than expected.**
-1. Joint sessions before the 18th are optional and do not change Kyle's plan. If David skips them, Kyle simply continues.
-2. David continues the queue (7.1) from wherever he is. If he has time before his other exam, encourage **newer chapters** once prerequisites are understood. Nothing is skipped silently; skipped material goes in the outstanding tracker with its actual depth.
-3. **Thursday will be too long at full MV depth unless he advances earlier:** Q10–Q16 need 6.5 h, but only 5.25 independent hours exist. Cut at least 1.25 h of planned depth or complete it before Thu. **Drop order if his Thursday gets too long** (each step trims about 0.25–0.5 h): (i) Ch 8 data-source detail S24–28 → reading only, (ii) Ch 9 topologies S27–28 → reading only, (iii) Ch 6 S34–38 → definitions only, (iv) Ch 4 part B ICAM → one-line definitions, (v) Ch 11 S22–24 numeric example → keep, but cut S25–36 to headings, (vi) Ch 2 part B transposition → keep one run, cut certificates.
-4. **Emergency-only exposure floor:** a superficial 0.5 h orientation per chapter (about 6 h for twelve chapters) could fit in Wed evening + Thu independent time **only if he has that evening available**. This is not a guarantee of comprehension or exam readiness. If he cannot do any Wed work, the full 6 h also exceeds Thu's 5.25 h independent allocation.
+1. David's open days (Fri 13–Mon 16) do not change Kyle's plan. If David cannot add sessions there, Kyle simply continues.
+2. David continues the queue (7.1) from wherever he is. If he has time on his open days, encourage **newer chapters** once prerequisites are understood. Nothing is skipped silently; skipped material goes in the outstanding tracker with its actual depth.
+3. **Thursday will be too long at full MV depth unless he advances earlier:** Q10–Q16 need 6.5 h, but only 5.25 independent hours exist. Cut at least 1.25 h of planned depth or complete it before Thu (on his open days, Tue 17 evening or Wed 18). **Drop order if his Thursday gets too long** (each step trims about 0.25–0.5 h): (i) Ch 8 data-source detail S24–28 → reading only, (ii) Ch 9 topologies S27–28 → reading only, (iii) Ch 6 S34–38 → definitions only, (iv) Ch 4 part B ICAM → one-line definitions, (v) Ch 11 S22–24 numeric example → keep, but cut S25–36 to headings, (vi) Ch 2 part B transposition → keep one run, cut certificates.
+4. **Emergency-only exposure floor:** a superficial 0.5 h orientation per chapter (about 6 h for twelve chapters) fits in Wed 18 + Thu independent time. This is not a guarantee of comprehension or exam readiness. If he cannot do any Wed work, the full 6 h also exceeds Thu's 5.25 h independent allocation.
 5. On Thursday Kyle's deepening time becomes *question writing*: five short questions with answers per chapter pair, for David to attempt. Kyle does **not** lecture to replace David's reading; a short explanation is not equivalent to learning the material.
 6. Friday's practice is adjusted by chapter depth for David, not turned into a content-learning day. **Never promise that every chapter received an MV first pass** if exposure was the only feasible coverage.
 
 **E — A joint session is missed.**
 - If it is within 24 hours and the topic is a prerequisite for the next chapter, reschedule it for the next free ≤30 min slot.
-- Otherwise merge it into the next session as an extra Part B (e.g., J1 + J2 on Mon).
+- Otherwise merge it into the next session as an extra Part B (e.g., a missed T2 block becomes part of T5).
 - If neither works, replace it with **independent teach-back**: each writes five questions with answers on the chapters, swaps them by message and answers them alone. Record gaps in Section 14.
 - Thursday's T6 is the safety net for any topic still missed.
 
@@ -451,7 +433,7 @@ Use only for the shortfall, only on chapters not yet studied: Ch 4 S29–35 ICAM
 - Use time for active recall: blank-page recall of each chapter, timed technical examples, explaining a chapter aloud without notes.
 - Work the SHOULD backlog (10.3) in order of technical load.
 - When mock questions exist, do a short exam-style set early.
-- Never pull Sat 14 or Fri 20 into content work; extra time lengthens the evening off, not the study.
+- Never pull Fri 20 into content work; extra time lengthens the evening off, not the study.
 
 ---
 
@@ -502,11 +484,11 @@ Target depth is the **intended maximum depth given time**, not a record of achie
 
 | Ch | Title | Kyle target | David target | Kyle status | David status | Joint discussion planned | Joint discussion done |
 |---|---|---|---|---|---|---|---|
-| 1 | Overview | MUST | MV | Not started | Not started | J1, J5-T6 | ☐ |
-| 2 | Cryptographic tools | MUST | MV | Not started | Not started | J1, J5-T6 | ☐ |
-| 3 | User authentication | MUST | MV | Not started | Not started | J2, J5-T6 | ☐ |
-| 4 | Access control | MUST | MV | Not started | Not started | J2, J5-T6 | ☐ |
-| 5 | Database and data centre security | MUST | MV | Not started | Not started | J3, J4, J5-T6 | ☐ |
+| 1 | Overview | MUST | MV | Not started | Not started | J5-T6 | ☐ |
+| 2 | Cryptographic tools | MUST | MV | Not started | Not started | J5-T6 | ☐ |
+| 3 | User authentication | MUST | MV | Not started | Not started | J5-T6 | ☐ |
+| 4 | Access control | MUST | MV | Not started | Not started | J5-T6 | ☐ |
+| 5 | Database and data centre security | MUST | MV | Not started | Not started | J5-T6 | ☐ |
 | 6 | Malicious software | MUST | MV | Not started | Not started | J5-T2 | ☐ |
 | 7 | Denial-of-service attacks | MUST | Exposure (conditional) | Not started | Not started | J5-T2 | ☐ |
 | 8 | Intrusion detection | MUST | MV | Not started | Not started | J5-T2 | ☐ |
@@ -521,7 +503,7 @@ Target depth is the **intended maximum depth given time**, not a record of achie
 
 | Completed | Still required |
 |---|---|
-| (none yet) | J1, J2, J3, J4 (all optional), J5, J6, J7 (optional) |
+| (none yet) | J5, J6, J7 (optional) |
 
 ### 13.3 Outstanding technical examples
 
@@ -580,3 +562,4 @@ Nothing is pre-filled. Strengths and weaknesses are recorded only when a student
 | 12 Nov 2026 | v1 | First draft | Created from the knowledge map |
 | 12 Nov 2026 | v2 | Full rebuild | Both students relearn all 12 chapters; test results no longer drive priority or weakness labels; study starts Fri 13; protected golf day Sat 14; MUST/SHOULD/COULD tiers; fallback plans A–F; David's plan made a flexible queue; practice day reduced to about 6 h |
 | 12 Nov 2026 | v3 | Feasibility and clarity revision | Audited queue/hour totals, split independent vs joint work, made David's new-chapter progress flexible, turned Thu 19 into a conditional plan, clarified priority tiers, and strengthened Friday mock/procedure coverage |
+| 13 Nov 2026 | v4 | Golf day removed; David's early days opened | Sat 14 becomes a study day for Kyle and his plan moves one day earlier, so his first pass ends on Wed 18, now a light day for both. David's other exam moves to Tue 17; Fri 13–Mon 16 are open days where he adds his own sessions, then light study on Tue 17 evening and Wed 18. Optional joint sessions J1–J4 removed. Recovery buffers recalculated. |

@@ -145,9 +145,9 @@ function renderReport(seed, report, validationWarnings) {
   L.push('- [ ] Exam date, time and venue match §1.');
   L.push('- [ ] All 12 examinable chapters are listed with the §13.1 titles; Chapter 12 is absent.');
   L.push('- [ ] Every Kyle day in §6 has one session, with the same MUST/SHOULD/COULD tasks and hours.');
-  L.push('- [ ] Every David day in §7.2 has a session; Sat 14 is optional, and Wed 18 shows the other exam plus an optional evening.');
-  L.push('- [ ] J1–J7 match §9.1 dates, lengths and optional flags.');
-  L.push('- [ ] Sat 14 is a rest day for Kyle; Fri 20 is practice only; Sat 21 has light revision plus the exam.');
+  L.push('- [ ] Every David day in §7.2 has a session; Fri 13–Mon 16 are open days, and Tue 17 shows the other exam plus a light evening.');
+  L.push('- [ ] J5–J7 match §9.1 dates, lengths and optional flags.');
+  L.push('- [ ] Sat 14 is a study day for Kyle and Wed 18 is light; Fri 20 is practice only; Sat 21 has light revision plus the exam.');
   L.push('- [ ] No progress is pre-marked.');
   L.push('');
   return L.join('\n');
