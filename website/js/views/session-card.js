@@ -1,6 +1,6 @@
 // Session card + session dialogs (status, reschedule, notes, add/edit/delete).
 import {
-  h, typeTag, whoChip, avatar, sessionStatePill, openDialog, confirmDialog, actionSheet, fieldError, bar, personChip,
+  h, typeTag, sessionStatePill, openDialog, confirmDialog, actionSheet, fieldError, bar, whoText, pill,
 } from '../ui.js';
 import { icon } from '../icons.js';
 import { state } from '../store.js';
@@ -18,9 +18,35 @@ export function topicLink(topicId) {
   return h('a', { class: 'chip', href: `#topics/${topicId}` }, t ? `Ch ${t.chapter}` : topicId);
 }
 
-function timeText(s) {
-  if (s.startTime && s.endTime) return `${s.startTime}–${s.endTime}`;
+/** "Ch 1–2", "Ch 3, 5" or "All chapters" for a list of topic ids. */
+export function chaptersText(topicIds) {
+  const all = activeTopics(state.topics);
+  if (!topicIds?.length) return '';
+  if (all.length && all.every((t) => topicIds.includes(t.id))) return 'All chapters';
+  const nums = topicIds.map((id) => all.find((t) => t.id === id)?.chapter).filter((n) => n != null).sort((a, b) => a - b);
+  const parts = [];
+  for (let i = 0; i < nums.length; i++) {
+    let j = i;
+    while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++;
+    parts.push(j > i ? `${nums[i]}–${nums[j]}` : String(nums[i]));
+    i = j;
+  }
+  return parts.length ? `Ch ${parts.join(', ')}` : '';
+}
+
+export function timeText(s) {
+  if (s.startTime && s.endTime) return `${s.startTime} – ${s.endTime}`;
   return s.timeLabel || 'Any time';
+}
+
+/** "With David" / "Individual" / "Kyle" from the viewer's point of view. */
+export function withText(s) {
+  const me = state.profile;
+  if (s.participants.length > 1) {
+    const others = s.participants.filter((p) => p !== me);
+    return involves(s, me) ? `With ${others.map((p) => PROFILES[p].name).join(' & ')}` : whoText(s.participants);
+  }
+  return s.participants[0] === me ? 'Individual' : PROFILES[s.participants[0]].name;
 }
 
 function taskRow(session, task) {
@@ -36,7 +62,7 @@ function taskRow(session, task) {
   return h('li', { class: ['task', done && 'is-done'] },
     mine
       ? h('input', {
-        type: 'checkbox', id: inputId, class: ['tick', `tick-${me}`], checked: done, dataset: { fk: inputId },
+        type: 'checkbox', id: inputId, class: ['tick', `tick-${me}`], checked: done, dataset: { fk: inputId }, 'data-test': 'task-tick',
         'aria-label': `${name} done`,
         onchange: (e) => actions.setCheck(me, itemId, e.target.checked, `${session.title}: ${name}`),
       })
@@ -53,26 +79,39 @@ function taskRow(session, task) {
     })));
 }
 
+function myTaskCount(s) {
+  const tasks = s.tasks || [];
+  const done = involves(s, state.profile) ? tasks.filter((t) => isChecked(state.checksById, state.profile, taskItemId(s, t))).length : 0;
+  return { done, total: tasks.length };
+}
+
+function taskProgress(s) {
+  const { done, total } = myTaskCount(s);
+  return h('div', { class: 'sess-progress' }, bar(done, total, `${done} of ${total} tasks done`),
+    h('span', { 'data-test': 'task-progress', 'data-done': done, 'data-total': total }, `${done} of ${total}`));
+}
+
 export function sessionCard(s, { showDate = false, compact = false } = {}) {
   const study = !NON_STUDY_TYPES.includes(s.type);
   const mine = involves(s, state.profile);
   const tasks = s.tasks || [];
-  const myDone = mine ? tasks.filter((t) => isChecked(state.checksById, state.profile, taskItemId(s, t))).length : 0;
+  const title = splitTitle(s.title);
   const card = h('article', {
     class: ['sess', `sess-${s.type}`, `status-${s.status}`, s.status !== 'planned' && 'is-done', compact && 'sess-compact'],
     id: `session-${s.id}`,
+    'data-test': 'session',
     'aria-label': `${SESSION_TYPES[s.type]?.label} session: ${s.title}`,
   });
 
   const parts = [
     h('div', { class: 'sess-top' },
       typeTag(s.type),
-      s.optional && h('span', { class: 'pill-state ps-optional' }, 'Optional'),
+      s.optional && pill('Optional', 'sand'),
       sessionStatePill(s.status),
-      h('span', { class: 'sess-who' }, whoChip(s.participants))),
-    h('h3', { class: 'sess-title' }, splitTitle(s.title).main),
-    splitTitle(s.title).sub && h('p', { class: 'small', style: 'color:var(--ink-2);margin-top:-.35rem' }, splitTitle(s.title).sub),
-    h('p', { class: 'sess-meta' }, icon('clock', { size: 15 }),
+      h('span', { class: 'sess-who' }, icon(s.participants.length > 1 ? 'users' : 'user', { size: 17, stroke: 1.7 }), whoText(s.participants))),
+    h('h3', { class: 'sess-title' }, title.main),
+    title.sub && h('p', { class: 'sess-subtitle' }, title.sub),
+    h('p', { class: 'sess-meta' }, icon('clock', { size: 16, stroke: 1.8 }),
       h('span', null, showDate && `${formatShort(s.date)} · `, timeText(s), s.durationLabel && ` · ${s.durationLabel}`)),
   ];
   card.append(...parts.filter(Boolean)); // native append would print "null"
@@ -80,9 +119,9 @@ export function sessionCard(s, { showDate = false, compact = false } = {}) {
     const venue = (s.notes || '').split('\n').find((n) => n.startsWith('Venue:'));
     if (venue) card.append(h('p', { class: 'small muted' }, venue));
   }
-  if (s.rescheduledFrom) card.append(h('p', { class: 'sess-flag' }, `Moved from ${formatShort(s.rescheduledFrom)}${s.statusReason ? ` · ${s.statusReason}` : ''}`));
-  else if (s.statusReason) card.append(h('p', { class: 'sess-flag' }, s.statusReason));
-  if (s.type === 'rest') card.append(h('p', { class: 'small', style: 'font-weight:700' }, 'No required work. Enjoy it.'));
+  if (s.rescheduledFrom) card.append(h('p', { class: 'sess-flag', 'data-test': 'session-flag' }, `Moved from ${formatShort(s.rescheduledFrom)}${s.statusReason ? ` · ${s.statusReason}` : ''}`));
+  else if (s.statusReason) card.append(h('p', { class: 'sess-flag', 'data-test': 'session-flag' }, s.statusReason));
+  if (s.type === 'rest') card.append(h('p', { class: 'sess-rest' }, 'No required work. Enjoy it.'));
   if (s.topicIds.length && s.type !== 'exam' && !compact) {
     const allTopics = activeTopics(state.topics);
     const everything = allTopics.length > 0 && allTopics.every((t) => s.topicIds.includes(t.id));
@@ -90,13 +129,11 @@ export function sessionCard(s, { showDate = false, compact = false } = {}) {
   }
 
   if (tasks.length && !compact) {
-    if (mine) {
-      card.append(h('div', { class: 'sess-progress' }, bar(myDone, tasks.length, `${myDone} of ${tasks.length} tasks done`),
-        h('span', null, `${myDone} of ${tasks.length}`)));
-    }
+    if (mine) card.append(taskProgress(s));
     card.append(h('ul', { class: 'tasks' }, tasks.map((t) => taskRow(s, t))));
   } else if (tasks.length && compact && mine) {
-    card.append(h('p', { class: 'small muted' }, `${myDone} of ${tasks.length} tasks done`));
+    const { done, total } = myTaskCount(s);
+    card.append(h('p', { class: 'small muted' }, `${done} of ${total} tasks done`));
   }
   if (s.userNotes) card.append(h('p', { class: 'user-note' }, h('b', null, 'Note: '), s.userNotes));
 
@@ -113,18 +150,43 @@ export function sessionCard(s, { showDate = false, compact = false } = {}) {
   return card;
 }
 
-function sessionFoot(s, study) {
+/**
+ * Today's Focus: one of my sessions as a plain checklist (no card chrome),
+ * with the same Mark done / ⋯ actions as the full card.
+ */
+export function focusSession(s, { showTitle = false } = {}) {
+  const study = !NON_STUDY_TYPES.includes(s.type);
+  const tasks = s.tasks || [];
+  const wrap = h('div', { class: ['focus-session', s.status !== 'planned' && 'is-done'], id: `focus-${s.id}`, 'data-test': 'focus-session' });
+  if (showTitle) {
+    wrap.append(h('div', { class: 'focus-title' },
+      h('b', null, splitTitle(s.title).main),
+      h('span', { class: 'muted' }, [timeText(s) !== 'Any time' && timeText(s), withText(s)].filter(Boolean).join(' · ')),
+      sessionStatePill(s.status)));
+  }
+  if (s.type === 'rest') wrap.append(h('p', { class: 'focus-empty' }, `${splitTitle(s.title).main}. No required work. Enjoy it.`));
+  else if (tasks.length) wrap.append(h('ul', { class: 'tasks tasks-focus' }, tasks.map((t) => taskRow(s, t))));
+  else wrap.append(h('p', { class: 'focus-empty' }, s.title));
+  if (s.type !== 'exam' && s.type !== 'other') {
+    const { done, total } = myTaskCount(s);
+    wrap.append(sessionFoot(s, study, total ? `${done} of ${total} done` : null));
+  }
+  return wrap;
+}
+
+function sessionFoot(s, study, note = null) {
   const foot = h('div', { class: 'sess-foot' });
   if (!involves(s, state.profile)) {
     // Someone else's session: no big button; status shown by them, actions in ⋯.
     foot.append(h('span', { class: 'grow small muted' }, `${PROFILES[s.participants[0]].name}'s session`));
-  } else if (study && s.status === 'planned') {
-    foot.append(h('button', { class: 'btn btn-primary', type: 'button', onclick: () => actions.setSessionStatus(s, 'completed') },
-      icon('check', { size: 18 }), 'Mark done'));
-  } else if (study) {
-    foot.append(h('button', { class: 'btn btn-ghost grow', type: 'button', onclick: () => actions.setSessionStatus(s, 'planned') }, 'Reopen'));
   } else {
-    foot.append(h('span', { class: 'grow' }));
+    foot.append(h('span', { class: 'grow small muted' }, note || ''));
+    if (study && s.status === 'planned') {
+      foot.append(h('button', { class: 'btn btn-primary', type: 'button', onclick: () => actions.setSessionStatus(s, 'completed') },
+        icon('check', { size: 18 }), 'Mark done'));
+    } else if (study) {
+      foot.append(h('button', { class: 'btn btn-soft', type: 'button', onclick: () => actions.setSessionStatus(s, 'planned') }, 'Reopen'));
+    }
   }
   foot.append(h('button', {
     class: 'icon-btn', type: 'button', 'aria-label': `More actions for ${s.title}`, onclick: () => sessionMenu(s, study),
@@ -161,7 +223,7 @@ export function missedDialog(s) {
         h('p', { class: 'muted small' }, 'This only records the session as missed. Nobody\'s chapter progress or ticked tasks change.'),
         reasonField('missed-reason', 'Reason (optional)', 'e.g. ran out of time', (v) => { reason = v; }),
         h('div', { class: 'dialog-actions' },
-          h('button', { class: 'btn', type: 'submit' }, 'Just mark missed'),
+          h('button', { class: 'btn btn-soft', type: 'submit' }, 'Just mark missed'),
           h('button', { class: 'btn btn-primary', type: 'button', onclick: () => close('reschedule') }, 'Missed + move it…')));
       form.addEventListener('submit', (e) => { e.preventDefault(); close('missed'); });
       return form;
@@ -183,7 +245,7 @@ export function cancelDialog(s) {
       h('p', null, `Cancel "${s.title}" on ${formatLong(s.date)}? It stays visible as cancelled and can be reopened. Progress is unchanged.`),
       reasonField('cancel-reason', 'Reason (optional)', '', (v) => { reason = v; }),
       h('div', { class: 'dialog-actions' },
-        h('button', { class: 'btn', onclick: () => close(false) }, 'Keep it'),
+        h('button', { class: 'btn btn-soft', type: 'button', onclick: () => close(false) }, 'Keep it'),
         h('button', { class: 'btn btn-danger', onclick: () => close(true) }, 'Cancel session'))),
   }).then((ok) => ok && actions.setSessionStatus(s, 'cancelled', reason));
 }
@@ -241,7 +303,7 @@ export function rescheduleDialog(s) {
         buffers.length > 0 && h('div', { class: 'field' },
           h('p', { class: 'small', style: 'font-weight:750' }, 'Catch-up slot from the schedule'),
           h('div', { class: 'chips' }, buffers.map((b) => h('button', {
-            type: 'button', class: 'btn btn-sm', onclick: () => { dateInput.value = b.date; render(); },
+            type: 'button', class: 'btn btn-soft btn-sm', onclick: () => { dateInput.value = b.date; render(); },
           }, `${formatShort(b.date)}: ${b.title}`)))),
         h('div', { class: 'field' }, h('label', { for: 'resched-date' }, 'New day'), dateInput),
         preview, confirmRow,

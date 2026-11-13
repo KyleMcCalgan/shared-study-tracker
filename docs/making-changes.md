@@ -54,16 +54,18 @@ If *Validate* fails after a push, the site has **already deployed**: Validate do
 
 ### 4.1 Visual design (CSS only)
 
-- All styling is in `website/styles/main.css`. Colours, fonts and radii are variables at the top (`--kyle`, `--david`, `--bg`, `--display`, …), so most re-themes are a few lines.
+- All styling is in `website/styles/main.css`. It is mobile-first (the phone design); the desktop design (sidebar, glyph icons, Helvetica-style type) is one `@media (min-width: 960px)` block that redefines the same variables. Colours, fonts and radii are variables at the top of each (`--bg`, `--green-*`, `--pink-*`, `--terra`, `--font`, …), so most re-themes are a few lines.
+- The design references live in `designs/` (desktop PNGs are 1.5× of a 1464×767 window; phone PNGs are ~1.83× of a 430 px wide screen).
 - Tests: **no changes**. The smoke tests still check that nothing overflows sideways at 320/375/430/1280 px and that no screen shows `null`/`undefined`. Run `npm run test:smoke` to confirm.
-- The display font comes from Google Fonts (`<link>` in `website/index.html`). If you swap it, keep a system-font fallback in `--display`.
+- The phone font (Figtree) comes from Google Fonts (`<link>` in `website/index.html`); desktop uses the system Helvetica/Arial stack. If you swap it, keep a system-font fallback in `--font`.
 
 ### 4.2 Screens and interactions (view code)
 
-- Each tab is one file: `views/dashboard.js` (Today), `schedule.js`, `topics.js` (Chapters), `discussions.js`, `settings.js` (Settings plus the full-screen gates). Shared session cards and dialogs are in `views/session-card.js`. Building blocks (`h()`, sheets, chips, segmented controls) are in `ui.js`. Icons are in `icons.js`.
+- Each tab is one file: `views/dashboard.js` (Today), `schedule.js`, `topics.js` (Topics), `discussions.js`, `settings.js` (Settings plus the full-screen gates). Shared session cards and dialogs are in `views/session-card.js`. Building blocks (`h()`, cards, pills, sheets, filter pills) are in `ui.js`. Icons and the two illustrations are in `icons.js` (line icons for phones, glyph icons for desktop).
+- Topics and Discuss render a different structure per layout (desktop: list + inline detail panel; phone: cards + bottom sheet), chosen with `isDesktop()` and rebuilt when the window crosses 960 px. Small desktop/phone differences in text or icons use `bp()` / `dualIcon()` and the `.only-desk` / `.only-mob` classes.
 - **Always build DOM with `h()`**, never `innerHTML` with data; that is how user notes are kept safe. Inside `h()`, `null`/`false` children are skipped. The browser's own `element.append(x)` prints `null` as text, so filter first (the smoke tests catch this).
 - Writes must go through `actions.js` so that "Saving… / Synced", error toasts and the activity feed keep working.
-- Tests: the smoke and e2e tests find things by **role + visible text** (e.g. the "Mark done" button, the "In progress" radio) and by some **ids and classes** (`#session-<id>`, `#tile-ch05`, `.sess`, `.duo-kyle`). If you rename or remove one of those, update the matching line in `tests/smoke/smoke.mjs` or `tests/e2e/emulator-e2e.mjs`. A failing test prints the selector it couldn't find.
+- Tests: the smoke and e2e tests find things by **role + visible text** (e.g. the "Mark done" button, the "In progress" radio), by **ids** (`#session-<id>`, `#topic-<id>`, `#daypill-<date>`) and by **`data-test` hooks** (`data-test="session"`, `"chapter-ch05"`, `"progress-kyle"`, `"profile-button"`, `"sync"`, …; statuses are read from `data-status-of` / `data-status` attributes, not text). Keep those hooks when you restyle and the tests won't need to change. A failing test prints the selector it couldn't find.
 
 ### 4.3 What gets saved (data model)
 
@@ -112,7 +114,7 @@ What the import **never** touches: progress, ticks, discussion status and notes,
 | Unit (20) | `npm test` | No | Logic changes: dates, stats, reschedule rules, task labels, parser |
 | Security rules (16) | `npm run test:rules` | No | Rules or the data model change |
 | Seed import (3) | `npm run test:seed` | No | Import or merge behaviour changes |
-| Browser smoke (22) | `npm run test:smoke` | **Yes** | Text, roles, ids or classes it looks for change; anything overflows on a phone; "null" appears |
+| Browser smoke (24) | `npm run test:smoke` | **Yes** | Text, roles, ids or classes it looks for change; anything overflows on a phone; "null" appears |
 | End-to-end (9) | `npm run test:e2e` | **Yes**, a little | Approval, profile or chapter-sheet controls change |
 
 Requirements: Node 20+, Java 21+ (for the emulator tests), Edge or Chrome. Firebase emulators run locally. **Tests never touch the real database.**

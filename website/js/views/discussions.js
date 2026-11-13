@@ -1,8 +1,9 @@
 // Shared discussion queue. Marking an item discussed never changes progress.
+// Desktop: list + inline detail panel. Phone: summary, filter pills, cards → sheet.
 import {
-  h, emptyState, avatar, openDialog, fieldError, segmented, actionSheet,
+  h, emptyState, openDialog, fieldError, filterPills, sectionHead, isDesktop, pill,
 } from '../ui.js';
-import { icon } from '../icons.js';
+import { icon, bubblesArt } from '../icons.js';
 import { state } from '../store.js';
 import {
   PROFILES, DISCUSSION_STATUSES, DISCUSSION_KINDS, LIMITS,
@@ -12,76 +13,154 @@ import {
 } from '../model.js';
 import { formatShort, formatTimestamp } from '../date-utils.js';
 import * as actions from '../actions.js';
-import { topicLink } from './session-card.js';
+import { topicLink, chaptersText } from './session-card.js';
 
-let tab = 'open';
+let tab = null; // open | deferred | discussed | all
+let selectedId = null;
 
-export function renderDiscussions(root, _param, rerender) {
-  root.append(h('div', { class: 'row' }, h('h1', { class: 'page-title grow' }, 'Discuss'),
-    h('button', { class: 'btn btn-sm btn-primary', onclick: () => raiseDiscussionDialog({}) }, icon('plus', { size: 18 }), 'New')));
+const STATUS_PILL = { open: ['Open', 'pink'], deferred: ['Deferred', 'grey'], discussed: ['Discussed', 'green'] };
+const TAG = { open: ['To discuss', 'pink'], deferred: ['Deferred', 'grey'], discussed: ['Discussed', 'green'] };
+const raisedText = (d) => (d.raisedBy ? PROFILES[d.raisedBy]?.name ?? d.raisedBy : 'From the schedule');
+const chapterLine = (d) => {
+  if (!d.topicIds?.length) return 'General';
+  if (d.topicIds.length === 1) {
+    const t = state.topics.find((x) => x.id === d.topicIds[0]);
+    return t ? `Ch ${t.chapter} – ${t.title}` : d.topicIds[0];
+  }
+  return chaptersText(d.topicIds);
+};
+
+export function renderDiscussions(root, param, rerender) {
+  const desktop = isDesktop();
+  if (!tab) tab = desktop ? 'open' : 'all';
   const all = sortDiscussions(state.discussions);
   const count = (id) => all.filter((d) => d.status === id).length;
-  root.append(segmented({
-    label: 'Filter', value: tab, onChange: (id) => { tab = id; rerender(); },
-    options: DISCUSSION_STATUSES.map((s) => ({ id: s.id, label: `${s.label} ${count(s.id)}` })),
-  }));
-  const items = all.filter((d) => d.status === tab);
-  if (!items.length) {
-    root.append(emptyState(tab === 'open' ? 'Nothing to discuss' : `Nothing ${tab}`,
-      tab === 'open' ? 'Add questions or tricky topics you want to go through together.' : null));
+  if (param && all.some((d) => d.id === param)) selectedId = param;
+  const items = tab === 'all' ? all : all.filter((d) => d.status === tab);
+  if (!items.some((d) => d.id === selectedId)) selectedId = items[0]?.id ?? all[0]?.id ?? null;
+  const select = (id) => { selectedId = id; if (desktop) rerender(); else openDiscussion(id); };
+
+  const options = desktop
+    ? [{ id: 'open', label: 'To Discuss' }, { id: 'deferred', label: 'Deferred' }, { id: 'discussed', label: 'Discussed' }, { id: 'all', label: 'All' }]
+    : [{ id: 'all', label: `All (${all.length})` }, ...DISCUSSION_STATUSES.map((s) => ({ id: s.id, label: `${s.label} (${count(s.id)})` }))];
+  const pills = filterPills({ label: 'Filter discussions', options, value: tab, onChange: (id) => { tab = id; rerender(); } });
+  const empty = emptyState(tab === 'open' ? 'Nothing to discuss' : tab === 'all' ? 'No discussion items yet' : `Nothing ${tab}`,
+    ['open', 'all'].includes(tab) ? 'Add questions or tricky topics you want to go through together.' : null);
+  const note = h('p', { class: 'small muted list-note' }, 'Marking something discussed never marks a chapter as complete.');
+
+  if (desktop) {
+    root.append(sectionHead('Shared discussion queue', 'Questions to work through together',
+      h('button', { class: 'btn btn-primary btn-add', type: 'button', onclick: () => raiseDiscussionDialog({}) }, icon('plus', { size: 20 }), 'Add Topic')));
+    const selected = all.find((d) => d.id === selectedId);
+    root.append(h('div', { class: 'split split-discuss' },
+      h('section', { class: 'card disc-list-card', 'aria-label': 'Discussion queue' },
+        pills,
+        items.length ? h('ul', { class: 'disc-list' }, items.map((d) => discussionRow(d, select))) : empty,
+        h('button', { class: 'add-row', type: 'button', onclick: () => raiseDiscussionDialog({}) },
+          h('b', null, '+ Add another question'), h('span', { class: 'muted' }, 'Keep a running list for your next shared session')),
+        note),
+      h('aside', { class: 'card detail-card', 'aria-label': 'Selected discussion' },
+        selected ? discussionDetail(selected, { inline: true }) : emptyState('Nothing selected', 'Pick a question on the left.'))));
   } else {
-    root.append(h('div', null, items.map(discussionCard)));
+    const open = count('open');
+    root.append(h('section', { class: 'card hero disc-hero', 'aria-labelledby': 'dq-hero-h' },
+      h('div', { class: 'hero-text' },
+        h('h2', { class: 'hero-label', id: 'dq-hero-h' }, 'Discussion Queue'),
+        h('p', { class: 'hero-big' }, `${open} open topic${open === 1 ? '' : 's'}`),
+        h('p', { class: 'hero-sub muted' }, `${count('deferred')} deferred · ${count('discussed')} discussed`)),
+      bubblesArt('hero-art')));
+    root.append(pills);
+    root.append(items.length ? h('ul', { class: 'disc-cards' }, items.map((d) => h('li', null, discussionCard(d, select)))) : empty);
+    root.append(h('button', { class: 'btn btn-primary btn-block btn-lg', type: 'button', onclick: () => raiseDiscussionDialog({}) },
+      icon('plus', { size: 24 }), 'Add Discussion Topic'), note);
   }
-  root.append(h('p', { class: 'small muted' }, 'Marking something discussed never marks a chapter as complete.'));
+
+  if (param && !desktop && all.some((d) => d.id === param)) setTimeout(() => openDiscussion(param), 30);
 }
 
-const who = (p) => PROFILES[p]?.name ?? p;
+// ---------------------------------------------------------------- list items
 
-function discussionCard(d) {
+function discussionRow(d, select) {
+  const [label, kind] = STATUS_PILL[d.status] || [d.status, 'grey'];
+  const sel = d.id === selectedId;
+  return h('li', null, h('button', {
+    class: ['disc-row', sel && 'is-selected'], type: 'button', id: `disc-${d.id}`, 'data-test': 'discussion', 'aria-pressed': String(sel), onclick: () => select(d.id),
+  },
+  h('span', { class: 'disc-row-title' }, d.title, d.priority === 'high' && pill('High', 'terra')),
+  h('span', { class: 'disc-row-sub' }, h('span', { class: 'muted' }, `${chapterLine(d)} · ${raisedText(d)}`), pill(label, kind, { 'data-test': 'discussion-status' }))));
+}
+
+function discussionCard(d, select) {
+  const [label, kind] = STATUS_PILL[d.status] || [d.status, 'grey'];
+  return h('button', { class: ['disc-card-m', `disc-${d.status}`], type: 'button', id: `disc-${d.id}`, 'data-test': 'discussion', onclick: () => select(d.id) },
+    h('span', { class: `disc-icon icon-${kind}`, 'aria-hidden': 'true' }, icon('chat', { size: 26, stroke: 1.8 })),
+    h('span', { class: 'disc-body' },
+      h('span', { class: 'disc-title' }, d.title),
+      h('span', { class: 'disc-chapter muted' }, chapterLine(d)),
+      h('span', { class: 'disc-meta' }, pill(label, kind, { 'data-test': 'discussion-status' }), d.priority === 'high' && pill('High', 'terra'),
+        h('span', { class: 'disc-who' }, icon(d.raisedBy ? 'user' : 'users', { size: 20, stroke: 1.6 }), raisedText(d)))),
+    icon('chevron', { size: 22, cls: 'chev' }));
+}
+
+// ---------------------------------------------------------------- detail (panel and sheet)
+
+function openDiscussion(id) {
+  const d0 = state.discussions.find((x) => x.id === id);
+  if (!d0) return null;
+  return openDialog({
+    title: 'Discussion',
+    wide: true,
+    live: true,
+    build: () => {
+      const d = state.discussions.find((x) => x.id === id);
+      return d ? discussionDetail(d, {}) : emptyState('This item was removed', null);
+    },
+  });
+}
+
+function discussionDetail(d, { inline = false } = {}) {
   const kind = DISCUSSION_KINDS.find((k) => k.id === d.kind);
   const session = d.sessionId ? state.sessions.find((s) => s.id === d.sessionId) : null;
   const me = PROFILES[state.profile].name;
   const setStatus = (status) => actions.updateDiscussion(d, { status }, `${me} marked "${d.title.slice(0, 80)}" as ${status}`);
-  return h('article', { class: ['disc', d.status !== 'open' && 'is-closed'], id: `disc-${d.id}` },
-    h('div', { class: 'sess-top' },
-      h('span', { class: 'tag tag-individual' }, kind?.label ?? d.kind),
-      d.priority === 'high' && h('span', { class: 'pill-state ps-high' }, 'High'),
-      d.status !== 'open' && h('span', { class: ['pill-state', d.status === 'discussed' ? 'ps-completed' : 'ps-optional'] }, d.status)),
-    h('h3', { class: 'disc-title' }, d.title),
-    d.topicIds?.length > 0 && h('div', { class: 'chips' }, d.topicIds.map(topicLink)),
-    h('p', { class: 'row small muted' },
-      d.raisedBy ? avatar(d.raisedBy, 'xs') : null,
-      d.raisedBy ? `${who(d.raisedBy)}` : 'From the schedule',
-      d.createdAt ? ` · ${formatTimestamp(d.createdAt)}` : ''),
-    session && h('a', { class: 'small', href: `#schedule/${session.date}`, style: 'font-weight:700' }, `For ${formatShort(session.date)} · ${session.title}`),
-    d.notes && h('p', { class: 'user-note pre' }, d.notes),
-    h('div', { class: 'disc-foot' },
-      d.status === 'open'
-        ? h('button', { class: 'btn btn-primary', onclick: () => setStatus('discussed') }, icon('check', { size: 18 }), 'Discussed')
-        : h('button', { class: 'btn btn-ghost', onclick: () => setStatus('open') }, 'Reopen'),
-      h('button', {
-        class: 'icon-btn', 'aria-label': `More for ${d.title}`,
-        onclick: () => actionSheet(d.title, [
-          { label: d.notes ? 'Edit notes / answer…' : 'Add notes / answer…', run: () => editNotesDialog(d) },
-          d.status === 'open' && { label: 'Defer for later', run: () => setStatus('deferred') },
-          { label: d.priority === 'high' ? 'Normal priority' : 'High priority', run: () => actions.updateDiscussion(d, { priority: d.priority === 'high' ? 'normal' : 'high' }) },
-        ]),
-      }, icon('more'))));
+  const [tag, tagKind] = TAG[d.status] || [d.status, 'grey'];
+
+  const notesId = `dn-${d.id}`;
+  const ta = h('textarea', { id: notesId, rows: 3, maxlength: LIMITS.notes, dataset: { fk: notesId }, placeholder: 'Add an explanation, useful example or resolution…' });
+  ta.value = d.notes || '';
+  let lastSaved = d.notes || '';
+  const save = h('button', { class: 'btn btn-soft btn-sm', type: 'button', disabled: true }, 'Save notes');
+  const doSave = () => {
+    if (ta.value.trim() === lastSaved.trim()) return;
+    lastSaved = ta.value;
+    save.disabled = true;
+    actions.updateDiscussion(d, { notes: ta.value.trim() });
+  };
+  save.addEventListener('click', doSave);
+  ta.addEventListener('input', () => { save.disabled = ta.value === lastSaved; });
+  ta.addEventListener('blur', doSave);
+
+  return h('div', { class: ['disc-detail', inline && 'is-inline'], id: `disc-detail-${d.id}`, 'data-test': 'discussion-detail' },
+    h('div', { class: 'row' }, pill(tag, tagKind, { class: 'pill-lg', 'data-test': 'discussion-tag' }), d.priority === 'high' && pill('High priority', 'terra', { class: 'pill-lg' })),
+    h('h2', { class: 'detail-title' }, d.title),
+    h('p', { class: 'detail-sub' }, kind?.label ?? d.kind),
+    h('dl', { class: 'facts-list' },
+      h('div', null, h('dt', null, 'Associated chapter'), h('dd', null, d.topicIds?.length ? h('span', { class: 'chips' }, d.topicIds.map(topicLink)) : 'Not assigned')),
+      h('div', null, h('dt', null, 'Raised by'), h('dd', null, `${raisedText(d)}${d.createdAt ? ` · ${formatTimestamp(d.createdAt)}` : ''}${d.sourceDateAdded ? ` · added ${d.sourceDateAdded}` : ''}`)),
+      session && h('div', null, h('dt', null, 'Discuss at'), h('dd', null, h('a', { href: `#schedule/${session.date}` }, `${formatShort(session.date)} · ${session.title}`)))),
+    h('div', { class: 'field' }, h('label', { for: notesId, class: 'detail-h' }, 'Discussion notes'), ta, h('div', { class: 'field-actions' }, save)),
+    h('div', { class: 'detail-actions' },
+      d.status !== 'discussed'
+        ? h('button', { class: 'btn btn-primary btn-block btn-lg', type: 'button', onclick: () => setStatus('discussed') }, icon('check', { size: 20 }), 'Mark as Discussed')
+        : h('button', { class: 'btn btn-soft btn-block btn-lg', type: 'button', onclick: () => setStatus('open') }, 'Reopen'),
+      h('div', { class: 'row' },
+        d.status === 'open' && h('button', { class: 'btn btn-soft grow', type: 'button', onclick: () => setStatus('deferred') }, 'Defer for later'),
+        d.status === 'deferred' && h('button', { class: 'btn btn-soft grow', type: 'button', onclick: () => setStatus('open') }, 'Back to the queue'),
+        h('button', { class: 'btn btn-soft grow', type: 'button', onclick: () => actions.updateDiscussion(d, { priority: d.priority === 'high' ? 'normal' : 'high' }) },
+          icon('flag', { size: 18 }), d.priority === 'high' ? 'Normal priority' : 'High priority'))));
 }
 
-function editNotesDialog(d) {
-  return openDialog({
-    title: 'Notes / answer',
-    build: (close) => {
-      const ta = h('textarea', { id: 'disc-notes', rows: 6, maxlength: LIMITS.notes, autofocus: true });
-      ta.value = d.notes || '';
-      return h('div', { class: 'form' },
-        h('p', { style: 'font-weight:700' }, d.title),
-        h('div', { class: 'field' }, h('label', { for: 'disc-notes' }, 'Notes'), ta),
-        h('div', { class: 'dialog-actions' }, h('button', { class: 'btn btn-primary', onclick: () => close(ta.value) }, 'Save')));
-    },
-  }).then((v) => typeof v === 'string' && v !== (d.notes || '') && actions.updateDiscussion(d, { notes: v.trim() }));
-}
+// ---------------------------------------------------------------- new item
 
 /** Dialog to add a discussion item; `defaults.topicIds` preselects chapters. */
 export function raiseDiscussionDialog(defaults) {

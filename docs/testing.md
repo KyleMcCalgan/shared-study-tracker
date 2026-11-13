@@ -8,7 +8,7 @@ Requirements: Node 20+, Java 21+ (Firestore emulator), Microsoft Edge or Google 
 | `npm test` | Unit: Johannesburg dates across month/year, countdown, parser output vs source, deterministic IDs, seed diff idempotency, stats denominators, reschedule guards, validation | F18, F20 |
 | `npm run test:rules` | Firestore rules in the emulator: signed-out / anonymous / unlisted / unverified accounts denied, nobody can edit the other person's progress, allowlist untouchable, malformed fields, immutable fields, batches | F02, F03, F06, F07, F10–F12 |
 | `npm run test:seed` | Seeding twice against the emulator: no duplicates, user progress/dates/notes preserved, `--update-changed` gating | F20 |
-| `npm run test:smoke` | Browser (preview backend): all gate states, profile remember/switch, independent progress, ticks, rejected writes, filters, protected days, missed + reschedule, add/delete session, discussions, no horizontal overflow at 320/375/430/1280 px, keyboard skip link | F01, F03–F07, F09–F17 |
+| `npm run test:smoke` | Browser (preview backend): all gate states, profile remember/switch, independent progress, ticks, rejected writes, filters, protected days, missed + reschedule, add/delete session, discussions, desktop inline chapter/discussion panels, no horizontal overflow at 320/375/430/1280 px, keyboard skip link | F01, F03–F07, F09–F17 |
 | `npm run test:e2e` | **Real Firebase SDK** against Auth + Firestore emulators with the real rules and emulated Google accounts: sign-in gate, "No access" for unlisted accounts, live unlock, two browsers syncing live, persistence after reload, staying signed in, live revoke, sign-out | F01–F03, F08, F12, F15 |
 | `npm run test:all` | All of the above | |
 

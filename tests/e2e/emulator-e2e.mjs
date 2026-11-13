@@ -45,12 +45,16 @@ const C = await device(); // a Google account that is not on the list
 const KYLE = 'kyle.e2e@example.com';
 const DAVID = 'david.e2e@example.com';
 let uidA;
+const T = (id) => `[data-test="${id}"]`;
+const PROFILE_BTN = (who) => `${T('profile-button')}[data-profile="${who}"]`;
+const SYNCED = `${T('sync')}[data-state="synced"]`;
+const status = (t, who, st) => `#topic-${t} ${T(`who-${who}`)} [data-status-of="${who}"][data-status="${st}"]`;
 const googleSignIn = (d, email) => d.page.evaluate((e) => window.__emulatorGoogleSignIn(e).then((c) => c.user.uid), email);
 
 await step('F01 first visit shows "Sign in" with Google; no study content', async () => {
   for (const d of [A, B, C]) await d.page.getByRole('heading', { name: 'Sign in' }).waitFor({ timeout: 20000 });
   await A.page.getByRole('button', { name: /Continue with Google/ }).waitFor();
-  assert.equal(await A.page.locator('.sess').count(), 0);
+  assert.equal(await A.page.locator(T('session')).count(), 0);
 });
 
 await step('Signed-in but unlisted accounts see "No access"', async () => {
@@ -58,14 +62,14 @@ await step('Signed-in but unlisted accounts see "No access"', async () => {
   await googleSignIn(B, DAVID);
   await googleSignIn(C, 'stranger@example.com');
   for (const d of [A, B, C]) await d.page.getByRole('heading', { name: 'No access for this account' }).waitFor({ timeout: 15000 });
-  await C.page.locator('.uid-big', { hasText: 'stranger@example.com' }).waitFor();
+  await C.page.locator(T('signed-in-email'), { hasText: 'stranger@example.com' }).waitFor();
 });
 
 await step('F03 allowing an account unlocks it live, with the profile set by the account (no chooser)', async () => {
   await admin.collection('allowedUsers').doc(KYLE).set({ profile: 'kyle', addedAt: FieldValue.serverTimestamp() });
   await admin.collection('allowedUsers').doc(DAVID).set({ profile: 'david', addedAt: FieldValue.serverTimestamp() });
-  await A.page.locator('.appbar .avatar-kyle').waitFor({ timeout: 15000 });
-  await B.page.locator('.appbar .avatar-david').waitFor({ timeout: 15000 });
+  await A.page.locator(PROFILE_BTN('kyle')).waitFor({ timeout: 15000 });
+  await B.page.locator(PROFILE_BTN('david')).waitFor({ timeout: 15000 });
   assert.equal(await A.page.getByRole('heading', { name: "Who's studying?" }).count(), 0);
 });
 
@@ -83,31 +87,31 @@ await step('F08 Kyle\'s change appears on David\'s device without refresh', asyn
   await A.page.goto(`${URL_}#topics/ch03`);
   await B.page.goto(`${URL_}#topics/ch03`);
   await A.page.getByRole('radio', { name: 'First pass completed' }).click();
-  await A.page.locator('.sync-synced').waitFor({ timeout: 10000 });
-  await B.page.locator('#topic-ch03 .who-kyle .status', { hasText: 'First pass completed' }).waitFor({ timeout: 10000 }); // live, sheet still open
-  assert.equal(await B.page.locator('#topic-ch03 .who-david .status').textContent(), 'Not started');
+  await A.page.locator(SYNCED).waitFor({ timeout: 10000 });
+  await B.page.locator(status('ch03', 'kyle', 'completed')).waitFor({ timeout: 10000 }); // live, sheet still open
+  assert.equal(await B.page.locator(status('ch03', 'david', 'not_started')).count(), 1);
 });
 
 await step('F08 David\'s change appears on Kyle\'s device; activity feed updates live', async () => {
   await B.page.getByRole('radio', { name: 'In progress' }).click();
-  await A.page.locator('#topic-ch03 .who-david .status', { hasText: 'In progress' }).waitFor({ timeout: 10000 });
+  await A.page.locator(status('ch03', 'david', 'in_progress')).waitFor({ timeout: 10000 });
   await A.page.goto(`${URL_}#today`);
-  await A.page.locator('.activity li', { hasText: 'David started Ch 3' }).waitFor({ timeout: 10000 });
+  await A.page.locator(`${T('activity')} li`, { hasText: 'David started Ch 3' }).waitFor({ timeout: 10000 });
 });
 
 await step('F12 discussion added on one device appears on the other', async () => {
   await B.page.goto(`${URL_}#discuss`);
-  await B.page.getByRole('button', { name: 'New', exact: true }).click();
+  await B.page.getByRole('button', { name: 'Add Discussion Topic' }).click();
   await B.page.getByRole('dialog').locator('#nd-title').fill('Explain salting with an example');
   await B.page.getByRole('dialog').getByRole('button', { name: 'Add' }).click();
   await A.page.goto(`${URL_}#discuss`);
-  await A.page.locator('.disc', { hasText: 'Explain salting with an example' }).waitFor({ timeout: 10000 });
+  await A.page.locator(T('discussion'), { hasText: 'Explain salting with an example' }).waitFor({ timeout: 10000 });
 });
 
 await step('F15 reload keeps saved changes (persisted in Firestore)', async () => {
   await A.page.reload();
   await A.page.goto(`${URL_}#topics/ch03`);
-  await A.page.locator('#topic-ch03 .who-kyle .status', { hasText: 'First pass completed' }).waitFor({ timeout: 15000 });
+  await A.page.locator(status('ch03', 'kyle', 'completed')).waitFor({ timeout: 15000 });
   const doc = await admin.doc('workspaces/cos330-2026/progress/kyle__ch03').get();
   assert.equal(doc.data().status, 'completed');
   assert.equal(doc.data().updatedByUid, uidA);
@@ -115,7 +119,7 @@ await step('F15 reload keeps saved changes (persisted in Firestore)', async () =
 
 await step('Session survives a reload (stays signed in)', async () => {
   await B.page.reload();
-  await B.page.locator('.appbar .avatar-david').waitFor({ timeout: 15000 });
+  await B.page.locator(PROFILE_BTN('david')).waitFor({ timeout: 15000 });
 });
 
 await step('Removing an account locks it out live', async () => {

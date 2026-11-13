@@ -4,9 +4,9 @@
 import {
   state, setState, setSync, subscribe, applyCollection, allLoaded, saveProfile, syncStatus,
 } from './store.js';
-import { h, clear } from './ui.js';
+import { h, clear, bp, onLayoutChange } from './ui.js';
 import { icon } from './icons.js';
-import { PROFILES } from './config.js';
+import { PROFILES, PROFILE_IDS } from './config.js';
 import * as actions from './actions.js';
 import { isPreviewAllowed, createMemoryBackend } from './memory-backend.js';
 import { renderDashboard } from './views/dashboard.js';
@@ -15,12 +15,31 @@ import { renderTopics } from './views/topics.js';
 import { renderDiscussions } from './views/discussions.js';
 import { renderSettings, gateScreen } from './views/settings.js';
 
+const other = () => PROFILES[PROFILE_IDS.find((p) => p !== state.profile)].name;
+const me = () => PROFILES[state.profile].name;
+
+// Page subtitles differ slightly between the desktop and phone designs: [desktop, phone].
 const ROUTES = {
-  today: { label: 'Today', icon: 'today', render: renderDashboard },
-  schedule: { label: 'Schedule', icon: 'schedule', render: renderSchedule },
-  topics: { label: 'Chapters', icon: 'topics', render: renderTopics },
-  discuss: { label: 'Discuss', icon: 'discuss', render: renderDiscussions },
-  settings: { label: 'Settings', icon: 'more', render: renderSettings, hidden: true },
+  today: {
+    label: 'Today', icon: ['d-home', 'home'], render: renderDashboard,
+    sub: () => [`${me()}'s plan · shared study with ${other()}`, `${me()}'s plan · COS330 with ${other()}`],
+  },
+  schedule: {
+    label: 'Schedule', icon: ['d-schedule', 'calendar'], render: renderSchedule,
+    sub: () => ['Plan individual and shared study time', 'Upcoming study sessions and key dates'],
+  },
+  topics: {
+    label: 'Topics', icon: ['d-topics', 'layers'], render: renderTopics,
+    sub: () => [`Your syllabus · ${PROFILES.kyle.name} and ${PROFILES.david.name}`, 'Chapters, progress and study material'],
+  },
+  discuss: {
+    label: 'Discuss', icon: ['d-discuss', 'chat'], render: renderDiscussions,
+    sub: () => ['Questions for your next study session', `Shared questions, clarifications and topics for ${PROFILES.kyle.name} and ${PROFILES.david.name}.`],
+  },
+  settings: {
+    label: 'Settings', icon: ['d-settings', 'gear'], render: renderSettings,
+    sub: () => ['Profile and connection preferences', 'Manage your profile, connection and application preferences.'],
+  },
 };
 
 let backend = null;
@@ -39,6 +58,8 @@ async function boot() {
     render({ routeChanged: true });
   });
   subscribe(() => render());
+  // Desktop and phone layouts differ in structure for some views: rebuild on crossing.
+  onLayoutChange(() => render({ routeChanged: false }));
   // Watchdog: never spin forever. If start-up stalls, offer a reload.
   setTimeout(() => {
     if (['boot', 'signing-in', 'checking-access', 'loading'].includes(state.phase)) setState({ slow: true });
@@ -216,7 +237,11 @@ function renderView(routeChanged) {
   const focusKey = document.activeElement?.dataset?.fk;
   const scrollY = window.scrollY;
 
-  const next = h('div', { class: `view view-${name}` });
+  const [subDesk, subMob] = route.sub();
+  const next = h('div', { class: `view view-${name}`, 'data-test': `view-${name}` },
+    h('div', { class: 'page-head' },
+      h('h1', { class: 'page-title' }, route.label),
+      h('p', { class: 'page-sub' }, bp(subDesk, subMob))));
   route.render(next, routeChanged ? param : null, () => render(), { resubscribe, signOut });
   view.replaceChildren(next);
 
@@ -236,19 +261,26 @@ function renderView(routeChanged) {
 }
 
 function buildShell() {
-  const syncPill = h('span', { class: 'sync', role: 'status', 'aria-live': 'polite' }, h('span', { class: 'sync-text' }));
-  const profileBtn = h('a', { class: 'avatar', href: '#settings' });
+  const syncPill = h('span', { class: 'sync', role: 'status', 'aria-live': 'polite', 'data-test': 'sync' },
+    icon('check', { size: 16, cls: 'sync-icon' }), h('span', { class: 'sync-text' }));
+  const profileBtn = h('a', { class: 'profile-btn', href: '#settings', 'data-test': 'profile-button' },
+    icon('pawn', { size: 30, stroke: 1.4, cls: 'only-desk' }), icon('user', { size: 30, stroke: 1.6, cls: 'only-mob' }));
   const nav = h('nav', { class: 'nav', 'aria-label': 'Main' },
-    Object.entries(ROUTES).filter(([, r]) => !r.hidden).map(([id, r]) => h('a', { href: `#${id}`, class: 'nav-link', dataset: { route: id } },
-      icon(r.icon, { size: 22 }), h('span', { class: 'nav-label' }, r.label))));
-  const header = h('header', { class: 'appbar' },
-    h('a', { class: 'brand', href: '#today', 'aria-label': 'COS330 study tracker, today' },
-      h('span', { class: 'brand-word' }, 'cos330'), h('span', { class: 'brand-sub' }, 'study tracker')),
-    nav,
-    h('div', { class: 'appbar-right' }, syncPill, profileBtn));
+    Object.entries(ROUTES).map(([id, r]) => h('a', { href: `#${id}`, class: 'nav-link', dataset: { route: id } },
+      h('span', { class: 'nav-icon', 'aria-hidden': 'true' },
+        icon(r.icon[0], { size: 26, stroke: 1.5, cls: 'only-desk' }), icon(r.icon[1], { size: 26, stroke: 1.7, cls: 'only-mob' })),
+      h('span', { class: 'nav-label' }, r.label))));
+  const header = h('header', { class: 'topbar' },
+    h('a', { class: 'brand', href: '#today', 'aria-label': 'COS330 Shared Study Tracker, today' },
+      h('span', { class: 'brand-mark', 'aria-hidden': 'true' },
+        icon('clover', { size: 44, stroke: 1.1, cls: 'only-desk' }), icon('cap', { size: 44, stroke: 1.6, cls: 'only-mob' })),
+      h('span', { class: 'brand-text' }, h('span', { class: 'brand-word' }, 'COS330'), h('span', { class: 'brand-sub' }, 'Shared Study Tracker'))),
+    h('div', { class: 'topbar-right' }, syncPill, profileBtn));
   const banner = state.preview ? h('div', { class: 'preview-banner', role: 'note' }, 'Local preview: data comes from the committed seed and changes are NOT saved anywhere.') : null;
   const view = h('main', { id: 'view', class: 'main', tabindex: '-1' });
-  const root = h('div', { class: 'shell' }, h('a', { class: 'skip', href: '#view', onclick: (e) => { e.preventDefault(); view.focus(); } }, 'Skip to content'), header, banner, view);
+  const root = h('div', { class: 'shell' },
+    h('a', { class: 'skip', href: '#view', onclick: (e) => { e.preventDefault(); view.focus(); } }, 'Skip to content'),
+    header, nav, h('div', { class: 'main-wrap' }, banner, view));
   return { root, view, nav, syncPill, profileBtn };
 }
 
@@ -257,12 +289,13 @@ const SYNC_LABEL = { synced: 'Synced', saving: 'Saving…', offline: 'Offline', 
 function updateHeader() {
   const s = syncStatus();
   shell.syncPill.className = `sync sync-${s}`;
-  shell.syncPill.firstChild.textContent = SYNC_LABEL[s];
+  shell.syncPill.dataset.state = s;
+  shell.syncPill.lastChild.textContent = SYNC_LABEL[s];
   shell.syncPill.title = s === 'offline' ? 'You are offline. Changes will not reach the other device until you reconnect.' : SYNC_LABEL[s];
   const p = PROFILES[state.profile];
-  shell.profileBtn.className = `avatar avatar-${p.id}`;
-  shell.profileBtn.textContent = p.initial;
+  shell.profileBtn.dataset.profile = p.id;
   shell.profileBtn.setAttribute('aria-label', `${p.name} (active profile). Open settings`);
+  shell.profileBtn.title = p.name;
 }
 
 boot();

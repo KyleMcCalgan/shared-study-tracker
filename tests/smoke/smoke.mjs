@@ -43,17 +43,24 @@ async function test(name, fn, { allowConsole = null } = {}) {
   }
 }
 
+// Stable hooks (data-test / ids) so a visual redesign barely touches these tests.
+const T = (id) => `[data-test="${id}"]`;
+const PROFILE_BTN = (who) => `${T('profile-button')}[data-profile="${who.toLowerCase()}"]`;
+const SYNC = (st) => `${T('sync')}[data-state="${st}"]`;
+const SESSION = T('session');
+
 async function choose(page, who = 'Kyle') {
   await page.goto(`${BASE}?preview`);
-  await page.locator(`.profile-${who.toLowerCase()}`).click();
-  await page.locator('.hero').waitFor();
+  await page.locator(T(`choose-${who.toLowerCase()}`)).click();
+  await page.locator(T('view-today')).waitFor();
+  await page.locator(T('exam-countdown')).waitFor();
 }
 
 async function switchTo(page, who) {
   await page.goto(`${BASE}?preview#settings`);
   await page.getByRole('button', { name: `Switch to ${who}` }).click();
   await page.getByRole('dialog').getByRole('button', { name: `Switch to ${who}` }).click();
-  await page.locator(`.appbar .avatar-${who.toLowerCase()}`).waitFor();
+  await page.locator(PROFILE_BTN(who)).waitFor();
 }
 
 async function openMenu(page, sessionId, item) {
@@ -61,7 +68,10 @@ async function openMenu(page, sessionId, item) {
   await page.getByRole('menuitem', { name: item }).click();
 }
 
-const tileStatus = (page, t, who) => page.locator(`#tile-${t} .who-${who} .status`);
+// Chapter list entry -> that person's status id (e.g. 'completed', 'in_progress').
+const tileStatus = (page, t, who) => page.locator(`${T(`chapter-${t}`)} [data-status-of="${who}"]`).getAttribute('data-status');
+// Chapter detail (sheet or panel) -> wait until that person's status is `status`.
+const detailStatus = (page, t, who, status) => page.locator(`#topic-${t} ${T(`who-${who}`)} [data-status-of="${who}"][data-status="${status}"]`).waitFor();
 
 async function noHorizontalOverflow(page, label = '') {
   const { sw, cw, culprits } = await page.evaluate(() => {
@@ -89,8 +99,8 @@ await test('Invalid config state: "Firebase configuration missing"', async (page
 await test('F01 signed-out screen offers Google sign-in, no study content', async (page) => {
   await page.goto(`${BASE}?preview=signedout`);
   await page.getByRole('heading', { name: 'Sign in' }).waitFor();
-  assert.equal(await page.locator('.sess').count(), 0);
-  assert.equal(await page.locator('.nav').count(), 0);
+  assert.equal(await page.locator(SESSION).count(), 0);
+  assert.equal(await page.locator('nav[aria-label="Main"]').count(), 0);
   await page.getByRole('button', { name: /Continue with Google/ }).click();
   await page.getByRole('heading', { name: "Who's studying?" }).waitFor(); // preview account → chooser
 });
@@ -98,7 +108,7 @@ await test('F01 signed-out screen offers Google sign-in, no study content', asyn
 await test('Unlisted account sees "No access" and can switch account', async (page) => {
   await page.goto(`${BASE}?preview=notallowed`);
   await page.getByRole('heading', { name: 'No access for this account' }).waitFor();
-  assert.equal(await page.locator('.sess').count(), 0);
+  assert.equal(await page.locator(SESSION).count(), 0);
   await page.getByRole('button', { name: 'Use a different account' }).click();
   await page.getByRole('heading', { name: 'Sign in' }).waitFor();
 });
@@ -119,16 +129,18 @@ await test('F03/F04 choose profile, remembered after reload', async (page) => {
   await page.goto(`${BASE}?preview`);
   await page.getByRole('heading', { name: "Who's studying?" }).waitFor();
   await page.getByRole('button', { name: 'David' }).click();
-  await page.locator('.appbar .avatar-david').waitFor();
+  await page.locator(PROFILE_BTN('david')).waitFor();
   await page.reload();
-  await page.locator('.appbar .avatar-david').waitFor();
+  await page.locator(PROFILE_BTN('david')).waitFor();
   assert.equal(await page.evaluate(() => localStorage.getItem('studyTracker.activeProfile.v1')), 'david');
 });
 
 await test('F05 switch profile via settings updates header', async (page) => {
   await choose(page, 'Kyle');
   await switchTo(page, 'David');
-  assert.equal(await page.locator('.appbar .avatar').textContent(), 'D');
+  assert.equal(await page.locator(T('profile-button')).getAttribute('data-profile'), 'david');
+  await page.goto(`${BASE}?preview#settings`);
+  assert.match(await page.locator(T('current-profile')).textContent(), /David/);
 });
 
 // ---------------------------------------------------------------- progress
@@ -136,30 +148,31 @@ await test('F06/F07 independent progress per profile', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#topics/ch01`);
   await page.getByRole('radio', { name: 'First pass completed' }).click();
-  await page.locator('#topic-ch01 .who-kyle .status', { hasText: 'First pass completed' }).waitFor();
-  assert.equal(await page.locator('#topic-ch01 .who-david .status').textContent(), 'Not started');
+  await detailStatus(page, 'ch01', 'kyle', 'completed');
+  await detailStatus(page, 'ch01', 'david', 'not_started');
   await switchTo(page, 'David');
   await page.goto(`${BASE}?preview#topics/ch01`);
   await page.getByRole('radio', { name: 'In progress' }).click();
-  await page.locator('#topic-ch01 .who-david .status', { hasText: 'In progress' }).waitFor();
-  assert.equal(await page.locator('#topic-ch01 .who-kyle .status').textContent(), 'First pass completed');
+  await detailStatus(page, 'ch01', 'david', 'in_progress');
+  await detailStatus(page, 'ch01', 'kyle', 'completed');
   await page.goto(`${BASE}?preview#topics`);
-  assert.equal(await tileStatus(page, 'ch01', 'kyle').textContent(), 'First pass');
-  assert.equal(await tileStatus(page, 'ch01', 'david').textContent(), 'In progress');
+  assert.equal(await tileStatus(page, 'ch01', 'kyle'), 'completed');
+  assert.equal(await tileStatus(page, 'ch01', 'david'), 'in_progress');
   await page.goto(`${BASE}?preview#today`);
-  assert.equal(await page.locator('.duo-kyle .duo-num').textContent(), '1/12');
-  assert.equal(await page.locator('.duo-david .duo-num').textContent(), '0/12');
+  const count = async (who) => { const el = page.locator(T(`progress-${who}`)); return `${await el.getAttribute('data-done')}/${await el.getAttribute('data-total')}`; };
+  assert.equal(await count('kyle'), '1/12');
+  assert.equal(await count('david'), '0/12');
 });
 
 await test('Task checkbox writes and shows saving → synced', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#schedule/2026-11-13`);
   const card = page.locator('#session-2026-11-13-kyle-study');
-  await card.locator('input.tick').first().check();
-  await page.locator('.sync-saving').waitFor();
-  await page.locator('.sync-synced').waitFor();
-  await card.locator('input.tick:checked').first().waitFor({ state: 'attached' });
-  assert.equal(await card.locator('.sess-progress > span').textContent(), '1 of 4');
+  await card.locator(T('task-tick')).first().check();
+  await page.locator(SYNC('saving')).waitFor();
+  await page.locator(SYNC('synced')).waitFor();
+  await card.locator(`${T('task-tick')}:checked`).first().waitFor({ state: 'attached' });
+  assert.equal(await card.locator(T('task-progress')).textContent(), '1 of 4');
 });
 
 await test('Rejected write shows error and does not claim success', async (page) => {
@@ -169,24 +182,24 @@ await test('Rejected write shows error and does not claim success', async (page)
   await page.getByRole('radio', { name: 'In progress' }).click();
   await page.locator('.toast-error').waitFor();
   assert.match(await page.locator('.toast-error').textContent(), /Not saved/);
-  await page.locator('#topic-ch02 .who-kyle .status', { hasText: 'Not started' }).waitFor(); // reverted
+  await detailStatus(page, 'ch02', 'kyle', 'not_started'); // reverted
   await page.getByRole('radio', { name: 'Not started', checked: true }).waitFor();
-  assert.equal(await page.locator('.sync-synced').count(), 1);
+  assert.equal(await page.locator(SYNC('synced')).count(), 1);
 }, { allowConsole: /Write failed/ });
 
 // ---------------------------------------------------------------- schedule
 await test('F09 calendar filters; own sessions listed first', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#schedule/2026-11-16`);
-  const count = () => page.locator('.sess').count();
+  const count = () => page.locator(SESSION).count();
   const all = await count();
-  assert.equal(await page.locator('.sess').first().getAttribute('id'), 'session-2026-11-16-kyle-study');
+  assert.equal(await page.locator(SESSION).first().getAttribute('id'), 'session-2026-11-16-kyle-study');
   await page.getByRole('button', { name: 'Together', exact: true }).click();
   const together = await count();
-  const types = await page.locator('.sess .tag').allTextContents();
+  const types = await page.locator(`${SESSION} ${T('session-type')}`).allTextContents();
   assert.ok(types.every((t) => /Joint|Practice/.test(t)), `together shows ${types}`);
   await page.getByRole('button', { name: 'Rest', exact: true }).click();
-  const rb = await page.locator('.sess .tag').allTextContents();
+  const rb = await page.locator(`${SESSION} ${T('session-type')}`).allTextContents();
   assert.ok(rb.every((t) => /Rest|Buffer/.test(t)), `rest/buffer shows ${rb}`);
   await page.getByRole('button', { name: 'David', exact: true }).click();
   const david = await count();
@@ -194,9 +207,10 @@ await test('F09 calendar filters; own sessions listed first', async (page) => {
   await page.getByRole('button', { name: 'All', exact: true }).click();
 });
 
-await test('Day strip: tapping a day shows that day', async (page) => {
+await test('Week strip: next week, then tapping a day shows that day', async (page) => {
   await choose(page, 'Kyle');
-  await page.goto(`${BASE}?preview#schedule`);
+  await page.goto(`${BASE}?preview#schedule/2026-11-13`);
+  await page.getByRole('button', { name: 'Next week' }).click();
   await page.locator('#daypill-2026-11-20').click();
   await page.getByRole('heading', { name: 'Friday 20' }).waitFor();
   await page.locator('#session-2026-11-20-practice').waitFor();
@@ -220,7 +234,7 @@ await test('F10/F11 reschedule + missed keep progress unchanged', async (page) =
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#topics/ch05`);
   await page.getByRole('radio', { name: 'In progress' }).click();
-  await page.locator('#topic-ch05 .who-kyle .status', { hasText: 'In progress' }).waitFor();
+  await detailStatus(page, 'ch05', 'kyle', 'in_progress');
   await page.goto(`${BASE}?preview#schedule/2026-11-16`);
   await openMenu(page, '2026-11-16-kyle-study', /Missed it/);
   await page.getByRole('dialog').locator('#missed-reason').fill('ran out of time');
@@ -232,22 +246,22 @@ await test('F10/F11 reschedule + missed keep progress unchanged', async (page) =
   await dlg.getByRole('button', { name: 'Move session' }).click();
   await page.locator('.toast-success', { hasText: 'Moved' }).waitFor();
   await page.goto(`${BASE}?preview#schedule/2026-11-19`);
-  await page.locator('#session-2026-11-16-kyle-study .sess-flag', { hasText: 'Moved from Mon 16 Nov' }).waitFor();
+  await page.locator(`#session-2026-11-16-kyle-study ${T('session-flag')}`, { hasText: 'Moved from Mon 16 Nov' }).waitFor();
   await page.goto(`${BASE}?preview#topics`);
-  assert.equal(await tileStatus(page, 'ch05', 'kyle').textContent(), 'In progress');
+  assert.equal(await tileStatus(page, 'ch05', 'kyle'), 'in_progress');
 });
 
 await test('Add, edit and delete a user session', async (page) => {
   await choose(page, 'Kyle');
   await page.goto(`${BASE}?preview#schedule/2026-11-17`);
-  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await page.getByRole('button', { name: 'Add Session', exact: true }).click();
   const dlg = page.getByRole('dialog');
   await dlg.getByRole('button', { name: 'Add session' }).click();
   await dlg.locator('#sf-title-err:not([hidden])').waitFor(); // validation
   await dlg.locator('#sf-title').fill('Extra SQLi practice');
   await dlg.locator('#sf-date').fill('2026-11-17');
   await dlg.getByRole('button', { name: 'Add session' }).click();
-  const card = page.locator('.sess', { hasText: 'Extra SQLi practice' });
+  const card = page.locator(SESSION, { hasText: 'Extra SQLi practice' });
   await card.waitFor();
   await card.getByRole('button', { name: /More actions/ }).click();
   await page.getByRole('menuitem', { name: /Delete session/ }).click();
@@ -264,16 +278,20 @@ await test('F12 add discussion; discussed does not change progress', async (page
   await dlg.locator('#nd-title').fill('Capability list vs ACL: which is faster to revoke?');
   await dlg.getByRole('button', { name: 'Add' }).click();
   await page.goto(`${BASE}?preview#discuss`);
-  const item = page.locator('.disc', { hasText: 'Capability list vs ACL' });
-  await item.waitFor();
-  await item.getByRole('button', { name: 'Discussed' }).click();
-  await page.getByRole('button', { name: 'Discussed 1' }).click();
-  await page.locator('.disc', { hasText: 'Capability list vs ACL' }).waitFor();
+  const item = page.locator(T('discussion'), { hasText: 'Capability list vs ACL' });
+  await item.click(); // opens the discussion sheet
+  const sheet = page.getByRole('dialog', { name: 'Discussion' });
+  await sheet.getByRole('button', { name: 'Mark as Discussed' }).click();
+  await sheet.locator(T('discussion-tag'), { hasText: 'Discussed' }).waitFor(); // live update inside the open sheet
+  await sheet.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('button', { name: 'Discussed (1)' }).click();
+  await page.locator(T('discussion'), { hasText: 'Capability list vs ACL' }).waitFor();
   await page.goto(`${BASE}?preview#topics`);
-  assert.equal(await tileStatus(page, 'ch04', 'david').textContent(), 'Not started');
+  assert.equal(await tileStatus(page, 'ch04', 'david'), 'not_started');
   await page.goto(`${BASE}?preview#discuss`);
-  await page.getByRole('button', { name: /^Open/ }).click();
-  await page.locator('.disc', { hasText: "two's complement gives −69" }).waitFor();
+  await page.getByRole('button', { name: /^Open \(/ }).click();
+  await page.locator(T('discussion'), { hasText: "two's complement gives −69" }).waitFor();
+  assert.equal(await page.locator(T('discussion'), { hasText: 'Capability list vs ACL' }).count(), 0);
 });
 
 await test('David queue ticks sync with session task', async (page) => {
@@ -291,6 +309,26 @@ await test('Navigating closes an open sheet', async (page) => {
   await page.getByRole('dialog').waitFor();
   await page.goto(`${BASE}?preview#today`);
   await page.getByRole('dialog').waitFor({ state: 'detached' });
+});
+
+// ---------------------------------------------------------------- desktop layout
+await test('Desktop: chapter panel and discussion panel edit inline', async (page) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await choose(page, 'Kyle');
+  assert.equal(await page.locator('nav[aria-label="Main"] a').count(), 5);
+  await page.goto(`${BASE}?preview#topics`);
+  await page.locator(T('chapter-ch06')).click();
+  await page.locator('#topic-ch06').waitFor();
+  assert.equal(await page.getByRole('dialog').count(), 0); // a panel, not a sheet
+  await page.getByRole('radio', { name: 'In progress' }).click();
+  await detailStatus(page, 'ch06', 'kyle', 'in_progress');
+  assert.equal(await tileStatus(page, 'ch06', 'kyle'), 'in_progress');
+  await page.goto(`${BASE}?preview#discuss`);
+  await page.locator(T('discussion'), { hasText: 'practicals are examinable' }).click();
+  await page.locator(T('discussion-detail'), { hasText: 'practicals are examinable' }).getByRole('button', { name: 'Mark as Discussed' }).click();
+  await page.locator(T('discussion'), { hasText: 'practicals are examinable' }).waitFor({ state: 'detached' }); // left the "To Discuss" list
+  await page.getByRole('button', { name: 'Discussed', exact: true }).click();
+  await page.locator(T('discussion'), { hasText: 'practicals are examinable' }).waitFor();
 });
 
 // ---------------------------------------------------------------- responsive
